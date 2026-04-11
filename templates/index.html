@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="/static/vendor/htmx.min.js"></script>
+    <style>
+        .catalog-row {
+            cursor: pointer;
+        }
+        .catalog-row:hover {
+            background: #f5f5f5;
+        }
+        .catalog-row.selected {
+            background: #dbeafe;
+        }
+    </style>
+</head>
+<body>
+<form method="post" hx-post="/signup" hx-target="#status">
+    <label for="name">Your name</label>
+    <input id="name" name="name" type="text" placeholder="Enter your name" style="width: 100%; max-width: 600px; padding: 8px; margin-bottom: 16px; box-sizing: border-box; display: block;">
+
+    <p id="limit-msg" style="display: none; color: #e53e3e; margin-bottom: 8px;">Maximum of 3 songs selected.</p>
+
+    <input id="search" type="text" placeholder="Search songs or artists..." aria-label="Search songs or artists" style="width: 100%; max-width: 600px; padding: 8px; margin-bottom: 8px; box-sizing: border-box;">
+
+    <table id="catalog" style="width: 100%; max-width: 600px; border-collapse: collapse;">
+        <thead>
+        <tr>
+            <th style="border: 1px solid #ccc; padding: 8px;">Title</th>
+            <th style="border: 1px solid #ccc; padding: 8px;">Artist</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{range $i, $s := .Songs}}
+        <tr class="catalog-row" data-title="{{$s.Title}}" data-artist="{{$s.Artist}}" data-index="{{$i}}">
+            <td style="border: 1px solid #ccc; padding: 8px;">{{$s.Title}}</td>
+            <td style="border: 1px solid #ccc; padding: 8px;">{{$s.Artist}}</td>
+        </tr>
+        {{end}}
+        </tbody>
+    </table>
+
+    <div id="song-inputs"></div>
+
+    <button type="submit" style="margin-top: 12px; padding: 8px 16px;">Submit</button>
+</form>
+
+<div id="status"></div>
+
+<script>
+    document.querySelectorAll('.catalog-row').forEach(row => {
+        row.addEventListener('click', function() {
+            const alreadySelected = this.classList.contains('selected');
+            if (!alreadySelected && document.querySelectorAll('.catalog-row.selected').length >= 3) {
+                document.getElementById('limit-msg').style.display = '';
+                return;
+            }
+            this.classList.toggle('selected');
+            const count = document.querySelectorAll('.catalog-row.selected').length;
+            document.getElementById('limit-msg').style.display = count >= 3 ? '' : 'none';
+            reorderRows(this);
+            updateSongInputs();
+            document.getElementById('search').value = '';
+            document.querySelectorAll('.catalog-row').forEach(r => r.style.display = '');
+        });
+    });
+
+    function reorderRows(row) {
+        const tbody = row.closest('tbody');
+        if (row.classList.contains('selected')) {
+            const firstUnselected = tbody.querySelector('.catalog-row:not(.selected)');
+            tbody.insertBefore(row, firstUnselected);
+        } else {
+            const index = parseInt(row.dataset.index);
+            const insertBefore = [...tbody.querySelectorAll('.catalog-row')]
+                .find(r => !r.classList.contains('selected') && parseInt(r.dataset.index) > index);
+            tbody.insertBefore(row, insertBefore || null);
+        }
+    }
+
+    function updateSongInputs() {
+        const container = document.getElementById('song-inputs');
+        const rows = [...document.querySelectorAll('.catalog-row.selected')];
+        container.innerHTML = rows
+            .map(row => `<input type="hidden" name="song" value='${JSON.stringify({title: row.dataset.title, artist: row.dataset.artist})}'>`)
+            .join('');
+    }
+
+    document.body.addEventListener('htmx:responseError', function(evt) {
+        if (evt.detail.xhr.status === 429) {
+            document.getElementById('status').innerHTML = '<p>Too many submissions. Please wait before trying again.</p>';
+        }
+    });
+
+    document.getElementById('search').addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        document.querySelectorAll('.catalog-row').forEach(row => {
+            row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
+        });
+    });
+</script>
+</body>
+</html>
