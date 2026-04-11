@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html style="height: 100%;">
 <head>
     <script src="/static/vendor/htmx.min.js"></script>
     <style>
@@ -12,40 +12,122 @@
         .catalog-row.selected {
             background: #dbeafe;
         }
+        body {
+            height: 100%;
+            min-height: 30em;
+            min-width: 360px;
+            margin: 0;
+            padding: 16px;
+            padding-top: 90px;
+            box-sizing: border-box;
+        }
+        #name-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 16px;
+            z-index: 100;
+            box-sizing: border-box;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        #catalog-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            max-width: 600px;
+        }
+        #unselected-scroll {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 20em;
+        }
+        #submit-btn {
+            align-self: flex-start;
+            width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+        }
+        #status-modal {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 24px;
+            min-width: 280px;
+        }
+        #status-modal::backdrop {
+            background: rgba(0, 0, 0, 0.4);
+        }
+        #status-modal button {
+            margin-top: 16px;
+            padding: 8px 24px;
+        }
+        @media (max-width: 600px) {
+            #submit-btn {
+                position: fixed;
+                bottom: 0;
+                left: 16px;
+                right: 16px;
+                padding: 16px;
+                box-sizing: border-box;
+            }
+            body {
+                padding-bottom: 64px;
+            }
+        }
     </style>
 </head>
 <body>
 <form method="post" hx-post="/signup" hx-target="#status">
-    <label for="name">Your name</label>
-    <input id="name" name="name" type="text" placeholder="Enter your name" style="width: 100%; max-width: 600px; padding: 8px; margin-bottom: 16px; box-sizing: border-box; display: block;">
+    <div id="name-bar">
+        <label for="name">Your name</label>
+        <input id="name" name="name" type="text" placeholder="Enter your name" style="width: 100%; max-width: 600px; padding: 8px; margin-top: 4px; box-sizing: border-box; display: block;">
+    </div>
 
     <p id="limit-msg" style="display: none; color: #e53e3e; margin-bottom: 8px;">Maximum of 3 songs selected.</p>
 
     <input id="search" type="text" placeholder="Search songs or artists..." aria-label="Search songs or artists" style="width: 100%; max-width: 600px; padding: 8px; margin-bottom: 8px; box-sizing: border-box;">
 
-    <table id="catalog" style="width: 100%; max-width: 600px; border-collapse: collapse;">
-        <thead>
-        <tr>
-            <th style="border: 1px solid #ccc; padding: 8px;">Title</th>
-            <th style="border: 1px solid #ccc; padding: 8px;">Artist</th>
-        </tr>
-        </thead>
-        <tbody>
-        {{range $i, $s := .Songs}}
-        <tr class="catalog-row" data-title="{{$s.Title}}" data-artist="{{$s.Artist}}" data-index="{{$i}}">
-            <td style="border: 1px solid #ccc; padding: 8px;">{{$s.Title}}</td>
-            <td style="border: 1px solid #ccc; padding: 8px;">{{$s.Artist}}</td>
-        </tr>
-        {{end}}
-        </tbody>
-    </table>
+    <div id="catalog-wrapper">
+        <table style="width: 100%; border-collapse: collapse; table-layout: fixed;">
+            <colgroup><col style="width: 60%;"><col style="width: 40%;"></colgroup>
+            <thead>
+            <tr>
+                <th style="border: 1px solid #ccc; padding: 8px;">Title</th>
+                <th style="border: 1px solid #ccc; padding: 8px;">Artist</th>
+            </tr>
+            </thead>
+            <tbody id="selected-rows"></tbody>
+        </table>
+        <div id="unselected-scroll">
+            <table style="width: 100%; border-collapse: collapse; table-layout: fixed;">
+                <colgroup><col style="width: 60%;"><col style="width: 40%;"></colgroup>
+                <tbody id="unselected-rows">
+                {{range $i, $s := .Songs}}
+                <tr class="catalog-row" data-title="{{$s.Title}}" data-artist="{{$s.Artist}}" data-index="{{$i}}">
+                    <td style="border: 1px solid #ccc; padding: 8px;">{{$s.Title}}</td>
+                    <td style="border: 1px solid #ccc; padding: 8px;">{{$s.Artist}}</td>
+                </tr>
+                {{end}}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
     <div id="song-inputs"></div>
 
-    <button type="submit" style="margin-top: 12px; padding: 8px 16px;">Submit</button>
+    <button id="submit-btn" type="submit" style="margin-top: 12px; padding: 8px 16px;" disabled>Submit</button>
 </form>
 
-<div id="status"></div>
+<dialog id="status-modal">
+    <div id="status"></div>
+    <button type="button" onclick="document.getElementById('status-modal').close()">OK</button>
+</dialog>
 
 <script>
     document.querySelectorAll('.catalog-row').forEach(row => {
@@ -60,20 +142,20 @@
             document.getElementById('limit-msg').style.display = count >= 3 ? '' : 'none';
             reorderRows(this);
             updateSongInputs();
+            updateSubmit();
             document.getElementById('search').value = '';
-            document.querySelectorAll('.catalog-row').forEach(r => r.style.display = '');
+            document.querySelectorAll('#unselected-rows .catalog-row').forEach(r => r.style.display = '');
         });
     });
 
     function reorderRows(row) {
-        const tbody = row.closest('tbody');
         if (row.classList.contains('selected')) {
-            const firstUnselected = tbody.querySelector('.catalog-row:not(.selected)');
-            tbody.insertBefore(row, firstUnselected);
+            document.getElementById('selected-rows').appendChild(row);
         } else {
+            const tbody = document.getElementById('unselected-rows');
             const index = parseInt(row.dataset.index);
             const insertBefore = [...tbody.querySelectorAll('.catalog-row')]
-                .find(r => !r.classList.contains('selected') && parseInt(r.dataset.index) > index);
+                .find(r => parseInt(r.dataset.index) > index);
             tbody.insertBefore(row, insertBefore || null);
         }
     }
@@ -82,19 +164,37 @@
         const container = document.getElementById('song-inputs');
         const rows = [...document.querySelectorAll('.catalog-row.selected')];
         container.innerHTML = rows
-            .map(row => `<input type="hidden" name="song" value='${JSON.stringify({title: row.dataset.title, artist: row.dataset.artist})}'>`)
+            .map(row => {
+                const json = JSON.stringify({title: row.dataset.title, artist: row.dataset.artist}).replace(/"/g, '&quot;');
+                return `<input type="hidden" name="song" value="${json}">`;
+            })
             .join('');
     }
+
+    document.body.addEventListener('htmx:afterSwap', function() {
+        const modal = document.getElementById('status-modal');
+        if (!modal.open) modal.showModal();
+    });
 
     document.body.addEventListener('htmx:responseError', function(evt) {
         if (evt.detail.xhr.status === 429) {
             document.getElementById('status').innerHTML = '<p>Too many submissions. Please wait before trying again.</p>';
+            const modal = document.getElementById('status-modal');
+            if (!modal.open) modal.showModal();
         }
     });
 
+    function updateSubmit() {
+        const hasName = document.getElementById('name').value.trim() !== '';
+        const hasSong = document.querySelectorAll('.catalog-row.selected').length > 0;
+        document.getElementById('submit-btn').disabled = !(hasName && hasSong);
+    }
+
+    document.getElementById('name').addEventListener('input', updateSubmit);
+
     document.getElementById('search').addEventListener('input', function() {
         const query = this.value.toLowerCase();
-        document.querySelectorAll('.catalog-row').forEach(row => {
+        document.querySelectorAll('#unselected-rows .catalog-row').forEach(row => {
             row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
         });
     });
