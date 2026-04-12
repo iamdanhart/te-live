@@ -8,12 +8,13 @@ import (
 	"time"
 
 	"github.com/iamdanhart/te-live/catalog"
+	"github.com/iamdanhart/te-live/config"
 	"github.com/iamdanhart/te-live/middleware"
 	"github.com/iamdanhart/te-live/queue"
 )
 
-func newRouter() *http.ServeMux {
-	rl := middleware.NewRateLimiter(2 * time.Minute)
+func newRouter(cfg config.Props) *http.ServeMux {
+	rl := middleware.NewRateLimiter(2*time.Minute, cfg.EnforceSignupLimit)
 	q := queue.New()
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", handleHealth)

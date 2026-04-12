@@ -10,16 +10,19 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/iamdanhart/te-live/config"
 )
 
 func main() {
-	if os.Getenv("ENV") == "production" {
+	cfg := config.Load()
+
+	if cfg.Env == "production" {
 		slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stderr, nil)))
 	} else {
 		slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, nil)))
 	}
 
-	srv := &http.Server{Addr: ":8080", Handler: newRouter()}
+	srv := &http.Server{Addr: ":8080", Handler: newRouter(cfg)}
 
 	go func() {
 		slog.Info("Listening on :8080")

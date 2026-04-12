@@ -14,14 +14,17 @@ type RateLimiter struct {
 	mu       sync.Mutex
 	last     map[string]time.Time
 	cooldown time.Duration
+	enforce  bool
 }
 
 // NewRateLimiter creates a RateLimiter with the given cooldown and starts
-// a background goroutine to periodically evict expired entries.
-func NewRateLimiter(cooldown time.Duration) *RateLimiter {
+// a background goroutine to periodically evict expired entries. When enforce
+// is false, request times are still tracked but the limit is never applied.
+func NewRateLimiter(cooldown time.Duration, enforce bool) *RateLimiter {
 	rl := &RateLimiter{
 		last:     make(map[string]time.Time),
 		cooldown: cooldown,
+		enforce:  enforce,
 	}
 	go rl.cleanup()
 	return rl
@@ -57,10 +60,12 @@ func (rl *RateLimiter) Limit(next http.Handler) http.Handler {
 		id := sessionID(w, r)
 
 		rl.mu.Lock()
-		if last, ok := rl.last[id]; ok && time.Since(last) < rl.cooldown {
-			rl.mu.Unlock()
-			http.Error(w, "too many requests", http.StatusTooManyRequests)
-			return
+		if rl.enforce {
+			if last, ok := rl.last[id]; ok && time.Since(last) < rl.cooldown {
+				rl.mu.Unlock()
+				http.Error(w, "too many requests", http.StatusTooManyRequests)
+				return
+			}
 		}
 		rl.last[id] = time.Now()
 		rl.mu.Unlock()
