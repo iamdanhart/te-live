@@ -2,6 +2,7 @@
 <html style="height: 100%;">
 <head>
     {{template "base-head" .}}
+    <script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js"></script>
     <style>
         body {
             padding: 32px 16px;
@@ -76,20 +77,9 @@
     {{if .SignupsOpen}}
         <a class="signup-link" href="/signup">Sign Up</a>
 
-        {{if .Current}}
-            <div class="card">
-                <div class="card-label">Current Singer</div>
-                <div class="card-name">{{.Current.Name}}</div>
-            </div>
-            {{if .Next}}
-            <div class="card">
-                <div class="card-label">On Deck</div>
-                <div class="card-name">{{.Next.Name}}</div>
-            </div>
-            {{end}}
-        {{else}}
-            <p class="warmup">Upcoming singers will be shown after warm-up!</p>
-        {{end}}
+        <div id="queue-status" hx-get="/queue-status" hx-trigger="every 5s" hx-swap="innerHTML">
+            {{template "index_queue.html" .}}
+        </div>
     {{else}}
         <p class="warmup">Signups are closed! See you next time!</p>
     {{end}}

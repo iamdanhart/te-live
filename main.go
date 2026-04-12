@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/iamdanhart/te-live/config"
+	"github.com/iamdanhart/te-live/router"
 )
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 		slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, nil)))
 	}
 
-	srv := &http.Server{Addr: ":8080", Handler: newRouter(cfg)}
+	srv := &http.Server{Addr: ":8080", Handler: router.NewRouter(cfg)}
 
 	go func() {
 		slog.Info("Listening on :8080")

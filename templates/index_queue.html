@@ -1,0 +1,14 @@
+{{if .Current}}
+    <div class="card">
+        <div class="card-label">Current Singer</div>
+        <div class="card-name">{{.Current.Name}}</div>
+    </div>
+    {{if .Next}}
+    <div class="card">
+        <div class="card-label">On Deck</div>
+        <div class="card-name">{{.Next.Name}}</div>
+    </div>
+    {{end}}
+{{else}}
+    <p class="warmup">Upcoming singers will be shown after warm-up!</p>
+{{end}}

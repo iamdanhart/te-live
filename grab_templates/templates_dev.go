@@ -1,11 +1,11 @@
 //go:build !production
 
-package main
+package grab_templates
 
 import "html/template"
 
-// getTemplates re-parses templates from disk on every call so edits are
+// GetTemplates re-parses templates from disk on every call so edits are
 // reflected without restarting the server.
-func getTemplates() *template.Template {
+func GetTemplates() *template.Template {
 	return template.Must(template.ParseGlob("templates/*"))
 }
