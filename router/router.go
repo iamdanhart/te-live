@@ -16,7 +16,13 @@ import (
 
 func NewRouter(cfg config.Props) *http.ServeMux {
 	rl := middleware.NewRateLimiter(2*time.Minute, cfg.EnforceSignupLimit)
-	q := queue.New()
+	var q queue.Queue
+	if cfg.Env == "production" {
+		// TODO
+	} else {
+		q = queue.NewInMemQueue()
+	}
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", handleHealth)
 	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
@@ -41,7 +47,7 @@ func handleHealth(w http.ResponseWriter, r *http.Request) {
 	slog.Info("ok")
 }
 
-func handleQueueStatus(w http.ResponseWriter, r *http.Request, q *queue.Queue) {
+func handleQueueStatus(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 	data := struct {
 		Current *queue.Entry
 		Next    *queue.Entry
@@ -52,12 +58,12 @@ func handleQueueStatus(w http.ResponseWriter, r *http.Request, q *queue.Queue) {
 	}
 }
 
-func handleIndex(w http.ResponseWriter, r *http.Request, q *queue.Queue) {
+func handleIndex(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 	data := struct {
 		Current     *queue.Entry
 		Next        *queue.Entry
 		SignupsOpen bool
-	}{q.Current(), q.Next(), q.SignupsOpen}
+	}{q.Current(), q.Next(), q.SignupsOpen()}
 	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "index.html", data); err != nil {
 		slog.Error("template error", "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
@@ -71,7 +77,7 @@ func handleSignupPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func handleSignup(w http.ResponseWriter, r *http.Request, q *queue.Queue) {
+func handleSignup(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 	name := r.FormValue("name")
 	var songs []catalog.Song
 	for _, s := range r.Form["song"] {

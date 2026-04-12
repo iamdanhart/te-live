@@ -6,39 +6,27 @@ import (
 	"github.com/iamdanhart/te-live/catalog"
 )
 
-// SongEntry pairs a song with a flag indicating whether it has been performed.
-type SongEntry struct {
-	Song      catalog.Song
-	Performed bool
-}
-
-// Entry is a single singer signup in the queue.
-type Entry struct {
-	Name  string
-	Songs []SongEntry
-}
-
-// PerformedSong records a song that has been sung, along with the singer's name.
-type PerformedSong struct {
-	Singer string
-	Song   catalog.Song
-}
-
-// Queue is a thread-safe in-memory list of singer signups.
-type Queue struct {
+// InMemQueue is a thread-safe in-memory list of singer signups.
+type InMemQueue struct {
 	mu          sync.Mutex
 	entries     []Entry
 	performed   []PerformedSong
-	SignupsOpen bool
+	signupsOpen bool
 }
 
-// New returns an empty Queue with signups open by default.
-func New() *Queue {
-	return &Queue{SignupsOpen: true}
+// New returns an empty InMemQueue with signups open by default.
+func NewInMemQueue() *InMemQueue {
+	return &InMemQueue{signupsOpen: true}
+}
+
+func (q *InMemQueue) SignupsOpen() bool {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	return q.signupsOpen
 }
 
 // Entries returns a snapshot of all entries in the queue.
-func (q *Queue) Entries() []Entry {
+func (q *InMemQueue) Entries() []Entry {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 	snapshot := make([]Entry, len(q.entries))
@@ -47,15 +35,15 @@ func (q *Queue) Entries() []Entry {
 }
 
 // ToggleSignups flips the SignupsOpen flag and returns the new value.
-func (q *Queue) ToggleSignups() bool {
+func (q *InMemQueue) ToggleSignups() bool {
 	q.mu.Lock()
 	defer q.mu.Unlock()
-	q.SignupsOpen = !q.SignupsOpen
-	return q.SignupsOpen
+	q.signupsOpen = !q.signupsOpen
+	return q.signupsOpen
 }
 
 // Add appends a new entry to the end of the queue.
-func (q *Queue) Add(name string, songs []catalog.Song) {
+func (q *InMemQueue) Add(name string, songs []catalog.Song) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 	entries := make([]SongEntry, len(songs))
@@ -66,7 +54,7 @@ func (q *Queue) Add(name string, songs []catalog.Song) {
 }
 
 // MarkSongPerformed sets the Performed flag on a matching song in the first entry.
-func (q *Queue) MarkSongPerformed(title, artist string) {
+func (q *InMemQueue) MarkSongPerformed(title, artist string) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 	if len(q.entries) == 0 {
@@ -81,14 +69,14 @@ func (q *Queue) MarkSongPerformed(title, artist string) {
 }
 
 // RecordPerformed appends a song to the performed history.
-func (q *Queue) RecordPerformed(singer string, song catalog.Song) {
+func (q *InMemQueue) RecordPerformed(singer string, song catalog.Song) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 	q.performed = append(q.performed, PerformedSong{Singer: singer, Song: song})
 }
 
 // Performed returns a snapshot of all songs that have been performed.
-func (q *Queue) Performed() []PerformedSong {
+func (q *InMemQueue) Performed() []PerformedSong {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 	snapshot := make([]PerformedSong, len(q.performed))
@@ -97,7 +85,7 @@ func (q *Queue) Performed() []PerformedSong {
 }
 
 // AddSongToFirst appends a song to the first entry in the queue.
-func (q *Queue) AddSongToFirst(song catalog.Song) {
+func (q *InMemQueue) AddSongToFirst(song catalog.Song) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 	if len(q.entries) == 0 {
@@ -107,7 +95,7 @@ func (q *Queue) AddSongToFirst(song catalog.Song) {
 }
 
 // MoveCurrentToBottom moves the first entry to the end of the queue.
-func (q *Queue) MoveCurrentToBottom() {
+func (q *InMemQueue) MoveCurrentToBottom() {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 	if len(q.entries) <= 1 {
@@ -117,7 +105,7 @@ func (q *Queue) MoveCurrentToBottom() {
 }
 
 // Current returns the first entry in the queue, or nil if empty.
-func (q *Queue) Current() *Entry {
+func (q *InMemQueue) Current() *Entry {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 	if len(q.entries) == 0 {
@@ -128,7 +116,7 @@ func (q *Queue) Current() *Entry {
 }
 
 // Next returns the second entry in the queue, or nil if fewer than two entries.
-func (q *Queue) Next() *Entry {
+func (q *InMemQueue) Next() *Entry {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 	if len(q.entries) < 2 {

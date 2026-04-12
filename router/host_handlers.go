@@ -12,7 +12,7 @@ import (
 	"github.com/iamdanhart/te-live/queue"
 )
 
-func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q *queue.Queue) {
+func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue) {
 	auth := func(h http.HandlerFunc) http.Handler {
 		return middleware.AdminAuth(cfg.EnforceAdminAuth, h)
 	}
