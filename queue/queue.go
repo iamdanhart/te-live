@@ -14,13 +14,22 @@ type Entry struct {
 
 // Queue is a thread-safe in-memory list of singer signups.
 type Queue struct {
-	mu      sync.Mutex
-	entries []Entry
+	mu            sync.Mutex
+	entries       []Entry
+	SignupsOpen   bool
 }
 
-// New returns an empty Queue.
+// New returns an empty Queue with signups open by default.
 func New() *Queue {
-	return &Queue{}
+	return &Queue{SignupsOpen: true}
+}
+
+// ToggleSignups flips the SignupsOpen flag and returns the new value.
+func (q *Queue) ToggleSignups() bool {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	q.SignupsOpen = !q.SignupsOpen
+	return q.SignupsOpen
 }
 
 // Add appends a new entry to the end of the queue.

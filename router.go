@@ -27,6 +27,10 @@ func newRouter(cfg config.Props) *http.ServeMux {
 	mux.Handle("POST /signup", rl.Limit(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		handleSignup(w, r, q)
 	})))
+	mux.Handle("POST /admin/signups/toggle", middleware.AdminAuth(cfg.EnforceAdminAuth, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		open := q.ToggleSignups()
+		fmt.Fprintf(w, `{"signups_open":%t}`, open)
+	})))
 	mux.HandleFunc("GET /catalog", handleCatalog)
 	mux.Handle("GET /static/", staticHandler())
 	return mux
@@ -38,9 +42,10 @@ func handleHealth(w http.ResponseWriter, r *http.Request) {
 
 func handleIndex(w http.ResponseWriter, r *http.Request, q *queue.Queue) {
 	data := struct {
-		Current *queue.Entry
-		Next    *queue.Entry
-	}{q.Current(), q.Next()}
+		Current     *queue.Entry
+		Next        *queue.Entry
+		SignupsOpen bool
+	}{q.Current(), q.Next(), q.SignupsOpen}
 	if err := getTemplates().ExecuteTemplate(w, "index.html", data); err != nil {
 		slog.Error("template error", "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
