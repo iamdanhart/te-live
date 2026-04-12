@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html style="height: 100%;">
+<head>
+    {{template "base-head" .}}
+    <script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js"></script>
+    <style>
+        body {
+            padding: 32px 16px;
+            min-width: 320px;
+        }
+
+        .layout {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 24px 0;
+            color: var(--accent);
+        }
+
+        /* Performed sidebar */
+
+        .sidebar {
+            width: 220px;
+            flex-shrink: 0;
+        }
+
+        .sidebar h2 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin: 0 0 12px 0;
+        }
+
+        .performed-item {
+            margin-bottom: 10px;
+        }
+
+        .performed-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .performed-singer {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Queue */
+
+        .queue {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .entry {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+        }
+
+        .entry-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .entry-songs {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .entry-songs li {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            padding: 2px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .entry-songs li span {
+            color: var(--text);
+        }
+
+        .performed-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.75rem;
+            padding: 1px 6px;
+            line-height: 1.4;
+            flex-shrink: 0;
+        }
+
+        .performed-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .entry-songs li.song-performed,
+        .entry-songs li.song-performed span {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .empty {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .position {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <div class="sidebar">
+        <h2>Performed</h2>
+        <div id="performed-list">
+            {{template "host_performed.html" .}}
+        </div>
+    </div>
+    <div class="queue">
+        <h1>Queue</h1>
+        <div id="queue-list" hx-get="/host/queue" hx-trigger="every 3s" hx-swap="innerHTML">
+            {{template "host_queue.html" .}}
+        </div>
+    </div>
+</div>
+</body>
+</html>

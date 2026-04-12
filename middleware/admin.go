@@ -12,7 +12,7 @@ func AdminAuth(enforce bool, next http.Handler) http.Handler {
 		if enforce {
 			_, pass, ok := r.BasicAuth()
 			if !ok || pass != os.Getenv("ADMIN_PASSWORD") {
-				w.Header().Set("WWW-Authenticate", `Basic realm="admin"`)
+				w.Header().Set("WWW-Authenticate", `Basic realm="sign in"`)
 				http.Error(w, "unauthorized", http.StatusUnauthorized)
 				return
 			}

@@ -1,0 +1,25 @@
+{{if .Entries}}
+    {{range $i, $e := .Entries}}
+    <div class="entry">
+        <div class="position">
+            {{if eq $i 0}}Now Singing{{else if eq $i 1}}On Deck{{else}}Up Next{{end}}
+        </div>
+        <div class="entry-name">{{$e.Name}}</div>
+        <ul class="entry-songs">
+            {{range $e.Songs}}
+            <li {{if .Performed}}class="song-performed"{{end}}>
+                <span>{{.Song.Title}}</span> &mdash; {{.Song.Artist}}
+                <form hx-post="/host/performed" hx-target="#performed-list" hx-swap="innerHTML" style="display:inline">
+                    <input type="hidden" name="singer" value="{{$e.Name}}">
+                    <input type="hidden" name="title" value="{{.Song.Title}}">
+                    <input type="hidden" name="artist" value="{{.Song.Artist}}">
+                    <button type="submit" class="performed-btn">&#10003;</button>
+                </form>
+            </li>
+            {{end}}
+        </ul>
+    </div>
+    {{end}}
+{{else}}
+    <p class="empty">No singers in the queue yet.</p>
+{{end}}

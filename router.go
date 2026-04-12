@@ -27,7 +27,39 @@ func newRouter(cfg config.Props) *http.ServeMux {
 	mux.Handle("POST /signup", rl.Limit(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		handleSignup(w, r, q)
 	})))
-	mux.Handle("POST /admin/signups/toggle", middleware.AdminAuth(cfg.EnforceAdminAuth, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("GET /host", middleware.AdminAuth(cfg.EnforceAdminAuth, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		data := struct {
+			Entries   []queue.Entry
+			Performed []queue.PerformedSong
+		}{q.Entries(), q.Performed()}
+		if err := getTemplates().ExecuteTemplate(w, "host.html", data); err != nil {
+			slog.Error("template error", "err", err)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
+	})))
+	mux.Handle("GET /host/queue", middleware.AdminAuth(cfg.EnforceAdminAuth, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		data := struct{ Entries []queue.Entry }{q.Entries()}
+		if err := getTemplates().ExecuteTemplate(w, "host_queue.html", data); err != nil {
+			slog.Error("template error", "err", err)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
+	})))
+	mux.Handle("POST /host/performed", middleware.AdminAuth(cfg.EnforceAdminAuth, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		title, artist := r.FormValue("title"), r.FormValue("artist")
+		q.MarkSongPerformed(title, artist)
+		q.RecordPerformed(r.FormValue("singer"), catalog.Song{Title: title, Artist: artist})
+		q.MoveCurrentToBottom()
+		tmpl := getTemplates()
+		if err := tmpl.ExecuteTemplate(w, "host_performed.html", struct{ Performed []queue.PerformedSong }{q.Performed()}); err != nil {
+			slog.Error("template error", "err", err)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
+		if err := tmpl.ExecuteTemplate(w, "host_queue_oob.html", struct{ Entries []queue.Entry }{q.Entries()}); err != nil {
+			slog.Error("template error", "err", err)
+		}
+	})))
+	mux.Handle("POST /signups/toggle", middleware.AdminAuth(cfg.EnforceAdminAuth, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		open := q.ToggleSignups()
 		fmt.Fprintf(w, `{"signups_open":%t}`, open)
 	})))

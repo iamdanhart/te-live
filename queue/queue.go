@@ -6,22 +6,44 @@ import (
 	"github.com/iamdanhart/te-live/catalog"
 )
 
+// SongEntry pairs a song with a flag indicating whether it has been performed.
+type SongEntry struct {
+	Song      catalog.Song
+	Performed bool
+}
+
 // Entry is a single singer signup in the queue.
 type Entry struct {
 	Name  string
-	Songs []catalog.Song
+	Songs []SongEntry
+}
+
+// PerformedSong records a song that has been sung, along with the singer's name.
+type PerformedSong struct {
+	Singer string
+	Song   catalog.Song
 }
 
 // Queue is a thread-safe in-memory list of singer signups.
 type Queue struct {
-	mu            sync.Mutex
-	entries       []Entry
-	SignupsOpen   bool
+	mu          sync.Mutex
+	entries     []Entry
+	performed   []PerformedSong
+	SignupsOpen bool
 }
 
 // New returns an empty Queue with signups open by default.
 func New() *Queue {
 	return &Queue{SignupsOpen: true}
+}
+
+// Entries returns a snapshot of all entries in the queue.
+func (q *Queue) Entries() []Entry {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	snapshot := make([]Entry, len(q.entries))
+	copy(snapshot, q.entries)
+	return snapshot
 }
 
 // ToggleSignups flips the SignupsOpen flag and returns the new value.
@@ -36,7 +58,52 @@ func (q *Queue) ToggleSignups() bool {
 func (q *Queue) Add(name string, songs []catalog.Song) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
-	q.entries = append(q.entries, Entry{Name: name, Songs: songs})
+	entries := make([]SongEntry, len(songs))
+	for i, s := range songs {
+		entries[i] = SongEntry{Song: s}
+	}
+	q.entries = append(q.entries, Entry{Name: name, Songs: entries})
+}
+
+// MarkSongPerformed sets the Performed flag on a matching song in the first entry.
+func (q *Queue) MarkSongPerformed(title, artist string) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	if len(q.entries) == 0 {
+		return
+	}
+	for i, s := range q.entries[0].Songs {
+		if s.Song.Title == title && s.Song.Artist == artist {
+			q.entries[0].Songs[i].Performed = true
+			return
+		}
+	}
+}
+
+// RecordPerformed appends a song to the performed history.
+func (q *Queue) RecordPerformed(singer string, song catalog.Song) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	q.performed = append(q.performed, PerformedSong{Singer: singer, Song: song})
+}
+
+// Performed returns a snapshot of all songs that have been performed.
+func (q *Queue) Performed() []PerformedSong {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	snapshot := make([]PerformedSong, len(q.performed))
+	copy(snapshot, q.performed)
+	return snapshot
+}
+
+// MoveCurrentToBottom moves the first entry to the end of the queue.
+func (q *Queue) MoveCurrentToBottom() {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	if len(q.entries) <= 1 {
+		return
+	}
+	q.entries = append(q.entries[1:], q.entries[0])
 }
 
 // Current returns the first entry in the queue, or nil if empty.
