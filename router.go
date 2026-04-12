@@ -1,27 +1,13 @@
 package main
 
 import (
-	"embed"
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"log/slog"
 	"net/http"
-	"os"
-	"te-live/catalog"
+
+	"github.com/iamdanhart/te-live/catalog"
 )
-
-//go:embed templates/*
-var templateFiles embed.FS
-
-var templates = template.Must(template.ParseFS(templateFiles, "templates/*"))
-
-func getTemplates() *template.Template {
-	if os.Getenv("ENV") == "production" {
-		return templates
-	}
-	return template.Must(template.ParseGlob("templates/*"))
-}
 
 func newRouter(rl *rateLimiter) *http.ServeMux {
 	mux := http.NewServeMux()
