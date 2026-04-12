@@ -280,6 +280,12 @@
         }
     });
 
+    // Clear the status content when the modal closes so stale messages
+    // don't flash briefly before HTMX overwrites them on the next submission.
+    document.getElementById('status-modal').addEventListener('close', function() {
+        document.getElementById('status').innerHTML = '';
+    });
+
     document.getElementById('modal-ok').addEventListener('click', function() {
         if (signupSucceeded) {
             window.location = '/';
