@@ -19,9 +19,10 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue) {
 
 	mux.Handle("GET /host", auth(func(w http.ResponseWriter, r *http.Request) {
 		data := struct {
-			Entries   []queue.Entry
-			Performed []queue.PerformedSong
-		}{q.Entries(), q.Performed()}
+			Entries     []queue.Entry
+			Performed   []queue.PerformedSong
+			SignupsOpen bool
+		}{q.Entries(), q.Performed(), q.SignupsOpen()}
 		if err := grab_templates.GetTemplates().ExecuteTemplate(w, "host.html", data); err != nil {
 			slog.Error("template error", "err", err)
 			http.Error(w, "internal server error", http.StatusInternalServerError)

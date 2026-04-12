@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/iamdanhart/te-live/catalog"
@@ -15,11 +16,10 @@ import (
 
 func NewRouter(cfg config.Props) *http.ServeMux {
 	rl := middleware.NewRateLimiter(2*time.Minute, cfg.EnforceSignupLimit)
-	var q queue.Queue
-	if cfg.Env == "production" {
-		// TODO
-	} else {
-		q = queue.NewInMemQueue()
+	q, err := queue.NewPgQueue(cfg.DatabaseURL)
+	if err != nil {
+		slog.Error("failed to connect to database", "err", err)
+		os.Exit(1)
 	}
 
 	mux := http.NewServeMux()
@@ -48,9 +48,10 @@ func handleHealth(w http.ResponseWriter, r *http.Request) {
 
 func handleQueueStatus(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 	data := struct {
-		Current *queue.Entry
-		Next    *queue.Entry
-	}{q.Current(), q.Next()}
+		Current     *queue.Entry
+		Next        *queue.Entry
+		SignupsOpen bool
+	}{q.Current(), q.Next(), q.SignupsOpen()}
 	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "index_queue.html", data); err != nil {
 		slog.Error("template error", "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
