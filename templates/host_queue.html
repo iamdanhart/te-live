@@ -25,6 +25,13 @@
             </li>
             {{end}}
         </ul>
+        {{if eq $i 0}}
+        <button class="add-song-btn" onclick="toggleAddSong()">+ Add Song</button>
+        <div id="add-song-picker" style="display:none">
+            <input id="add-song-search" type="text" placeholder="Search songs…" oninput="renderResults(this.value)" autocomplete="off">
+            <ul id="add-song-results"></ul>
+        </div>
+        {{end}}
     </div>
     {{end}}
 {{else}}

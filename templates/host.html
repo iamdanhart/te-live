@@ -141,6 +141,75 @@
             color: var(--text-muted);
         }
 
+        .add-song-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            font-family: inherit;
+            margin-top: 10px;
+        }
+
+        .add-song-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        #add-song-picker {
+            margin-top: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px;
+        }
+
+        #add-song-search {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.9rem;
+            padding: 6px 10px;
+            box-sizing: border-box;
+            margin-bottom: 8px;
+        }
+
+        #add-song-search:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        #add-song-results {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .add-song-result {
+            font-size: 0.85rem;
+            padding: 5px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .add-song-result span {
+            color: var(--text);
+        }
+
+        .add-song-result:hover {
+            background: var(--surface);
+            color: var(--text);
+        }
+
         .empty {
             color: var(--text-muted);
             font-size: 1rem;
@@ -171,5 +240,61 @@
         </div>
     </div>
 </div>
+<script>
+    let songCatalog = null;
+    let filteredResults = [];
+
+    function toggleAddSong() {
+        const picker = document.getElementById('add-song-picker');
+        const isHidden = picker.style.display === 'none' || picker.style.display === '';
+        picker.style.display = isHidden ? 'block' : 'none';
+        if (isHidden) {
+            if (!songCatalog) {
+                fetch('/catalog').then(r => r.json()).then(data => {
+                    songCatalog = data.songs;
+                    renderResults('');
+                });
+            } else {
+                renderResults(document.getElementById('add-song-search').value);
+            }
+            document.getElementById('add-song-search').focus();
+        }
+    }
+
+    function renderResults(query) {
+        const q = query.toLowerCase();
+        filteredResults = songCatalog.filter(s =>
+            s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q)
+        );
+        const ul = document.getElementById('add-song-results');
+        ul.innerHTML = filteredResults.map((s, i) =>
+            '<li class="add-song-result" onclick="selectSong(' + i + ')">' +
+            '<span>' + s.title + '</span> &mdash; ' + s.artist +
+            '</li>'
+        ).join('');
+    }
+
+    // Pause the queue poll while the add-song picker is open so the swap
+    // doesn't destroy the picker mid-interaction.
+    document.body.addEventListener('htmx:beforeRequest', function(evt) {
+        if (evt.detail.elt.id === 'queue-list') {
+            const picker = document.getElementById('add-song-picker');
+            if (picker && picker.style.display === 'block') {
+                evt.preventDefault();
+            }
+        }
+    });
+
+    function selectSong(i) {
+        const song = filteredResults[i];
+        htmx.ajax('POST', '/host/add-song', {
+            target: '#queue-list',
+            swap: 'innerHTML',
+            values: {title: song.title, artist: song.artist}
+        });
+        document.getElementById('add-song-picker').style.display = 'none';
+        document.getElementById('add-song-search').value = '';
+    }
+</script>
 </body>
 </html>

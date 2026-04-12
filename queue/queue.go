@@ -96,6 +96,16 @@ func (q *Queue) Performed() []PerformedSong {
 	return snapshot
 }
 
+// AddSongToFirst appends a song to the first entry in the queue.
+func (q *Queue) AddSongToFirst(song catalog.Song) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	if len(q.entries) == 0 {
+		return
+	}
+	q.entries[0].Songs = append(q.entries[0].Songs, SongEntry{Song: song})
+}
+
 // MoveCurrentToBottom moves the first entry to the end of the queue.
 func (q *Queue) MoveCurrentToBottom() {
 	q.mu.Lock()
