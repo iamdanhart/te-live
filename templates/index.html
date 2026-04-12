@@ -1,26 +1,9 @@
 <!DOCTYPE html>
 <html style="height: 100%;">
 <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    {{template "base-head" .}}
     <style>
-        :root {
-            --bg:           #0f0f18;
-            --surface:      #1a1a2a;
-            --border:       #2e2e45;
-            --accent:       #fbbf24;
-            --text:         #f1f5f9;
-            --text-muted:   #94a3b8;
-        }
-
-        * { box-sizing: border-box; }
-
         body {
-            font-family: 'Poppins', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            margin: 0;
             padding: 32px 16px;
             min-height: 100%;
         }

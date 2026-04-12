@@ -2,30 +2,12 @@
 <html style="height: 100%;">
 <head>
     <script src="/static/vendor/htmx.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    {{template "base-head" .}}
     <style>
-        :root {
-            --bg:           #0f0f18;
-            --surface:      #1a1a2a;
-            --border:       #2e2e45;
-            --accent:       #fbbf24;
-            --accent-dark:  #78350f;
-            --text:         #f1f5f9;
-            --text-muted:   #94a3b8;
-        }
-
-        * { box-sizing: border-box; }
-
         body {
-            font-family: 'Poppins', sans-serif;
-            background: var(--bg);
-            color: var(--text);
             height: 100%;
             min-height: 30em;
             min-width: 360px;
-            margin: 0;
             padding: 16px;
             padding-top: 118px;
         }
@@ -237,7 +219,7 @@
 
 <dialog id="status-modal">
     <div id="status"></div>
-    <button type="button" onclick="document.getElementById('status-modal').close()">OK</button>
+    <button type="button" id="modal-ok">OK</button>
 </dialog>
 
 <script>
@@ -281,16 +263,28 @@
             .join('');
     }
 
+    let signupSucceeded = false;
+
     document.body.addEventListener('htmx:afterSwap', function() {
+        signupSucceeded = true;
         const modal = document.getElementById('status-modal');
         if (!modal.open) modal.showModal();
     });
 
     document.body.addEventListener('htmx:responseError', function(evt) {
         if (evt.detail.xhr.status === 429) {
+            signupSucceeded = false;
             document.getElementById('status').innerHTML = '<p>Too many submissions. Please wait before trying again.</p>';
             const modal = document.getElementById('status-modal');
             if (!modal.open) modal.showModal();
+        }
+    });
+
+    document.getElementById('modal-ok').addEventListener('click', function() {
+        if (signupSucceeded) {
+            window.location = '/';
+        } else {
+            document.getElementById('status-modal').close();
         }
     });
 
