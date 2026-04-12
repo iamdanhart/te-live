@@ -4,7 +4,14 @@
         <div class="position">
             {{if eq $i 0}}Now Singing{{else if eq $i 1}}On Deck{{else}}Up Next{{end}}
         </div>
-        <div class="entry-name">{{$e.Name}}</div>
+        <div class="entry-header">
+            <div class="entry-name">{{$e.Name}}</div>
+            {{if eq $i 0}}
+            <form hx-post="/host/skip" hx-target="#queue-list" hx-swap="innerHTML" style="display:inline">
+                <button type="submit" class="skip-btn">Skip</button>
+            </form>
+            {{end}}
+        </div>
         <ul class="entry-songs">
             {{range $e.Songs}}
             <li {{if .Performed}}class="song-performed"{{end}}>

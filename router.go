@@ -59,6 +59,14 @@ func newRouter(cfg config.Props) *http.ServeMux {
 			slog.Error("template error", "err", err)
 		}
 	})))
+	mux.Handle("POST /host/skip", middleware.AdminAuth(cfg.EnforceAdminAuth, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		q.MoveCurrentToBottom()
+		data := struct{ Entries []queue.Entry }{q.Entries()}
+		if err := getTemplates().ExecuteTemplate(w, "host_queue.html", data); err != nil {
+			slog.Error("template error", "err", err)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
+	})))
 	mux.Handle("POST /signups/toggle", middleware.AdminAuth(cfg.EnforceAdminAuth, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		open := q.ToggleSignups()
 		fmt.Fprintf(w, `{"signups_open":%t}`, open)

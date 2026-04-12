@@ -69,10 +69,34 @@
             margin-bottom: 12px;
         }
 
+        .entry-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
         .entry-name {
             font-size: 1.1rem;
             font-weight: 700;
-            margin-bottom: 8px;
+            flex: 1;
+        }
+
+        .skip-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            font-family: inherit;
+        }
+
+        .skip-btn:hover {
+            border-color: #f87171;
+            color: #f87171;
         }
 
         .entry-songs {
