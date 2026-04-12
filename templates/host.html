@@ -88,6 +88,33 @@
             flex: 1;
         }
 
+        .toggle-signups-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            font-family: inherit;
+            margin-bottom: 16px;
+        }
+        .toggle-signups-btn.open {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .toggle-signups-btn.open:hover {
+            background: var(--accent-dark);
+        }
+        .toggle-signups-btn:not(.open) {
+            border-color: #f87171;
+            color: #f87171;
+        }
+        .toggle-signups-btn:not(.open):hover {
+            background: rgba(248, 113, 113, 0.1);
+        }
+
         .skip-btn {
             background: none;
             border: 1px solid var(--border);
@@ -316,6 +343,11 @@
         </div>
     </div>
     <div class="queue">
+        <button id="signup-toggle-btn"
+                class="toggle-signups-btn{{if .SignupsOpen}} open{{end}}"
+                onclick="toggleSignups()">
+            {{if .SignupsOpen}}Close Signups{{else}}Open Signups{{end}}
+        </button>
         <div id="queue-list" hx-get="/host/queue" hx-trigger="every 3s" hx-swap="innerHTML">
             {{template "host_queue.html" .}}
         </div>
@@ -388,6 +420,17 @@
             }
         }
     });
+
+    function toggleSignups() {
+        fetch('/signups/toggle', {method: 'POST'})
+            .then(r => r.json())
+            .then(data => {
+                const btn = document.getElementById('signup-toggle-btn');
+                const open = data.signups_open;
+                btn.textContent = open ? 'Close Signups' : 'Open Signups';
+                btn.classList.toggle('open', open);
+            });
+    }
 
     function selectSong(i) {
         const song = filteredResults[i];

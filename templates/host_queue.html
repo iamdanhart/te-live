@@ -18,12 +18,14 @@
             {{range $e.Songs}}
             <li {{if .Performed}}class="song-performed"{{end}}>
                 <a href="{{.Song.TabUrl}}" target="_blank" rel="noopener" class="song-link">{{.Song.Title}}</a> &mdash; {{.Song.Artist}}
+                {{if eq $i 0}}
                 <form hx-post="/host/performed" hx-target="#performed-list" hx-swap="innerHTML" style="display:inline">
                     <input type="hidden" name="singer" value="{{$e.Name}}">
                     <input type="hidden" name="title" value="{{.Song.Title}}">
                     <input type="hidden" name="artist" value="{{.Song.Artist}}">
                     <button type="submit" class="performed-btn">&#10003;</button>
                 </form>
+                {{end}}
             </li>
             {{end}}
         </ul>

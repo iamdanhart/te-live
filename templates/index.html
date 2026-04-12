@@ -74,15 +74,9 @@
 <div class="container">
     <h1>Troubles End Live Band Karaoke</h1>
 
-    {{if .SignupsOpen}}
-        <a class="signup-link" href="/signup">Sign Up</a>
-
-        <div id="queue-status" hx-get="/queue-status" hx-trigger="every 5s" hx-swap="innerHTML">
-            {{template "index_queue.html" .}}
-        </div>
-    {{else}}
-        <p class="warmup">Signups are closed! See you next time!</p>
-    {{end}}
+    <div id="queue-status" hx-get="/queue-status" hx-trigger="every 5s" hx-swap="innerHTML">
+        {{template "index_queue.html" .}}
+    </div>
 </div>
 </body>
 </html>

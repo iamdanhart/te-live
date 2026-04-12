@@ -1,3 +1,9 @@
+{{if .SignupsOpen}}
+    <a class="signup-link" href="/signup">Sign Up</a>
+{{else}}
+    <p class="warmup">Signups are closed!</p>
+{{end}}
+
 {{if .Current}}
     <div class="card">
         <div class="card-label">Current Singer</div>
@@ -9,6 +15,6 @@
         <div class="card-name">{{.Next.Name}}</div>
     </div>
     {{end}}
-{{else}}
+{{else if .SignupsOpen}}
     <p class="warmup">Upcoming singers will be shown after warm-up!</p>
 {{end}}
