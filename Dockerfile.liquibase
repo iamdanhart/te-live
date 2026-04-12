@@ -1,0 +1,3 @@
+FROM liquibase/liquibase:latest
+RUN lpm add --global postgresql
+COPY db/changelog /liquibase/changelog

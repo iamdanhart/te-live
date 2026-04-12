@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: telive
+      POSTGRES_USER: telive
+      POSTGRES_PASSWORD: telive
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  liquibase:
+    build:
+      context: .
+      dockerfile: Dockerfile.liquibase
+    depends_on:
+      - db
+    command: >
+      --url=jdbc:postgresql://db:5432/telive
+      --username=telive
+      --password=telive
+      --changeLogFile=root.yaml
+      update
+
+volumes:
+  pgdata:
