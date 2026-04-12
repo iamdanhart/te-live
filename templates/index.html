@@ -2,40 +2,82 @@
 <html style="height: 100%;">
 <head>
     <script src="/static/vendor/htmx.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        .catalog-row {
-            cursor: pointer;
+        :root {
+            --bg:           #0f0f18;
+            --surface:      #1a1a2a;
+            --border:       #2e2e45;
+            --accent:       #fbbf24;
+            --accent-dark:  #78350f;
+            --text:         #f1f5f9;
+            --text-muted:   #94a3b8;
         }
-        .catalog-row:hover {
-            background: #f5f5f5;
-        }
-        .catalog-row.selected {
-            background: #dbeafe;
-        }
+
+        * { box-sizing: border-box; }
+
         body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text);
             height: 100%;
             min-height: 30em;
             min-width: 360px;
             margin: 0;
             padding: 16px;
-            padding-top: 90px;
-            box-sizing: border-box;
+            padding-top: 118px;
         }
+        #catalog-wrapper.at-limit #unselected-scroll {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
         #name-bar {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background: white;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
             padding: 16px;
             z-index: 100;
-            box-sizing: border-box;
         }
+
+        label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            max-width: 600px;
+            display: block;
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+        }
+        input[type="text"]::placeholder { color: var(--text-muted); }
+        input[type="text"]:focus { border-color: var(--accent); }
+
+        #name { margin-top: 6px; }
+        #search { margin-bottom: 10px; }
+
         form {
             display: flex;
             flex-direction: column;
             height: 100%;
         }
+
         #catalog-wrapper {
             flex: 1;
             display: flex;
@@ -43,42 +85,113 @@
             overflow: hidden;
             max-width: 600px;
         }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        colgroup col:first-child { width: 60%; }
+        colgroup col:last-child  { width: 40%; }
+
+        th {
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+        }
+        th[data-col] {
+            cursor: pointer;
+            user-select: none;
+        }
+        th[data-col]:hover { color: var(--text); }
+        th[data-col].sorted { color: var(--accent); }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.95rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .catalog-row { cursor: pointer; }
+        .catalog-row:hover td { background: #1e1e30; }
+        .catalog-row.selected td {
+            background: var(--accent-dark);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
         #unselected-scroll {
             flex: 1;
             overflow-y: auto;
             min-height: 20em;
         }
+
         #submit-btn {
             align-self: flex-start;
             width: 100%;
             max-width: 600px;
-            box-sizing: border-box;
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--accent);
+            color: #0f0f18;
+            border: none;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.05em;
         }
+        #submit-btn:disabled {
+            background: var(--border);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+        #submit-btn:not(:disabled):hover { background: #fcd34d; }
+
         #status-modal {
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 24px;
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 28px;
             min-width: 280px;
+            font-family: inherit;
         }
-        #status-modal::backdrop {
-            background: rgba(0, 0, 0, 0.4);
-        }
+        #status-modal::backdrop { background: rgba(0, 0, 0, 0.6); }
         #status-modal button {
-            margin-top: 16px;
-            padding: 8px 24px;
+            margin-top: 20px;
+            padding: 10px 28px;
+            background: var(--accent);
+            color: #0f0f18;
+            border: none;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
         }
+        #status-modal button:hover { background: #fcd34d; }
+
         @media (max-width: 600px) {
             #submit-btn {
                 position: fixed;
                 bottom: 0;
                 left: 16px;
                 right: 16px;
-                padding: 16px;
-                box-sizing: border-box;
+                border-radius: 6px 6px 0 0;
             }
-            body {
-                padding-bottom: 64px;
-            }
+            body { padding-bottom: 64px; }
         }
     </style>
 </head>
@@ -86,32 +199,30 @@
 <form method="post" hx-post="/signup" hx-target="#status">
     <div id="name-bar">
         <label for="name">Your name</label>
-        <input id="name" name="name" type="text" placeholder="Enter your name" style="width: 100%; max-width: 600px; padding: 8px; margin-top: 4px; box-sizing: border-box; display: block;">
+        <input id="name" name="name" type="text" placeholder="Enter your name">
     </div>
 
-    <p id="limit-msg" style="display: none; color: #e53e3e; margin-bottom: 8px;">Maximum of 3 songs selected.</p>
-
-    <input id="search" type="text" placeholder="Search songs or artists..." aria-label="Search songs or artists" style="width: 100%; max-width: 600px; padding: 8px; margin-bottom: 8px; box-sizing: border-box;">
+    <input id="search" type="text" placeholder="Search songs or artists..." aria-label="Search songs or artists">
 
     <div id="catalog-wrapper">
-        <table style="width: 100%; border-collapse: collapse; table-layout: fixed;">
-            <colgroup><col style="width: 60%;"><col style="width: 40%;"></colgroup>
+        <table>
+            <colgroup><col><col></colgroup>
             <thead>
             <tr>
-                <th style="border: 1px solid #ccc; padding: 8px;">Title</th>
-                <th style="border: 1px solid #ccc; padding: 8px;">Artist</th>
+                <th data-col="title">Title</th>
+                <th data-col="artist">Artist</th>
             </tr>
             </thead>
             <tbody id="selected-rows"></tbody>
         </table>
         <div id="unselected-scroll">
-            <table style="width: 100%; border-collapse: collapse; table-layout: fixed;">
-                <colgroup><col style="width: 60%;"><col style="width: 40%;"></colgroup>
+            <table>
+                <colgroup><col><col></colgroup>
                 <tbody id="unselected-rows">
                 {{range $i, $s := .Songs}}
                 <tr class="catalog-row" data-title="{{$s.Title}}" data-artist="{{$s.Artist}}" data-index="{{$i}}">
-                    <td style="border: 1px solid #ccc; padding: 8px;">{{$s.Title}}</td>
-                    <td style="border: 1px solid #ccc; padding: 8px;">{{$s.Artist}}</td>
+                    <td>{{$s.Title}}</td>
+                    <td>{{$s.Artist}}</td>
                 </tr>
                 {{end}}
                 </tbody>
@@ -121,7 +232,7 @@
 
     <div id="song-inputs"></div>
 
-    <button id="submit-btn" type="submit" style="margin-top: 12px; padding: 8px 16px;" disabled>Submit</button>
+    <button id="submit-btn" type="submit" disabled>Sign Up</button>
 </form>
 
 <dialog id="status-modal">
@@ -134,12 +245,11 @@
         row.addEventListener('click', function() {
             const alreadySelected = this.classList.contains('selected');
             if (!alreadySelected && document.querySelectorAll('.catalog-row.selected').length >= 3) {
-                document.getElementById('limit-msg').style.display = '';
                 return;
             }
             this.classList.toggle('selected');
-            const count = document.querySelectorAll('.catalog-row.selected').length;
-            document.getElementById('limit-msg').style.display = count >= 3 ? '' : 'none';
+            const atLimit = document.querySelectorAll('.catalog-row.selected').length >= 3;
+            document.getElementById('catalog-wrapper').classList.toggle('at-limit', atLimit);
             reorderRows(this);
             updateSongInputs();
             updateSubmit();
@@ -191,6 +301,29 @@
     }
 
     document.getElementById('name').addEventListener('input', updateSubmit);
+
+    let sortCol = null, sortDir = 1;
+
+    document.querySelectorAll('th[data-col]').forEach(th => {
+        th.addEventListener('click', function() {
+            const col = this.dataset.col;
+            if (sortCol === col) {
+                sortDir *= -1;
+            } else {
+                sortCol = col;
+                sortDir = 1;
+            }
+            document.querySelectorAll('th[data-col]').forEach(h => {
+                h.classList.toggle('sorted', h === this);
+                h.textContent = h.dataset.col.charAt(0).toUpperCase() + h.dataset.col.slice(1);
+                if (h === this) h.textContent += sortDir === 1 ? ' ↑' : ' ↓';
+            });
+            const tbody = document.getElementById('unselected-rows');
+            [...tbody.querySelectorAll('.catalog-row')]
+                .sort((a, b) => a.dataset[col].localeCompare(b.dataset[col]) * sortDir)
+                .forEach(row => tbody.appendChild(row));
+        });
+    });
 
     document.getElementById('search').addEventListener('input', function() {
         const query = this.value.toLowerCase();

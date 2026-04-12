@@ -27,7 +27,6 @@ func newRouter(rl *rateLimiter) *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", handleHealth)
 	mux.HandleFunc("GET /", handleIndex)
-	mux.HandleFunc("GET /hello", handleHello)
 	mux.HandleFunc("GET /catalog", handleCatalog)
 	mux.Handle("POST /signup", rl.limit(http.HandlerFunc(handleSignup)))
 	mux.Handle("GET /static/", staticHandler())
@@ -40,15 +39,6 @@ func handleHealth(w http.ResponseWriter, r *http.Request) {
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
 	if err := getTemplates().ExecuteTemplate(w, "index.html", catalog.FullCatalog); err != nil {
-		slog.Error("template error", "err", err)
-		http.Error(w, "internal server error", http.StatusInternalServerError)
-	}
-}
-
-func handleHello(w http.ResponseWriter, r *http.Request) {
-	if err := getTemplates().ExecuteTemplate(w, "hello.html", struct{ Message string }{
-		Message: "Hello from the server!",
-	}); err != nil {
 		slog.Error("template error", "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}
