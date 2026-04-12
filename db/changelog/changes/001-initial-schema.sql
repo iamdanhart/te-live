@@ -9,7 +9,7 @@ CREATE TABLE songs (
 );
 
 --changeset dan:2
-CREATE TABLE queue_entries (
+CREATE TABLE signups (
     id             SERIAL PRIMARY KEY,
     name           TEXT NOT NULL,
     position       INT  NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE queue_entries (
 --changeset dan:3
 CREATE TABLE entry_songs (
     id         SERIAL PRIMARY KEY,
-    entry_id   INT     NOT NULL REFERENCES queue_entries(id) ON DELETE CASCADE,
+    entry_id   INT     NOT NULL REFERENCES signups(id) ON DELETE CASCADE,
     song_id    INT     NOT NULL REFERENCES songs(id),
     performed  BOOLEAN NOT NULL DEFAULT FALSE,
     sort_order INT     NOT NULL DEFAULT 0

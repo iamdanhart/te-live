@@ -8,13 +8,13 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
-// todayFilter is appended to WHERE clauses on queue_entries and performed_songs
+// todayFilter is appended to WHERE clauses on signups and performed_songs
 // to scope all queries to the current calendar day.
 const todayQueueEntries = `created_at >= CURRENT_DATE`
 const todayPerformed = `performed_at >= CURRENT_DATE`
 
 // firstTodayID is a subquery that returns the id of the first entry in today's queue.
-const firstTodayID = `(SELECT id FROM queue_entries WHERE created_at >= CURRENT_DATE ORDER BY position ASC LIMIT 1)`
+const firstTodayID = `(SELECT id FROM signups WHERE created_at >= CURRENT_DATE ORDER BY position ASC LIMIT 1)`
 
 type PgQueue struct {
 	db *sql.DB
@@ -34,7 +34,7 @@ func NewPgQueue(dsn string) (*PgQueue, error) {
 func (q *PgQueue) Entries() []Entry {
 	rows, err := q.db.Query(`
 		SELECT qe.id, qe.name, s.id, s.title, s.artist, s.tab_url, es.performed
-		FROM queue_entries qe
+		FROM signups qe
 		JOIN entry_songs es ON es.entry_id = qe.id
 		JOIN songs s ON s.id = es.song_id
 		WHERE ` + todayQueueEntries + `
@@ -97,8 +97,8 @@ func (q *PgQueue) Add(name string, songs []catalog.Song) {
 
 	var entryID int
 	err = tx.QueryRow(`
-		INSERT INTO queue_entries (name, position)
-		VALUES ($1, COALESCE((SELECT MAX(position) FROM queue_entries WHERE `+todayQueueEntries+`), 0) + 1)
+		INSERT INTO signups (name, position)
+		VALUES ($1, COALESCE((SELECT MAX(position) FROM signups WHERE `+todayQueueEntries+`), 0) + 1)
 		RETURNING id`, name).Scan(&entryID)
 	if err != nil {
 		slog.Error("Add insert entry", "err", err)
@@ -123,8 +123,8 @@ func (q *PgQueue) Add(name string, songs []catalog.Song) {
 
 func (q *PgQueue) MoveCurrentToBottom() {
 	_, err := q.db.Exec(`
-		UPDATE queue_entries
-		SET position = (SELECT MAX(position) FROM queue_entries WHERE ` + todayQueueEntries + `) + 1
+		UPDATE signups
+		SET position = (SELECT MAX(position) FROM signups WHERE ` + todayQueueEntries + `) + 1
 		WHERE id = ` + firstTodayID)
 	if err != nil {
 		slog.Error("MoveCurrentToBottom", "err", err)
@@ -132,7 +132,7 @@ func (q *PgQueue) MoveCurrentToBottom() {
 }
 
 func (q *PgQueue) RemoveCurrent() {
-	_, err := q.db.Exec(`DELETE FROM queue_entries WHERE id = ` + firstTodayID)
+	_, err := q.db.Exec(`DELETE FROM signups WHERE id = ` + firstTodayID)
 	if err != nil {
 		slog.Error("RemoveCurrent", "err", err)
 	}
@@ -167,7 +167,7 @@ func (q *PgQueue) RecordPerformed(singer string, song catalog.Song) {
 	}
 
 	_, err = tx.Exec(`
-		UPDATE queue_entries SET times_on_stage = times_on_stage + 1
+		UPDATE signups SET times_on_stage = times_on_stage + 1
 		WHERE id = ` + firstTodayID)
 	if err != nil {
 		slog.Error("RecordPerformed increment times_on_stage", "err", err)
