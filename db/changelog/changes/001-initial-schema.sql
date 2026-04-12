@@ -10,10 +10,11 @@ CREATE TABLE songs (
 
 --changeset dan:2
 CREATE TABLE queue_entries (
-    id         SERIAL PRIMARY KEY,
-    name       TEXT NOT NULL,
-    position   INT  NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    id             SERIAL PRIMARY KEY,
+    name           TEXT NOT NULL,
+    position       INT  NOT NULL,
+    times_on_stage INT  NOT NULL DEFAULT 0,
+    created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 --changeset dan:3

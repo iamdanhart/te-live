@@ -150,12 +150,32 @@ func (q *PgQueue) MarkSongPerformed(title, artist string) {
 }
 
 func (q *PgQueue) RecordPerformed(singer string, song catalog.Song) {
-	_, err := q.db.Exec(`
+	tx, err := q.db.Begin()
+	if err != nil {
+		slog.Error("RecordPerformed begin tx", "err", err)
+		return
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec(`
 		INSERT INTO performed_songs (singer, song_id)
 		VALUES ($1, (SELECT id FROM songs WHERE title = $2 AND artist = $3))`,
 		singer, song.Title, song.Artist)
 	if err != nil {
-		slog.Error("RecordPerformed", "err", err)
+		slog.Error("RecordPerformed insert", "err", err)
+		return
+	}
+
+	_, err = tx.Exec(`
+		UPDATE queue_entries SET times_on_stage = times_on_stage + 1
+		WHERE id = ` + firstTodayID)
+	if err != nil {
+		slog.Error("RecordPerformed increment times_on_stage", "err", err)
+		return
+	}
+
+	if err := tx.Commit(); err != nil {
+		slog.Error("RecordPerformed commit", "err", err)
 	}
 }
 
