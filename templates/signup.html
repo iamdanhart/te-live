@@ -165,6 +165,15 @@
         }
         #status-modal button:hover { background: #fcd34d; }
 
+        .tab-link {
+            color: var(--text);
+            text-decoration: none;
+        }
+        .tab-link:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
         @media (max-width: 600px) {
             #submit-btn {
                 position: fixed;
@@ -202,8 +211,8 @@
                 <colgroup><col><col></colgroup>
                 <tbody id="unselected-rows">
                 {{range $i, $s := .Songs}}
-                <tr class="catalog-row" data-title="{{$s.Title}}" data-artist="{{$s.Artist}}" data-index="{{$i}}">
-                    <td>{{$s.Title}}</td>
+                <tr class="catalog-row" data-title="{{$s.Title}}" data-artist="{{$s.Artist}}" data-id="{{$s.ID}}" data-index="{{$i}}">
+                    <td><a href="{{$s.TabUrl}}" target="_blank" rel="noopener" class="tab-link" onclick="event.stopPropagation()">{{$s.Title}}</a></td>
                     <td>{{$s.Artist}}</td>
                 </tr>
                 {{end}}
@@ -256,10 +265,7 @@
         const container = document.getElementById('song-inputs');
         const rows = [...document.querySelectorAll('.catalog-row.selected')];
         container.innerHTML = rows
-            .map(row => {
-                const json = JSON.stringify({title: row.dataset.title, artist: row.dataset.artist}).replace(/"/g, '&quot;');
-                return `<input type="hidden" name="song" value="${json}">`;
-            })
+            .map(row => `<input type="hidden" name="song" value="${row.dataset.id}">`)
             .join('');
     }
 

@@ -2,1259 +2,1887 @@
   "songs": [
     {
       "title": "9 to 5",
-      "artist": "Dolly Parton"
+      "artist": "Dolly Parton",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 1
     },
     {
       "title": "A-Punk",
-      "artist": "Vampire Weekend"
+      "artist": "Vampire Weekend",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 2
     },
     {
       "title": "ABC",
-      "artist": "The Jackson 5"
+      "artist": "The Jackson 5",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 3
     },
     {
       "title": "Ain't It Fun",
-      "artist": "Paramore"
+      "artist": "Paramore",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 4
     },
     {
       "title": "Ain't No Mountain High Enough",
-      "artist": "Marvin Gaye, Tammi Terrell"
+      "artist": "Marvin Gaye, Tammi Terrell",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 5
     },
     {
       "title": "Ain't No Rest for the Wicked",
-      "artist": "Cage The Elephant"
+      "artist": "Cage The Elephant",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 6
     },
     {
       "title": "Alive",
-      "artist": "Pearl Jam"
+      "artist": "Pearl Jam",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 7
     },
     {
       "title": "All Apologies",
-      "artist": "Nirvana"
+      "artist": "Nirvana",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 8
     },
     {
       "title": "All Star",
-      "artist": "Smash Mouth"
+      "artist": "Smash Mouth",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 9
     },
     {
       "title": "all the good girls go to hell",
-      "artist": "Billie Eilish"
+      "artist": "Billie Eilish",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 10
     },
     {
       "title": "All The Small Things",
-      "artist": "blink-182"
+      "artist": "blink-182",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 11
     },
     {
       "title": "Alone",
-      "artist": "Heart"
+      "artist": "Heart",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 12
     },
     {
       "title": "American Girl",
-      "artist": "Tom Petty and the Heartbreakers"
+      "artist": "Tom Petty and the Heartbreakers",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 13
     },
     {
       "title": "Another Brick in the Wall, Pt. 2",
-      "artist": "Pink Floyd"
+      "artist": "Pink Floyd",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 14
     },
     {
       "title": "Anti-Hero",
-      "artist": "Taylor Swift"
+      "artist": "Taylor Swift",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 15
     },
     {
       "title": "Are You Gonna Be My Girl",
-      "artist": "Jet"
+      "artist": "Jet",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 16
     },
     {
       "title": "Baba O'Riley",
-      "artist": "The Who"
+      "artist": "The Who",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 17
     },
     {
       "title": "Baby",
-      "artist": "Justin Bieber, Ludacris"
+      "artist": "Justin Bieber, Ludacris",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 18
     },
     {
       "title": "Baby Got Back",
-      "artist": "Sir Mix-A-Lot"
+      "artist": "Sir Mix-A-Lot",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 19
     },
     {
       "title": "Back In Black",
-      "artist": "AC/DC"
+      "artist": "AC/DC",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 20
     },
     {
       "title": "bad guy",
-      "artist": "Billie Eilish"
+      "artist": "Billie Eilish",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 21
     },
     {
       "title": "Bad Romance",
-      "artist": "Lady Gaga"
+      "artist": "Lady Gaga",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 22
     },
     {
       "title": "Banditos",
-      "artist": "The Refreshments"
+      "artist": "The Refreshments",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 23
     },
     {
       "title": "Barracuda",
-      "artist": "Heart"
+      "artist": "Heart",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 24
     },
     {
       "title": "Basket Case",
-      "artist": "Green Day"
+      "artist": "Green Day",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 25
     },
     {
       "title": "Beat It",
-      "artist": "Michael Jackson"
+      "artist": "Michael Jackson",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 26
     },
     {
       "title": "Before He Cheats",
-      "artist": "Carrie Underwood"
+      "artist": "Carrie Underwood",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 27
     },
     {
       "title": "Bennie And The Jets",
-      "artist": "Elton John"
+      "artist": "Elton John",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 28
     },
     {
       "title": "Beverly Hills",
-      "artist": "Weezer"
+      "artist": "Weezer",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 29
     },
     {
       "title": "Billie Jean",
-      "artist": "Michael Jackson"
+      "artist": "Michael Jackson",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 30
     },
     {
       "title": "Blister In The Sun",
-      "artist": "Violent Femmes"
+      "artist": "Violent Femmes",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 31
     },
     {
       "title": "Bohemian Rhapsody",
-      "artist": "Queen"
+      "artist": "Queen",
+      "tabUrl": "https://tabs.ultimate-guitar.com/tab/queen/bohemian-rhapsody-chords-40606",
+      "id": 32
     },
     {
       "title": "Born to Run",
-      "artist": "Bruce Springsteen"
+      "artist": "Bruce Springsteen",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 33
     },
     {
       "title": "Brain Stew",
-      "artist": "Green Day"
+      "artist": "Green Day",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 34
     },
     {
       "title": "Brown Eyed Girl",
-      "artist": "Van Morrison"
+      "artist": "Van Morrison",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 35
     },
     {
       "title": "Buddy Holly",
-      "artist": "Weezer"
+      "artist": "Weezer",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 36
     },
     {
       "title": "Bulls On Parade",
-      "artist": "Rage Against The Machine"
+      "artist": "Rage Against The Machine",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 37
     },
     {
       "title": "Burning Down the House",
-      "artist": "Talking Heads"
+      "artist": "Talking Heads",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 38
     },
     {
       "title": "Bust A Move",
-      "artist": "Young MC"
+      "artist": "Young MC",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 39
     },
     {
       "title": "Cake by the Ocean",
-      "artist": "DNCE"
+      "artist": "DNCE",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 40
     },
     {
       "title": "California Dreamin'",
-      "artist": "The Mamas & The Papas"
+      "artist": "The Mamas & The Papas",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 41
     },
     {
       "title": "California Gurls",
-      "artist": "Katy Perry, Snoop Dogg"
+      "artist": "Katy Perry, Snoop Dogg",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 42
     },
     {
       "title": "Californication",
-      "artist": "Red Hot Chili Peppers"
+      "artist": "Red Hot Chili Peppers",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 43
     },
     {
       "title": "Call Me Maybe",
-      "artist": "Carly Rae Jepsen"
+      "artist": "Carly Rae Jepsen",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 44
     },
     {
       "title": "Can't Get Enough Of Your Love, Babe",
-      "artist": "Barry White"
+      "artist": "Barry White",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 45
     },
     {
       "title": "Can't Hardly Wait",
-      "artist": "The Replacements"
+      "artist": "The Replacements",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 46
     },
     {
       "title": "Can't Help Falling in Love",
-      "artist": "Elvis Presley"
+      "artist": "Elvis Presley",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 47
     },
     {
       "title": "Chop Suey!",
-      "artist": "System Of A Down"
+      "artist": "System Of A Down",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 48
     },
     {
       "title": "Cigarette Daydreams",
-      "artist": "Cage The Elephant"
+      "artist": "Cage The Elephant",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 49
     },
     {
       "title": "Come As You Are",
-      "artist": "Nirvana"
+      "artist": "Nirvana",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 50
     },
     {
       "title": "Come Together",
-      "artist": "The Beatles"
+      "artist": "The Beatles",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 51
     },
     {
       "title": "Comfortably Numb",
-      "artist": "Pink Floyd"
+      "artist": "Pink Floyd",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 52
     },
     {
       "title": "Complicated",
-      "artist": "Avril Lavigne"
+      "artist": "Avril Lavigne",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 53
     },
     {
       "title": "Crazy In Love (feat. Jay-Z)",
-      "artist": "Beyoncé, JAY-Z"
+      "artist": "Beyoncé, JAY-Z",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 54
     },
     {
       "title": "Crazy Little Thing Called Love",
-      "artist": "Queen"
+      "artist": "Queen",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 55
     },
     {
       "title": "Crazy On You",
-      "artist": "Heart"
+      "artist": "Heart",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 56
     },
     {
       "title": "Crazy Train",
-      "artist": "Ozzy Osbourne"
+      "artist": "Ozzy Osbourne",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 57
     },
     {
       "title": "Creep",
-      "artist": "Radiohead"
+      "artist": "Radiohead",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 58
     },
     {
       "title": "Criminal",
-      "artist": "Fiona Apple"
+      "artist": "Fiona Apple",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 59
     },
     {
       "title": "Crocodile Rock",
-      "artist": "Elton John"
+      "artist": "Elton John",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 60
     },
     {
       "title": "Cryin'",
-      "artist": "Aerosmith"
+      "artist": "Aerosmith",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 61
     },
     {
       "title": "Cult of Personality",
-      "artist": "Living Colour"
+      "artist": "Living Colour",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 62
     },
     {
       "title": "Dancing Queen",
-      "artist": "ABBA"
+      "artist": "ABBA",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 63
     },
     {
       "title": "Dani California",
-      "artist": "Red Hot Chili Peppers"
+      "artist": "Red Hot Chili Peppers",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 64
     },
     {
       "title": "Dirty Work",
-      "artist": "Steely Dan"
+      "artist": "Steely Dan",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 65
     },
     {
       "title": "Doctor My Eyes",
-      "artist": "Jackson Browne"
+      "artist": "Jackson Browne",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 66
     },
     {
       "title": "Don't Look Back In Anger",
-      "artist": "Oasis"
+      "artist": "Oasis",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 67
     },
     {
       "title": "Don't Speak",
-      "artist": "No Doubt"
+      "artist": "No Doubt",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 68
     },
     {
       "title": "Don't Stop Believin'",
-      "artist": "Journey"
+      "artist": "Journey",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 69
     },
     {
       "title": "Don't You (Forget About Me)",
-      "artist": "Simple Minds"
+      "artist": "Simple Minds",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 70
     },
     {
       "title": "Dream A Little Dream Of Me",
-      "artist": "The Mamas & The Papas"
+      "artist": "The Mamas & The Papas",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 71
     },
     {
       "title": "Dream On",
-      "artist": "Aerosmith"
+      "artist": "Aerosmith",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 72
     },
     {
       "title": "Easy",
-      "artist": "Commodores"
+      "artist": "Commodores",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 73
     },
     {
       "title": "End Of The Road",
-      "artist": "Boyz II Men"
+      "artist": "Boyz II Men",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 74
     },
     {
       "title": "Enter Sandman",
-      "artist": "Metallica"
+      "artist": "Metallica",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 75
     },
     {
       "title": "Everlong",
-      "artist": "Foo Fighters"
+      "artist": "Foo Fighters",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 76
     },
     {
       "title": "Everybody Talks",
-      "artist": "Neon Trees"
+      "artist": "Neon Trees",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 77
     },
     {
       "title": "Ex's & Oh's",
-      "artist": "Elle King"
+      "artist": "Elle King",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 78
     },
     {
       "title": "Eye of the Tiger",
-      "artist": "Survivor"
+      "artist": "Survivor",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 79
     },
     {
       "title": "Faithfully",
-      "artist": "Journey"
+      "artist": "Journey",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 80
     },
     {
       "title": "Fight For Your Right",
-      "artist": "Beastie Boys"
+      "artist": "Beastie Boys",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 81
     },
     {
       "title": "Fire",
-      "artist": "Jimi Hendrix"
+      "artist": "Jimi Hendrix",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 82
     },
     {
       "title": "Firework",
-      "artist": "Katy Perry"
+      "artist": "Katy Perry",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 83
     },
     {
       "title": "Flagpole Sitta",
-      "artist": "Harvey Danger"
+      "artist": "Harvey Danger",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 84
     },
     {
       "title": "Flowers",
-      "artist": "Miley Cyrus"
+      "artist": "Miley Cyrus",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 85
     },
     {
       "title": "Folsom Prison Blues",
-      "artist": "Johnny Cash"
+      "artist": "Johnny Cash",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 86
     },
     {
       "title": "Foxey Lady",
-      "artist": "Jimi Hendrix"
+      "artist": "Jimi Hendrix",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 87
     },
     {
       "title": "Free Fallin'",
-      "artist": "Tom Petty"
+      "artist": "Tom Petty",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 88
     },
     {
       "title": "Friends in Low Places",
-      "artist": "Garth Brooks"
+      "artist": "Garth Brooks",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 89
     },
     {
       "title": "Gimme Shelter",
-      "artist": "The Rolling Stones"
+      "artist": "The Rolling Stones",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 90
     },
     {
       "title": "Girl Crush",
-      "artist": "Little Big Town"
+      "artist": "Little Big Town",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 91
     },
     {
       "title": "Girl on Fire",
-      "artist": "Alicia Keys"
+      "artist": "Alicia Keys",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 92
     },
     {
       "title": "Girls & Boys",
-      "artist": "Blur"
+      "artist": "Blur",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 93
     },
     {
       "title": "Girls Just Want to Have Fun",
-      "artist": "Cyndi Lauper"
+      "artist": "Cyndi Lauper",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 94
     },
     {
       "title": "Gives You Hell",
-      "artist": "The All-American Rejects"
+      "artist": "The All-American Rejects",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 95
     },
     {
       "title": "Glory Days",
-      "artist": "Bruce Springsteen"
+      "artist": "Bruce Springsteen",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 96
     },
     {
       "title": "good 4 u",
-      "artist": "Olivia Rodrigo"
+      "artist": "Olivia Rodrigo",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 97
     },
     {
       "title": "Good Riddance (Time of Your Life)",
-      "artist": "Green Day"
+      "artist": "Green Day",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 98
     },
     {
       "title": "Grenade",
-      "artist": "Bruno Mars"
+      "artist": "Bruno Mars",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 99
     },
     {
       "title": "Happy",
-      "artist": "Pharrell Williams"
+      "artist": "Pharrell Williams",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 100
     },
     {
       "title": "Heat Waves",
-      "artist": "Glass Animals"
+      "artist": "Glass Animals",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 101
     },
     {
       "title": "Hello",
-      "artist": "Adele"
+      "artist": "Adele",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 102
     },
     {
       "title": "Hey Jude",
-      "artist": "The Beatles"
+      "artist": "The Beatles",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 103
     },
     {
       "title": "Hey There Delilah",
-      "artist": "Plain White T's"
+      "artist": "Plain White T's",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 104
     },
     {
       "title": "High and Dry",
-      "artist": "Radiohead"
+      "artist": "Radiohead",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 105
     },
     {
       "title": "Highway to Hell",
-      "artist": "AC/DC"
+      "artist": "AC/DC",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 106
     },
     {
       "title": "Hips Don't Lie",
-      "artist": "Shakira"
+      "artist": "Shakira",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 107
     },
     {
       "title": "Hit Me With Your Best Shot",
-      "artist": "Pat Benatar"
+      "artist": "Pat Benatar",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 108
     },
     {
       "title": "Holiday",
-      "artist": "Green Day"
+      "artist": "Green Day",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 109
     },
     {
       "title": "House Of The Rising Sun",
-      "artist": "The Animals"
+      "artist": "The Animals",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 110
     },
     {
       "title": "How Sweet It Is (To Be Loved By You)",
-      "artist": "Marvin Gaye"
+      "artist": "Marvin Gaye",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 111
     },
     {
       "title": "Hungry Like the Wolf",
-      "artist": "Duran Duran"
+      "artist": "Duran Duran",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 112
     },
     {
       "title": "I Believe in a Thing Called Love",
-      "artist": "The Darkness"
+      "artist": "The Darkness",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 113
     },
     {
       "title": "I Feel the Earth Move",
-      "artist": "Carole King"
+      "artist": "Carole King",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 114
     },
     {
       "title": "I Heard It Through The Grapevine",
-      "artist": "Marvin Gaye"
+      "artist": "Marvin Gaye",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 115
     },
     {
       "title": "I Wanna Be Sedated",
-      "artist": "Ramones"
+      "artist": "Ramones",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 116
     },
     {
       "title": "I Wanna Dance with Somebody",
-      "artist": "Whitney Houston"
+      "artist": "Whitney Houston",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 117
     },
     {
       "title": "I Want It That Way",
-      "artist": "Backstreet Boys"
+      "artist": "Backstreet Boys",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 118
     },
     {
       "title": "I Want To Hold Your Hand",
-      "artist": "The Beatles"
+      "artist": "The Beatles",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 119
     },
     {
       "title": "I Want You Back",
-      "artist": "The Jackson 5"
+      "artist": "The Jackson 5",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 120
     },
     {
       "title": "I Will Survive - Single Version",
-      "artist": "Gloria Gaynor"
+      "artist": "Gloria Gaynor",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 121
     },
     {
       "title": "I Wish",
-      "artist": "Skee-Lo"
+      "artist": "Skee-Lo",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 122
     },
     {
       "title": "I'm a Believer",
-      "artist": "The Monkees"
+      "artist": "The Monkees",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 123
     },
     {
       "title": "I'm Gonna Be (500 Miles)",
-      "artist": "The Proclaimers"
+      "artist": "The Proclaimers",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 124
     },
     {
       "title": "I'm So Excited",
-      "artist": "The Pointer Sisters"
+      "artist": "The Pointer Sisters",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 125
     },
     {
       "title": "If It Makes You Happy",
-      "artist": "Sheryl Crow"
+      "artist": "Sheryl Crow",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 126
     },
     {
       "title": "Immigrant Song",
-      "artist": "Led Zeppelin"
+      "artist": "Led Zeppelin",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 127
     },
     {
       "title": "Interstate Love Song",
-      "artist": "Stone Temple Pilots"
+      "artist": "Stone Temple Pilots",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 128
     },
     {
       "title": "Iron Man",
-      "artist": "Black Sabbath"
+      "artist": "Black Sabbath",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 129
     },
     {
       "title": "Ironic",
-      "artist": "Alanis Morissette"
+      "artist": "Alanis Morissette",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 130
     },
     {
       "title": "Irreplaceable",
-      "artist": "Beyoncé"
+      "artist": "Beyoncé",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 131
     },
     {
       "title": "Is This Love",
-      "artist": "Bob Marley & The Wailers"
+      "artist": "Bob Marley & The Wailers",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 132
     },
     {
       "title": "Island In The Sun",
-      "artist": "Weezer"
+      "artist": "Weezer",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 133
     },
     {
       "title": "It's Raining Men",
-      "artist": "The Weather Girls"
+      "artist": "The Weather Girls",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 134
     },
     {
       "title": "It's Too Late",
-      "artist": "Carole King"
+      "artist": "Carole King",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 135
     },
     {
       "title": "Jamming",
-      "artist": "Bob Marley & The Wailers"
+      "artist": "Bob Marley & The Wailers",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 136
     },
     {
       "title": "Jeremy",
-      "artist": "Pearl Jam"
+      "artist": "Pearl Jam",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 137
     },
     {
       "title": "Jolene",
-      "artist": "Dolly Parton"
+      "artist": "Dolly Parton",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 138
     },
     {
       "title": "Jump",
-      "artist": "Van Halen"
+      "artist": "Van Halen",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 139
     },
     {
       "title": "Just a Friend",
-      "artist": "Biz Markie"
+      "artist": "Biz Markie",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 140
     },
     {
       "title": "Just A Girl",
-      "artist": "No Doubt"
+      "artist": "No Doubt",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 141
     },
     {
       "title": "Karma Police",
-      "artist": "Radiohead"
+      "artist": "Radiohead",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 142
     },
     {
       "title": "Killing Me Softly With His Song",
-      "artist": "Fugees, Ms. Lauryn Hill"
+      "artist": "Fugees, Ms. Lauryn Hill",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 143
     },
     {
       "title": "Kiss",
-      "artist": "Prince"
+      "artist": "Prince",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 144
     },
     {
       "title": "Last Nite",
-      "artist": "The Strokes"
+      "artist": "The Strokes",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 145
     },
     {
       "title": "Lean on Me",
-      "artist": "Bill Withers"
+      "artist": "Bill Withers",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 146
     },
     {
       "title": "Learn to Fly",
-      "artist": "Foo Fighters"
+      "artist": "Foo Fighters",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 147
     },
     {
       "title": "Let It Be",
-      "artist": "The Beatles"
+      "artist": "The Beatles",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 148
     },
     {
       "title": "Let's Get It On",
-      "artist": "Marvin Gaye"
+      "artist": "Marvin Gaye",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 149
     },
     {
       "title": "Life During Wartime",
-      "artist": "Talking Heads"
+      "artist": "Talking Heads",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 150
     },
     {
       "title": "Life is a Highway",
-      "artist": "Rascal Flatts"
+      "artist": "Rascal Flatts",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 151
     },
     {
       "title": "Lithium",
-      "artist": "Nirvana"
+      "artist": "Nirvana",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 152
     },
     {
       "title": "Little Red Corvette",
-      "artist": "Prince"
+      "artist": "Prince",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 153
     },
     {
       "title": "Livin' On A Prayer",
-      "artist": "Bon Jovi"
+      "artist": "Bon Jovi",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 154
     },
     {
       "title": "Locked out of Heaven",
-      "artist": "Bruno Mars"
+      "artist": "Bruno Mars",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 155
     },
     {
       "title": "London Calling",
-      "artist": "The Clash"
+      "artist": "The Clash",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 156
     },
     {
       "title": "Lost on You",
-      "artist": "LP"
+      "artist": "LP",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 157
     },
     {
       "title": "Love Rollercoaster",
-      "artist": "Ohio Players"
+      "artist": "Ohio Players",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 158
     },
     {
       "title": "Love Shack",
-      "artist": "The B-52's"
+      "artist": "The B-52's",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 159
     },
     {
       "title": "Love Story",
-      "artist": "Taylor Swift"
+      "artist": "Taylor Swift",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 160
     },
     {
       "title": "Love Yourself",
-      "artist": "Justin Bieber"
+      "artist": "Justin Bieber",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 161
     },
     {
       "title": "Lovely Day",
-      "artist": "Bill Withers"
+      "artist": "Bill Withers",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 162
     },
     {
       "title": "Man, I Feel Like a Woman",
-      "artist": "Shania Twain"
+      "artist": "Shania Twain",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 163
     },
     {
       "title": "Man in the Box",
-      "artist": "Alice In Chains"
+      "artist": "Alice In Chains",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 164
     },
     {
       "title": "Mary Jane's Last Dance",
-      "artist": "Tom Petty and the Heartbreakers"
+      "artist": "Tom Petty and the Heartbreakers",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 165
     },
     {
       "title": "Me and Julio Down by the Schoolyard",
-      "artist": "Paul Simon"
+      "artist": "Paul Simon",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 166
     },
     {
       "title": "Message In A Bottle",
-      "artist": "The Police"
+      "artist": "The Police",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 167
     },
     {
       "title": "Misery Business",
-      "artist": "Paramore"
+      "artist": "Paramore",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 168
     },
     {
       "title": "Moonage Daydream",
-      "artist": "David Bowie"
+      "artist": "David Bowie",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 169
     },
     {
       "title": "Movin' Out (Anthony's Song)",
-      "artist": "Billy Joel"
+      "artist": "Billy Joel",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 170
     },
     {
       "title": "Mr. Brightside",
-      "artist": "The Killers"
+      "artist": "The Killers",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 171
     },
     {
       "title": "Ms. Jackson",
-      "artist": "Outkast"
+      "artist": "Outkast",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 172
     },
     {
       "title": "Mustang Sally",
-      "artist": "Wilson Pickett"
+      "artist": "Wilson Pickett",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 173
     },
     {
       "title": "My Girl",
-      "artist": "The Temptations"
+      "artist": "The Temptations",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 174
     },
     {
       "title": "My Hero",
-      "artist": "Foo Fighters"
+      "artist": "Foo Fighters",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 175
     },
     {
       "title": "My Own Worst Enemy",
-      "artist": "Lit"
+      "artist": "Lit",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 176
     },
     {
       "title": "My Way",
-      "artist": "Frank Sinatra"
+      "artist": "Frank Sinatra",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 177
     },
     {
       "title": "Nineteen Seventy-Nine (1979)",
-      "artist": "The Smashing Pumpkins"
+      "artist": "The Smashing Pumpkins",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 178
     },
     {
       "title": "No Rain",
-      "artist": "Blind Melon"
+      "artist": "Blind Melon",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 179
     },
     {
       "title": "No Scrubs",
-      "artist": "TLC"
+      "artist": "TLC",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 180
     },
     {
       "title": "Nothing Else Matters",
-      "artist": "Metallica"
+      "artist": "Metallica",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 181
     },
     {
       "title": "Oh, Pretty Woman",
-      "artist": "Roy Orbison"
+      "artist": "Roy Orbison",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 182
     },
     {
       "title": "Only Girl (In The World)",
-      "artist": "Rihanna"
+      "artist": "Rihanna",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 183
     },
     {
       "title": "Only the Good Die Young",
-      "artist": "Billy Joel"
+      "artist": "Billy Joel",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 184
     },
     {
       "title": "Paint It, Black",
-      "artist": "The Rolling Stones"
+      "artist": "The Rolling Stones",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 185
     },
     {
       "title": "Paradise City",
-      "artist": "Guns N' Roses"
+      "artist": "Guns N' Roses",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 186
     },
     {
       "title": "Paranoid",
-      "artist": "Black Sabbath"
+      "artist": "Black Sabbath",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 187
     },
     {
       "title": "Party In The U.S.A.",
-      "artist": "Miley Cyrus"
+      "artist": "Miley Cyrus",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 188
     },
     {
       "title": "People Are Strange",
-      "artist": "The Doors"
+      "artist": "The Doors",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 189
     },
     {
       "title": "Piano Man",
-      "artist": "Billy Joel"
+      "artist": "Billy Joel",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 190
     },
     {
       "title": "Piece of My Heart",
-      "artist": "Big Brother & The Holding Company"
+      "artist": "Big Brother & The Holding Company",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 191
     },
     {
       "title": "Pinball Wizard",
-      "artist": "The Who"
+      "artist": "The Who",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 192
     },
     {
       "title": "Pink Pony Club",
-      "artist": "Chappell Roan"
+      "artist": "Chappell Roan",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 193
     },
     {
       "title": "Play That Funky Music",
-      "artist": "Wild Cherry"
+      "artist": "Wild Cherry",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 194
     },
     {
       "title": "Please, Please, Please",
-      "artist": "Sabrina Carpenter"
+      "artist": "Sabrina Carpenter",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 195
     },
     {
       "title": "Plush",
-      "artist": "Stone Temple Pilots"
+      "artist": "Stone Temple Pilots",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 196
     },
     {
       "title": "Poison",
-      "artist": "Bell Biv DeVoe"
+      "artist": "Bell Biv DeVoe",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 197
     },
     {
       "title": "Poker Face",
-      "artist": "Lady Gaga"
+      "artist": "Lady Gaga",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 198
     },
     {
       "title": "Possum Kingdom",
-      "artist": "Toadies"
+      "artist": "Toadies",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 199
     },
     {
       "title": "Pour Some Sugar On Me",
-      "artist": "Def Leppard"
+      "artist": "Def Leppard",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 200
     },
     {
       "title": "Psycho Killer",
-      "artist": "Talking Heads"
+      "artist": "Talking Heads",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 201
     },
     {
       "title": "Purple Haze",
-      "artist": "Jimi Hendrix"
+      "artist": "Jimi Hendrix",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 202
     },
     {
       "title": "Purple Rain",
-      "artist": "Prince"
+      "artist": "Prince",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 203
     },
     {
       "title": "Raise Your Glass",
-      "artist": "P!nk"
+      "artist": "P!nk",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 204
     },
     {
       "title": "Rebel Yell",
-      "artist": "Billy Idol"
+      "artist": "Billy Idol",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 205
     },
     {
       "title": "Rehab",
-      "artist": "Amy Winehouse"
+      "artist": "Amy Winehouse",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 206
     },
     {
       "title": "Rescue Me",
-      "artist": "Fontella Bass"
+      "artist": "Fontella Bass",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 207
     },
     {
       "title": "Respect",
-      "artist": "Aretha Franklin"
+      "artist": "Aretha Franklin",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 208
     },
     {
       "title": "Return of the Mack",
-      "artist": "Mark Morrison"
+      "artist": "Mark Morrison",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 209
     },
     {
       "title": "Ring of Fire",
-      "artist": "Johnny Cash"
+      "artist": "Johnny Cash",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 210
     },
     {
       "title": "Rock and Roll",
-      "artist": "Led Zeppelin"
+      "artist": "Led Zeppelin",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 211
     },
     {
       "title": "Rock with You",
-      "artist": "Michael Jackson"
+      "artist": "Michael Jackson",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 212
     },
     {
       "title": "Rocket Man",
-      "artist": "Elton John"
+      "artist": "Elton John",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 213
     },
     {
       "title": "Rolling in the Deep",
-      "artist": "Adele"
+      "artist": "Adele",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 214
     },
     {
       "title": "Rooster",
-      "artist": "Alice In Chains"
+      "artist": "Alice In Chains",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 215
     },
     {
       "title": "Roxanne",
-      "artist": "The Police"
+      "artist": "The Police",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 216
     },
     {
       "title": "Runnin' Down A Dream",
-      "artist": "Tom Petty"
+      "artist": "Tom Petty",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 217
     },
     {
       "title": "Santeria",
-      "artist": "Sublime"
+      "artist": "Sublime",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 218
     },
     {
       "title": "Satisfaction",
-      "artist": "The Rolling Stones"
+      "artist": "The Rolling Stones",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 219
     },
     {
       "title": "Say It Ain't So",
-      "artist": "Weezer"
+      "artist": "Weezer",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 220
     },
     {
       "title": "Scotty Doesn't Know",
-      "artist": "Lustra"
+      "artist": "Lustra",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 221
     },
     {
       "title": "Semi-Charmed Life",
-      "artist": "Third Eye Blind"
+      "artist": "Third Eye Blind",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 222
     },
     {
       "title": "Separate Ways (Worlds Apart)",
-      "artist": "Journey"
+      "artist": "Journey",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 223
     },
     {
       "title": "September",
-      "artist": "Earth, Wind & Fire"
+      "artist": "Earth, Wind & Fire",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 224
     },
     {
       "title": "Seven Nation Army",
-      "artist": "The White Stripes"
+      "artist": "The White Stripes",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 225
     },
     {
       "title": "Sex & Candy",
-      "artist": "Marcy Playground"
+      "artist": "Marcy Playground",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 226
     },
     {
       "title": "Sex on Fire",
-      "artist": "Kings of Leon"
+      "artist": "Kings of Leon",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 227
     },
     {
       "title": "Shake It Off",
-      "artist": "Taylor Swift"
+      "artist": "Taylor Swift",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 228
     },
     {
       "title": "Shallow",
-      "artist": "Lady Gaga"
+      "artist": "Lady Gaga",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 229
     },
     {
       "title": "Should I Stay or Should I Go",
-      "artist": "The Clash"
+      "artist": "The Clash",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 230
     },
     {
       "title": "Shut Up and Dance",
-      "artist": "WALK THE MOON"
+      "artist": "WALK THE MOON",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 231
     },
     {
       "title": "Since U Been Gone",
-      "artist": "Kelly Clarkson"
+      "artist": "Kelly Clarkson",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 232
     },
     {
       "title": "Sittin' On The Dock of the Bay",
-      "artist": "Otis Redding"
+      "artist": "Otis Redding",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 233
     },
     {
       "title": "Sledgehammer",
-      "artist": "Peter Gabriel"
+      "artist": "Peter Gabriel",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 234
     },
     {
       "title": "Smells Like Teen Spirit",
-      "artist": "Nirvana"
+      "artist": "Nirvana",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 235
     },
     {
       "title": "So What",
-      "artist": "P!nk"
+      "artist": "P!nk",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 236
     },
     {
       "title": "Some Nights",
-      "artist": "fun."
+      "artist": "fun.",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 237
     },
     {
       "title": "Son of a Preacher Man",
-      "artist": "Dusty Springfield"
+      "artist": "Dusty Springfield",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 238
     },
     {
       "title": "Song 2",
-      "artist": "Blur"
+      "artist": "Blur",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 239
     },
     {
       "title": "Space Oddity",
-      "artist": "David Bowie"
+      "artist": "David Bowie",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 240
     },
     {
       "title": "Stand By Me",
-      "artist": "Ben E. King"
+      "artist": "Ben E. King",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 241
     },
     {
       "title": "Start Me Up",
-      "artist": "The Rolling Stones"
+      "artist": "The Rolling Stones",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 242
     },
     {
       "title": "Stayin' Alive",
-      "artist": "Bee Gees"
+      "artist": "Bee Gees",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 243
     },
     {
       "title": "Still into You",
-      "artist": "Paramore"
+      "artist": "Paramore",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 244
     },
     {
       "title": "Sugar, We're Goin Down",
-      "artist": "Fall Out Boy"
+      "artist": "Fall Out Boy",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 245
     },
     {
       "title": "Summer Nights",
-      "artist": "Grease"
+      "artist": "Grease",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 246
     },
     {
       "title": "Sunshine Of Your Love",
-      "artist": "Cream"
+      "artist": "Cream",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 247
     },
     {
       "title": "Supersonic",
-      "artist": "Oasis"
+      "artist": "Oasis",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 248
     },
     {
       "title": "Superstition",
-      "artist": "Stevie Wonder"
+      "artist": "Stevie Wonder",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 249
     },
     {
       "title": "Surrender",
-      "artist": "Cheap Trick"
+      "artist": "Cheap Trick",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 250
     },
     {
       "title": "Sweet Child O' Mine",
-      "artist": "Guns N' Roses"
+      "artist": "Guns N' Roses",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 251
     },
     {
       "title": "Sweet Emotion",
-      "artist": "Aerosmith"
+      "artist": "Aerosmith",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 252
     },
     {
       "title": "Sweet Jane",
-      "artist": "The Velvet Underground"
+      "artist": "The Velvet Underground",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 253
     },
     {
       "title": "T.N.T.",
-      "artist": "AC/DC"
+      "artist": "AC/DC",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 254
     },
     {
       "title": "Tainted Love",
-      "artist": "Soft Cell"
+      "artist": "Soft Cell",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 255
     },
     {
       "title": "Take Me Out",
-      "artist": "Franz Ferdinand"
+      "artist": "Franz Ferdinand",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 256
     },
     {
       "title": "Take Me to Church",
-      "artist": "Hozier"
+      "artist": "Hozier",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 257
     },
     {
       "title": "Teenage Dirtbag",
-      "artist": "Wheatus"
+      "artist": "Wheatus",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 258
     },
     {
       "title": "Tennessee Whiskey",
-      "artist": "Chris Stapleton"
+      "artist": "Chris Stapleton",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 259
     },
     {
       "title": "Tequila",
-      "artist": "Dan and Shay"
+      "artist": "Dan and Shay",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 260
     },
     {
       "title": "Thank You",
-      "artist": "Dido"
+      "artist": "Dido",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 261
     },
     {
       "title": "The Distance",
-      "artist": "CAKE"
+      "artist": "CAKE",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 262
     },
     {
       "title": "The Lazy Song",
-      "artist": "Bruno Mars"
+      "artist": "Bruno Mars",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 263
     },
     {
       "title": "The Middle",
-      "artist": "Jimmy Eat World"
+      "artist": "Jimmy Eat World",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 264
     },
     {
       "title": "The Weight",
-      "artist": "The Band"
+      "artist": "The Band",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 265
     },
     {
       "title": "Three Little Birds",
-      "artist": "Bob Marley & The Wailers"
+      "artist": "Bob Marley & The Wailers",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 266
     },
     {
       "title": "Thriller",
-      "artist": "Michael Jackson"
+      "artist": "Michael Jackson",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 267
     },
     {
       "title": "Tighten Up",
-      "artist": "The Black Keys"
+      "artist": "The Black Keys",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 268
     },
     {
       "title": "Time After Time",
-      "artist": "Cyndi Lauper"
+      "artist": "Cyndi Lauper",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 269
     },
     {
       "title": "Tiny Dancer",
-      "artist": "Elton John"
+      "artist": "Elton John",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 270
     },
     {
       "title": "Torn",
-      "artist": "Natalie Imbruglia"
+      "artist": "Natalie Imbruglia",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 271
     },
     {
       "title": "Tubthumping",
-      "artist": "Chumbawamba"
+      "artist": "Chumbawamba",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 272
     },
     {
       "title": "Turn the Beat Around",
-      "artist": "Vicki Sue Robinson"
+      "artist": "Vicki Sue Robinson",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 273
     },
     {
       "title": "Twist And Shout",
-      "artist": "The Beatles"
+      "artist": "The Beatles",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 274
     },
     {
       "title": "Umbrella",
-      "artist": "Rihanna, JAY-Z"
+      "artist": "Rihanna, JAY-Z",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 275
     },
     {
       "title": "Under the Bridge",
-      "artist": "Red Hot Chili Peppers"
+      "artist": "Red Hot Chili Peppers",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 276
     },
     {
       "title": "Uptown Funk",
-      "artist": "Bruno Mars"
+      "artist": "Bruno Mars",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 277
     },
     {
       "title": "Use Somebody",
-      "artist": "Kings of Leon"
+      "artist": "Kings of Leon",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 278
     },
     {
       "title": "Valerie",
-      "artist": "Amy Winehouse"
+      "artist": "Amy Winehouse",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 279
     },
     {
       "title": "Wagon Wheel",
-      "artist": "Darius Rucker"
+      "artist": "Darius Rucker",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 280
     },
     {
       "title": "Wake Me Up When September Ends",
-      "artist": "Green Day"
+      "artist": "Green Day",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 281
     },
     {
       "title": "Walk Like an Egyptian",
-      "artist": "The Bangles"
+      "artist": "The Bangles",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 282
     },
     {
       "title": "Walk This Way",
-      "artist": "Aerosmith"
+      "artist": "Aerosmith",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 283
     },
     {
       "title": "Wannabe",
-      "artist": "Spice Girls"
+      "artist": "Spice Girls",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 284
     },
     {
       "title": "Watching The Detectives",
-      "artist": "Elvis Costello"
+      "artist": "Elvis Costello",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 285
     },
     {
       "title": "We Are The Champions",
-      "artist": "Queen"
+      "artist": "Queen",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 286
     },
     {
       "title": "We Are Young",
-      "artist": "fun., Janelle Monáe"
+      "artist": "fun., Janelle Monáe",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 287
     },
     {
       "title": "We Didn't Start the Fire",
-      "artist": "Billy Joel"
+      "artist": "Billy Joel",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 288
     },
     {
       "title": "We Will Rock You",
-      "artist": "Queen"
+      "artist": "Queen",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 289
     },
     {
       "title": "What A Wonderful World",
-      "artist": "Louis Armstrong"
+      "artist": "Louis Armstrong",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 290
     },
     {
       "title": "What I Got",
-      "artist": "Sublime"
+      "artist": "Sublime",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 291
     },
     {
       "title": "What's My Age Again?",
-      "artist": "blink-182"
+      "artist": "blink-182",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 292
     },
     {
       "title": "What's So Funny 'Bout Peace, Love….",
-      "artist": "Elvis Costello & The Attractions"
+      "artist": "Elvis Costello & The Attractions",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 293
     },
     {
       "title": "What's Up?",
-      "artist": "4 Non Blondes"
+      "artist": "4 Non Blondes",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 294
     },
     {
       "title": "When Doves Cry",
-      "artist": "Prince"
+      "artist": "Prince",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 295
     },
     {
       "title": "When I Come Around",
-      "artist": "Green Day"
+      "artist": "Green Day",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 296
     },
     {
       "title": "When We Were Young",
-      "artist": "Adele"
+      "artist": "Adele",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 297
     },
     {
       "title": "Where Is My Mind?",
-      "artist": "Pixies"
+      "artist": "Pixies",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 298
     },
     {
       "title": "Where You Lead",
-      "artist": "Carole King"
+      "artist": "Carole King",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 299
     },
     {
       "title": "Whip It",
-      "artist": "DEVO"
+      "artist": "DEVO",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 300
     },
     {
       "title": "White Rabbit",
-      "artist": "Jefferson Airplane"
+      "artist": "Jefferson Airplane",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 301
     },
     {
       "title": "White Wedding - Pt. 1",
-      "artist": "Billy Idol"
+      "artist": "Billy Idol",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 302
     },
     {
       "title": "Whitehouse Road",
-      "artist": "Tyler Childers"
+      "artist": "Tyler Childers",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 303
     },
     {
       "title": "Wild World",
-      "artist": "Yusuf / Cat Stevens"
+      "artist": "Yusuf / Cat Stevens",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 304
     },
     {
       "title": "Wonderwall",
-      "artist": "Oasis"
+      "artist": "Oasis",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 305
     },
     {
       "title": "Wrecking Ball",
-      "artist": "Miley Cyrus"
+      "artist": "Miley Cyrus",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 306
     },
     {
       "title": "YMCA",
-      "artist": "Village People"
+      "artist": "Village People",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 307
     },
     {
       "title": "You Belong With Me",
-      "artist": "Taylor Swift"
+      "artist": "Taylor Swift",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 308
     },
     {
       "title": "You Can't Always Get What You Want",
-      "artist": "The Rolling Stones"
+      "artist": "The Rolling Stones",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 309
     },
     {
       "title": "You Oughta Know",
-      "artist": "Alanis Morissette"
+      "artist": "Alanis Morissette",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 310
     },
     {
       "title": "You're My Best Friend",
-      "artist": "Queen"
+      "artist": "Queen",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 311
     },
     {
       "title": "Young Americans",
-      "artist": "David Bowie"
+      "artist": "David Bowie",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 312
     },
     {
       "title": "Ziggy Stardust",
-      "artist": "David Bowie"
+      "artist": "David Bowie",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 313
     },
     {
       "title": "Zombie",
-      "artist": "The Cranberries"
+      "artist": "The Cranberries",
+      "tabUrl": "https://ultimate-guitar.com",
+      "id": 314
     }
   ]
 }

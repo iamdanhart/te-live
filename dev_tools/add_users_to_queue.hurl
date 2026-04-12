@@ -4,68 +4,68 @@
 POST http://localhost:8080/signup
 [FormParams]
 name: Jamie
-song: {"title":"Bohemian Rhapsody","artist":"Queen"}
-song: {"title":"All Star","artist":"Smash Mouth"}
+song: 32
+song: 9
 HTTP 200
 
 POST http://localhost:8080/signup
 [FormParams]
 name: Priya
-song: {"title":"Anti-Hero","artist":"Taylor Swift"}
+song: 15
 HTTP 200
 
 POST http://localhost:8080/signup
 [FormParams]
 name: Marcus
-song: {"title":"Back In Black","artist":"AC/DC"}
-song: {"title":"Basket Case","artist":"Green Day"}
-song: {"title":"Barracuda","artist":"Heart"}
+song: 20
+song: 25
+song: 24
 HTTP 200
 
 POST http://localhost:8080/signup
 [FormParams]
 name: Sofia
-song: {"title":"Bad Romance","artist":"Lady Gaga"}
-song: {"title":"Before He Cheats","artist":"Carrie Underwood"}
+song: 22
+song: 27
 HTTP 200
 
 POST http://localhost:8080/signup
 [FormParams]
 name: Derek
-song: {"title":"Billie Jean","artist":"Michael Jackson"}
+song: 30
 HTTP 200
 
 POST http://localhost:8080/signup
 [FormParams]
 name: Nora
-song: {"title":"9 to 5","artist":"Dolly Parton"}
-song: {"title":"Brown Eyed Girl","artist":"Van Morrison"}
+song: 1
+song: 35
 HTTP 200
 
 POST http://localhost:8080/signup
 [FormParams]
 name: Eli
-song: {"title":"Born to Run","artist":"Bruce Springsteen"}
-song: {"title":"Bulls On Parade","artist":"Rage Against The Machine"}
-song: {"title":"Burning Down the House","artist":"Talking Heads"}
+song: 33
+song: 37
+song: 38
 HTTP 200
 
 POST http://localhost:8080/signup
 [FormParams]
 name: Carmen
-song: {"title":"Beat It","artist":"Michael Jackson"}
-song: {"title":"Bust A Move","artist":"Young MC"}
+song: 26
+song: 39
 HTTP 200
 
 POST http://localhost:8080/signup
 [FormParams]
 name: Theo
-song: {"title":"Baby Got Back","artist":"Sir Mix-A-Lot"}
+song: 19
 HTTP 200
 
 POST http://localhost:8080/signup
 [FormParams]
 name: Leila
-song: {"title":"Ain't No Mountain High Enough","artist":"Marvin Gaye, Tammi Terrell"}
-song: {"title":"Blister In The Sun","artist":"Violent Femmes"}
+song: 5
+song: 31
 HTTP 200

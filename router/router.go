@@ -1,7 +1,6 @@
 package router
 
 import (
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -81,10 +80,16 @@ func handleSignup(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 	name := r.FormValue("name")
 	var songs []catalog.Song
 	for _, s := range r.Form["song"] {
-		var song catalog.Song
-		if err := json.Unmarshal([]byte(s), &song); err != nil {
-			slog.Error("failed to unmarshal song", "err", err)
-			http.Error(w, "invalid song data", http.StatusBadRequest)
+		var id int
+		if _, err := fmt.Sscan(s, &id); err != nil {
+			slog.Error("failed to parse song id", "err", err)
+			http.Error(w, "invalid song id", http.StatusBadRequest)
+			return
+		}
+		song, ok := catalog.FindByID(id)
+		if !ok {
+			slog.Error("song not found", "id", id)
+			http.Error(w, "song not found", http.StatusBadRequest)
 			return
 		}
 		songs = append(songs, song)
