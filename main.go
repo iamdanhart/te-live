@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
 )
 
 func main() {
@@ -18,8 +19,7 @@ func main() {
 		slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, nil)))
 	}
 
-	rl := newRateLimiter(2 * time.Minute)
-	srv := &http.Server{Addr: ":8080", Handler: newRouter(rl)}
+	srv := &http.Server{Addr: ":8080", Handler: newRouter()}
 
 	go func() {
 		slog.Info("Listening on :8080")

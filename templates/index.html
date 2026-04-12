@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html style="height: 100%;">
 <head>
-    <script src="/static/vendor/htmx.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -11,7 +10,6 @@
             --surface:      #1a1a2a;
             --border:       #2e2e45;
             --accent:       #fbbf24;
-            --accent-dark:  #78350f;
             --text:         #f1f5f9;
             --text-muted:   #94a3b8;
         }
@@ -22,315 +20,86 @@
             font-family: 'Poppins', sans-serif;
             background: var(--bg);
             color: var(--text);
-            height: 100%;
-            min-height: 30em;
-            min-width: 360px;
             margin: 0;
-            padding: 16px;
-            padding-top: 118px;
-        }
-        #catalog-wrapper.at-limit #unselected-scroll {
-            opacity: 0.3;
-            pointer-events: none;
+            padding: 32px 16px;
+            min-height: 100%;
         }
 
-        #name-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: var(--bg);
-            border-bottom: 1px solid var(--border);
-            padding: 16px;
-            z-index: 100;
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
         }
 
-        label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--text-muted);
-        }
-
-        input[type="text"] {
-            width: 100%;
-            max-width: 600px;
-            display: block;
-            background: var(--surface);
-            color: var(--text);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 10px 12px;
-            font-family: inherit;
-            font-size: 1rem;
-            outline: none;
-        }
-        input[type="text"]::placeholder { color: var(--text-muted); }
-        input[type="text"]:focus { border-color: var(--accent); }
-
-        #name { margin-top: 6px; }
-        #search { margin-bottom: 10px; }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        #catalog-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            max-width: 600px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
-
-        colgroup col:first-child { width: 60%; }
-        colgroup col:last-child  { width: 40%; }
-
-        th {
-            padding: 10px 12px;
-            text-align: left;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--text-muted);
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-        }
-        th[data-col] {
-            cursor: pointer;
-            user-select: none;
-        }
-        th[data-col]:hover { color: var(--text); }
-        th[data-col].sorted { color: var(--accent); }
-
-        td {
-            padding: 10px 12px;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.95rem;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .catalog-row { cursor: pointer; }
-        .catalog-row:hover td { background: #1e1e30; }
-        .catalog-row.selected td {
-            background: var(--accent-dark);
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 24px 0;
             color: var(--accent);
-            font-weight: 600;
         }
 
-        #unselected-scroll {
-            flex: 1;
-            overflow-y: auto;
-            min-height: 20em;
-        }
-
-        #submit-btn {
-            align-self: flex-start;
-            width: 100%;
-            max-width: 600px;
-            margin-top: 12px;
-            padding: 12px;
+        .signup-link {
+            display: inline-block;
+            padding: 10px 24px;
             background: var(--accent);
             color: #0f0f18;
-            border: none;
             border-radius: 6px;
-            font-family: inherit;
-            font-size: 1rem;
             font-weight: 700;
-            cursor: pointer;
+            font-size: 1rem;
             letter-spacing: 0.05em;
+            text-decoration: none;
+            margin-bottom: 32px;
         }
-        #submit-btn:disabled {
-            background: var(--border);
-            color: var(--text-muted);
-            cursor: not-allowed;
-        }
-        #submit-btn:not(:disabled):hover { background: #fcd34d; }
+        .signup-link:hover { background: #fcd34d; }
 
-        #status-modal {
+        .card {
             background: var(--surface);
-            color: var(--text);
             border: 1px solid var(--border);
             border-radius: 10px;
-            padding: 28px;
-            min-width: 280px;
-            font-family: inherit;
+            padding: 20px 24px;
+            margin-bottom: 16px;
         }
-        #status-modal::backdrop { background: rgba(0, 0, 0, 0.6); }
-        #status-modal button {
-            margin-top: 20px;
-            padding: 10px 28px;
-            background: var(--accent);
-            color: #0f0f18;
-            border: none;
-            border-radius: 6px;
-            font-family: inherit;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-        }
-        #status-modal button:hover { background: #fcd34d; }
 
-        @media (max-width: 600px) {
-            #submit-btn {
-                position: fixed;
-                bottom: 0;
-                left: 16px;
-                right: 16px;
-                border-radius: 6px 6px 0 0;
-            }
-            body { padding-bottom: 64px; }
+        .card-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .card-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .warmup {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 8px;
         }
     </style>
 </head>
 <body>
-<form method="post" hx-post="/signup" hx-target="#status">
-    <div id="name-bar">
-        <label for="name">Your name</label>
-        <input id="name" name="name" type="text" placeholder="Enter your name">
-    </div>
+<div class="container">
+    <h1>Troubles End Live Band Karaoke</h1>
 
-    <input id="search" type="text" placeholder="Search songs or artists..." aria-label="Search songs or artists">
+    <a class="signup-link" href="/signup">Sign Up</a>
 
-    <div id="catalog-wrapper">
-        <table>
-            <colgroup><col><col></colgroup>
-            <thead>
-            <tr>
-                <th data-col="title">Title</th>
-                <th data-col="artist">Artist</th>
-            </tr>
-            </thead>
-            <tbody id="selected-rows"></tbody>
-        </table>
-        <div id="unselected-scroll">
-            <table>
-                <colgroup><col><col></colgroup>
-                <tbody id="unselected-rows">
-                {{range $i, $s := .Songs}}
-                <tr class="catalog-row" data-title="{{$s.Title}}" data-artist="{{$s.Artist}}" data-index="{{$i}}">
-                    <td>{{$s.Title}}</td>
-                    <td>{{$s.Artist}}</td>
-                </tr>
-                {{end}}
-                </tbody>
-            </table>
+    {{if .Current}}
+        <div class="card">
+            <div class="card-label">Current Singer</div>
+            <div class="card-name">{{.Current.Name}}</div>
         </div>
-    </div>
-
-    <div id="song-inputs"></div>
-
-    <button id="submit-btn" type="submit" disabled>Sign Up</button>
-</form>
-
-<dialog id="status-modal">
-    <div id="status"></div>
-    <button type="button" onclick="document.getElementById('status-modal').close()">OK</button>
-</dialog>
-
-<script>
-    document.querySelectorAll('.catalog-row').forEach(row => {
-        row.addEventListener('click', function() {
-            const alreadySelected = this.classList.contains('selected');
-            if (!alreadySelected && document.querySelectorAll('.catalog-row.selected').length >= 3) {
-                return;
-            }
-            this.classList.toggle('selected');
-            const atLimit = document.querySelectorAll('.catalog-row.selected').length >= 3;
-            document.getElementById('catalog-wrapper').classList.toggle('at-limit', atLimit);
-            reorderRows(this);
-            updateSongInputs();
-            updateSubmit();
-            document.getElementById('search').value = '';
-            document.querySelectorAll('#unselected-rows .catalog-row').forEach(r => r.style.display = '');
-        });
-    });
-
-    function reorderRows(row) {
-        if (row.classList.contains('selected')) {
-            document.getElementById('selected-rows').appendChild(row);
-        } else {
-            const tbody = document.getElementById('unselected-rows');
-            const index = parseInt(row.dataset.index);
-            const insertBefore = [...tbody.querySelectorAll('.catalog-row')]
-                .find(r => parseInt(r.dataset.index) > index);
-            tbody.insertBefore(row, insertBefore || null);
-        }
-    }
-
-    function updateSongInputs() {
-        const container = document.getElementById('song-inputs');
-        const rows = [...document.querySelectorAll('.catalog-row.selected')];
-        container.innerHTML = rows
-            .map(row => {
-                const json = JSON.stringify({title: row.dataset.title, artist: row.dataset.artist}).replace(/"/g, '&quot;');
-                return `<input type="hidden" name="song" value="${json}">`;
-            })
-            .join('');
-    }
-
-    document.body.addEventListener('htmx:afterSwap', function() {
-        const modal = document.getElementById('status-modal');
-        if (!modal.open) modal.showModal();
-    });
-
-    document.body.addEventListener('htmx:responseError', function(evt) {
-        if (evt.detail.xhr.status === 429) {
-            document.getElementById('status').innerHTML = '<p>Too many submissions. Please wait before trying again.</p>';
-            const modal = document.getElementById('status-modal');
-            if (!modal.open) modal.showModal();
-        }
-    });
-
-    function updateSubmit() {
-        const hasName = document.getElementById('name').value.trim() !== '';
-        const hasSong = document.querySelectorAll('.catalog-row.selected').length > 0;
-        document.getElementById('submit-btn').disabled = !(hasName && hasSong);
-    }
-
-    document.getElementById('name').addEventListener('input', updateSubmit);
-
-    let sortCol = null, sortDir = 1;
-
-    document.querySelectorAll('th[data-col]').forEach(th => {
-        th.addEventListener('click', function() {
-            const col = this.dataset.col;
-            if (sortCol === col) {
-                sortDir *= -1;
-            } else {
-                sortCol = col;
-                sortDir = 1;
-            }
-            document.querySelectorAll('th[data-col]').forEach(h => {
-                h.classList.toggle('sorted', h === this);
-                h.textContent = h.dataset.col.charAt(0).toUpperCase() + h.dataset.col.slice(1);
-                if (h === this) h.textContent += sortDir === 1 ? ' ↑' : ' ↓';
-            });
-            const tbody = document.getElementById('unselected-rows');
-            [...tbody.querySelectorAll('.catalog-row')]
-                .sort((a, b) => a.dataset[col].localeCompare(b.dataset[col]) * sortDir)
-                .forEach(row => tbody.appendChild(row));
-        });
-    });
-
-    document.getElementById('search').addEventListener('input', function() {
-        const query = this.value.toLowerCase();
-        document.querySelectorAll('#unselected-rows .catalog-row').forEach(row => {
-            row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
-        });
-    });
-</script>
+        {{if .Next}}
+        <div class="card">
+            <div class="card-label">On Deck</div>
+            <div class="card-name">{{.Next.Name}}</div>
+        </div>
+        {{end}}
+    {{else}}
+        <p class="warmup">Upcoming singers will be shown after warm-up!</p>
+    {{end}}
+</div>
 </body>
 </html>

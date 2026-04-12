@@ -1,4 +1,4 @@
-package main
+package middleware
 
 import (
 	"crypto/rand"
@@ -8,18 +8,18 @@ import (
 	"time"
 )
 
-// rateLimiter tracks the last request time per session cookie and rejects
+// RateLimiter tracks the last request time per session cookie and rejects
 // requests that arrive within the cooldown window.
-type rateLimiter struct {
+type RateLimiter struct {
 	mu       sync.Mutex
 	last     map[string]time.Time
 	cooldown time.Duration
 }
 
-// newRateLimiter creates a rateLimiter with the given cooldown and starts
+// NewRateLimiter creates a RateLimiter with the given cooldown and starts
 // a background goroutine to periodically evict expired entries.
-func newRateLimiter(cooldown time.Duration) *rateLimiter {
-	rl := &rateLimiter{
+func NewRateLimiter(cooldown time.Duration) *RateLimiter {
+	rl := &RateLimiter{
 		last:     make(map[string]time.Time),
 		cooldown: cooldown,
 	}
@@ -49,10 +49,10 @@ func sessionID(w http.ResponseWriter, r *http.Request) string {
 	return id
 }
 
-// limit is middleware that wraps the given handler. It allows the request
+// Limit is middleware that wraps the given handler. It allows the request
 // through if the session has not made a request within the cooldown window,
 // otherwise it responds with 429 Too Many Requests.
-func (rl *rateLimiter) limit(next http.Handler) http.Handler {
+func (rl *RateLimiter) Limit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		id := sessionID(w, r)
 
@@ -71,7 +71,7 @@ func (rl *rateLimiter) limit(next http.Handler) http.Handler {
 
 // cleanup runs forever, removing sessions from the map whose last request was
 // longer ago than the cooldown. This prevents the map from growing unbounded.
-func (rl *rateLimiter) cleanup() {
+func (rl *RateLimiter) cleanup() {
 	for range time.Tick(time.Minute) {
 		rl.mu.Lock()
 		for id, last := range rl.last {
