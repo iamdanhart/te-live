@@ -64,6 +64,15 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue) {
 		}
 	}))
 
+	mux.Handle("POST /host/remove", auth(func(w http.ResponseWriter, r *http.Request) {
+		q.RemoveCurrent()
+		data := struct{ Entries []queue.Entry }{q.Entries()}
+		if err := grab_templates.GetTemplates().ExecuteTemplate(w, "host_queue.html", data); err != nil {
+			slog.Error("template error", "err", err)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
+	}))
+
 	mux.Handle("POST /host/skip", auth(func(w http.ResponseWriter, r *http.Request) {
 		q.MoveCurrentToBottom()
 		data := struct{ Entries []queue.Entry }{q.Entries()}

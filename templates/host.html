@@ -24,6 +24,12 @@
             color: var(--accent);
         }
 
+        .queue-count {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
         /* Performed sidebar */
 
         .sidebar {
@@ -141,6 +147,72 @@
             color: var(--text-muted);
         }
 
+        .remove-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            font-family: inherit;
+        }
+
+        .remove-btn:hover {
+            border-color: #f87171;
+            color: #f87171;
+        }
+
+        #remove-dialog {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-family: inherit;
+            padding: 24px 28px;
+            max-width: 360px;
+            width: 100%;
+        }
+
+        #remove-dialog::backdrop {
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        #remove-dialog p {
+            margin: 0 0 20px 0;
+            font-size: 1rem;
+        }
+
+        .dialog-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .dialog-cancel-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            padding: 6px 14px;
+        }
+
+        .dialog-confirm-btn {
+            background: #f87171;
+            border: none;
+            border-radius: 4px;
+            color: #0f0f18;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 6px 14px;
+        }
+
         .add-song-btn {
             background: none;
             border: 1px solid var(--border);
@@ -234,12 +306,20 @@
         </div>
     </div>
     <div class="queue">
-        <h1>Queue</h1>
         <div id="queue-list" hx-get="/host/queue" hx-trigger="every 3s" hx-swap="innerHTML">
             {{template "host_queue.html" .}}
         </div>
     </div>
 </div>
+
+<dialog id="remove-dialog">
+    <p>Remove <strong id="remove-name"></strong> from the queue?</p>
+    <div class="dialog-actions">
+        <button class="dialog-cancel-btn" onclick="document.getElementById('remove-dialog').close()">Cancel</button>
+        <button class="dialog-confirm-btn" onclick="confirmRemove()">Remove</button>
+    </div>
+</dialog>
+
 <script>
     let songCatalog = null;
     let filteredResults = [];
@@ -274,12 +354,26 @@
         ).join('');
     }
 
-    // Pause the queue poll while the add-song picker is open so the swap
-    // doesn't destroy the picker mid-interaction.
+    function openRemoveDialog(name) {
+        document.getElementById('remove-name').textContent = name;
+        document.getElementById('remove-dialog').showModal();
+    }
+
+    function confirmRemove() {
+        document.getElementById('remove-dialog').close();
+        htmx.ajax('POST', '/host/remove', {
+            target: '#queue-list',
+            swap: 'innerHTML'
+        });
+    }
+
+    // Pause the queue poll while the add-song picker or remove dialog is open
+    // so the swap doesn't destroy them mid-interaction.
     document.body.addEventListener('htmx:beforeRequest', function(evt) {
         if (evt.detail.elt.id === 'queue-list') {
             const picker = document.getElementById('add-song-picker');
-            if (picker && picker.style.display === 'block') {
+            const dialog = document.getElementById('remove-dialog');
+            if ((picker && picker.style.display === 'block') || (dialog && dialog.open)) {
                 evt.preventDefault();
             }
         }

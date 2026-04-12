@@ -1,3 +1,4 @@
+<h1>Queue <span class="queue-count">{{len .Entries}}</span></h1>
 {{if .Entries}}
     {{range $i, $e := .Entries}}
     <div class="entry">
@@ -10,6 +11,7 @@
             <form hx-post="/host/skip" hx-target="#queue-list" hx-swap="innerHTML" style="display:inline">
                 <button type="submit" class="skip-btn">Skip</button>
             </form>
+            <button class="remove-btn" onclick="openRemoveDialog('{{$e.Name}}')">Remove</button>
             {{end}}
         </div>
         <ul class="entry-songs">

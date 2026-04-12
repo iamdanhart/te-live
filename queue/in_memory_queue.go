@@ -94,6 +94,16 @@ func (q *InMemQueue) AddSongToFirst(song catalog.Song) {
 	q.entries[0].Songs = append(q.entries[0].Songs, SongEntry{Song: song})
 }
 
+// RemoveCurrent removes the first entry from the queue.
+func (q *InMemQueue) RemoveCurrent() {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+	if len(q.entries) == 0 {
+		return
+	}
+	q.entries = q.entries[1:]
+}
+
 // MoveCurrentToBottom moves the first entry to the end of the queue.
 func (q *InMemQueue) MoveCurrentToBottom() {
 	q.mu.Lock()

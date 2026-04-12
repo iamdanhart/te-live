@@ -30,6 +30,7 @@ type Queue interface {
 	Performed() []PerformedSong
 	AddSongToFirst(song catalog.Song)
 	MoveCurrentToBottom()
+	RemoveCurrent()
 	Current() *Entry
 	Next() *Entry
 }
