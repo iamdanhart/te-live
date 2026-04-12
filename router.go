@@ -68,9 +68,7 @@ func handleSignup(w http.ResponseWriter, r *http.Request, q *queue.Queue) {
 	}
 	q.Add(name, songs)
 	slog.Info("signup", "name", name, "songs", songs)
-	if _, err := fmt.Fprintf(w, "<p>Thanks, %s! You've been added to the queue.</p>", name); err != nil {
-		slog.Error("write error", "err", err)
-	}
+	fmt.Fprintf(w, `<p>You're on the list, %s! See you up there.</p>`, name)
 }
 
 func handleCatalog(w http.ResponseWriter, r *http.Request) {
