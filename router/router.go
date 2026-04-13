@@ -15,7 +15,7 @@ import (
 )
 
 func NewRouter(cfg config.Props) *http.ServeMux {
-	rl := middleware.NewRateLimiter(2*time.Minute, cfg.EnforceSignupLimit)
+	rl := middleware.NewRateLimiter(2*time.Minute, cfg.EnforceSignupLimit, cfg.Env == "production")
 	q, err := queue.NewPgQueue(cfg.DatabaseURL)
 	if err != nil {
 		slog.Error("failed to connect to database", "err", err)

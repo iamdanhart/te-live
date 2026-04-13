@@ -15,16 +15,18 @@ type RateLimiter struct {
 	last     map[string]time.Time
 	cooldown time.Duration
 	enforce  bool
+	secure   bool
 }
 
 // NewRateLimiter creates a RateLimiter with the given cooldown and starts
 // a background goroutine to periodically evict expired entries. When enforce
 // is false, request times are still tracked but the limit is never applied.
-func NewRateLimiter(cooldown time.Duration, enforce bool) *RateLimiter {
+func NewRateLimiter(cooldown time.Duration, enforce bool, secure bool) *RateLimiter {
 	rl := &RateLimiter{
 		last:     make(map[string]time.Time),
 		cooldown: cooldown,
 		enforce:  enforce,
+		secure:   secure,
 	}
 	go rl.cleanup()
 	return rl
@@ -32,7 +34,7 @@ func NewRateLimiter(cooldown time.Duration, enforce bool) *RateLimiter {
 
 // sessionID returns the value of the session cookie, creating and setting
 // one on the response if the request does not already have one.
-func sessionID(w http.ResponseWriter, r *http.Request) string {
+func (rl *RateLimiter) sessionID(w http.ResponseWriter, r *http.Request) string {
 	if cookie, err := r.Cookie("session"); err == nil {
 		return cookie.Value
 	}
@@ -47,6 +49,7 @@ func sessionID(w http.ResponseWriter, r *http.Request) string {
 		Name:     "session",
 		Value:    id,
 		HttpOnly: true,
+		Secure:   rl.secure,
 		SameSite: http.SameSiteStrictMode,
 	})
 	return id
@@ -57,7 +60,7 @@ func sessionID(w http.ResponseWriter, r *http.Request) string {
 // otherwise it responds with 429 Too Many Requests.
 func (rl *RateLimiter) Limit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		id := sessionID(w, r)
+		id := rl.sessionID(w, r)
 
 		rl.mu.Lock()
 		if rl.enforce {
