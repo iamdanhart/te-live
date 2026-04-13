@@ -38,9 +38,8 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue) {
 	}))
 
 	mux.Handle("POST /host/performed", auth(func(w http.ResponseWriter, r *http.Request) {
-		title, artist := r.FormValue("title"), r.FormValue("artist")
-		q.MarkSongPerformed(title, artist)
-		q.RecordPerformed(r.FormValue("singer"), catalog.Song{Title: title, Artist: artist})
+		song := catalog.Song{Title: r.FormValue("title"), Artist: r.FormValue("artist")}
+		q.CompleteCurrentSong(r.FormValue("singer"), song)
 		q.MoveCurrentToBottom()
 		tmpl := grab_templates.GetTemplates()
 		if err := tmpl.ExecuteTemplate(w, "host_performed.html", struct{ Performed []queue.PerformedSong }{q.Performed()}); err != nil {

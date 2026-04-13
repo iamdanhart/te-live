@@ -117,31 +117,30 @@ func (q *PgQueue) RemoveCurrent() {
 	}
 }
 
-func (q *PgQueue) MarkSongPerformed(title, artist string) {
-	_, err := q.db.Exec(`
-		UPDATE entry_songs SET performed = true
-		WHERE entry_id = `+firstTodayID+`
-		  AND song_id = (SELECT id FROM songs WHERE title = $1 AND artist = $2)`,
-		title, artist)
-	if err != nil {
-		slog.Error("MarkSongPerformed", "err", err)
-	}
-}
-
-func (q *PgQueue) RecordPerformed(singer string, song catalog.Song) {
+func (q *PgQueue) CompleteCurrentSong(singer string, song catalog.Song) {
 	tx, err := q.db.Begin()
 	if err != nil {
-		slog.Error("RecordPerformed begin tx", "err", err)
+		slog.Error("CompleteCurrentSong begin tx", "err", err)
 		return
 	}
 	defer tx.Rollback()
+
+	_, err = tx.Exec(`
+		UPDATE entry_songs SET performed = true
+		WHERE entry_id = `+firstTodayID+`
+		  AND song_id = (SELECT id FROM songs WHERE title = $1 AND artist = $2)`,
+		song.Title, song.Artist)
+	if err != nil {
+		slog.Error("CompleteCurrentSong mark performed", "err", err)
+		return
+	}
 
 	_, err = tx.Exec(`
 		INSERT INTO performed_songs (singer, song_id)
 		VALUES ($1, (SELECT id FROM songs WHERE title = $2 AND artist = $3))`,
 		singer, song.Title, song.Artist)
 	if err != nil {
-		slog.Error("RecordPerformed insert", "err", err)
+		slog.Error("CompleteCurrentSong insert performed_songs", "err", err)
 		return
 	}
 
@@ -149,12 +148,12 @@ func (q *PgQueue) RecordPerformed(singer string, song catalog.Song) {
 		UPDATE signups SET times_on_stage = times_on_stage + 1
 		WHERE id = ` + firstTodayID)
 	if err != nil {
-		slog.Error("RecordPerformed increment times_on_stage", "err", err)
+		slog.Error("CompleteCurrentSong increment times_on_stage", "err", err)
 		return
 	}
 
 	if err := tx.Commit(); err != nil {
-		slog.Error("RecordPerformed commit", "err", err)
+		slog.Error("CompleteCurrentSong commit", "err", err)
 	}
 }
 
