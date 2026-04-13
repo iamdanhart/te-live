@@ -24,7 +24,7 @@ type Queue interface {
 	Entries() []Entry
 	SignupsOpen() bool
 	ToggleSignups() bool
-	Add(name string, songs []catalog.Song)
+	Add(name string, songs []catalog.Song) error
 	MarkSongPerformed(title, artist string)
 	RecordPerformed(singer string, song catalog.Song)
 	Performed() []PerformedSong

@@ -95,7 +95,11 @@ func handleSignup(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 		}
 		songs = append(songs, song)
 	}
-	q.Add(name, songs)
+	if err := q.Add(name, songs); err != nil {
+		slog.Error("failed to add signup", "name", name, "err", err)
+		http.Error(w, "failed to save signup", http.StatusInternalServerError)
+		return
+	}
 	slog.Info("signup", "name", name, "songs", songs)
 	fmt.Fprintf(w, `<p>You're on the list, %s! See you up there.</p>`, name)
 }

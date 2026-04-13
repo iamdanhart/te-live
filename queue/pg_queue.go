@@ -87,11 +87,10 @@ func (q *PgQueue) ToggleSignups() bool {
 	return value == "true"
 }
 
-func (q *PgQueue) Add(name string, songs []catalog.Song) {
+func (q *PgQueue) Add(name string, songs []catalog.Song) error {
 	tx, err := q.db.Begin()
 	if err != nil {
-		slog.Error("Add begin tx", "err", err)
-		return
+		return err
 	}
 	defer tx.Rollback()
 
@@ -101,8 +100,7 @@ func (q *PgQueue) Add(name string, songs []catalog.Song) {
 		VALUES ($1, COALESCE((SELECT MAX(position) FROM signups WHERE `+todayQueueEntries+`), 0) + 1)
 		RETURNING id`, name).Scan(&entryID)
 	if err != nil {
-		slog.Error("Add insert entry", "err", err)
-		return
+		return err
 	}
 
 	for i, song := range songs {
@@ -111,14 +109,11 @@ func (q *PgQueue) Add(name string, songs []catalog.Song) {
 			VALUES ($1, (SELECT id FROM songs WHERE title = $2 AND artist = $3), $4)`,
 			entryID, song.Title, song.Artist, i)
 		if err != nil {
-			slog.Error("Add insert entry_song", "err", err)
-			return
+			return err
 		}
 	}
 
-	if err := tx.Commit(); err != nil {
-		slog.Error("Add commit", "err", err)
-	}
+	return tx.Commit()
 }
 
 func (q *PgQueue) MoveCurrentToBottom() {
