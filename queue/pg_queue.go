@@ -195,6 +195,62 @@ func (q *PgQueue) AddSongToFirst(song catalog.Song) {
 	}
 }
 
+func (q *PgQueue) MoveEntry(id, afterID int) {
+	rows, err := q.db.Query(`
+		SELECT id, position FROM signups
+		WHERE `+todayQueueEntries+`
+		ORDER BY position ASC`)
+	if err != nil {
+		slog.Error("MoveEntry query", "err", err)
+		return
+	}
+	defer rows.Close()
+
+	type row struct {
+		id  int
+		pos float64
+	}
+	var entries []row
+	for rows.Next() {
+		var r row
+		if err := rows.Scan(&r.id, &r.pos); err != nil {
+			slog.Error("MoveEntry scan", "err", err)
+			return
+		}
+		entries = append(entries, r)
+	}
+
+	var newPos float64
+	if afterID == 0 {
+		if len(entries) == 0 {
+			newPos = 1
+		} else {
+			newPos = entries[0].pos - 1
+		}
+	} else {
+		afterIdx := -1
+		for i, e := range entries {
+			if e.id == afterID {
+				afterIdx = i
+				break
+			}
+		}
+		if afterIdx == -1 {
+			slog.Error("MoveEntry afterID not found", "afterID", afterID)
+			return
+		}
+		if afterIdx == len(entries)-1 {
+			newPos = entries[afterIdx].pos + 1
+		} else {
+			newPos = (entries[afterIdx].pos + entries[afterIdx+1].pos) / 2
+		}
+	}
+
+	if _, err := q.db.Exec(`UPDATE signups SET position = $1 WHERE id = $2`, newPos, id); err != nil {
+		slog.Error("MoveEntry update", "err", err)
+	}
+}
+
 // scanEntries collapses the joined rows into []Entry, grouping songs by singer.
 func scanEntries(rows *sql.Rows) []Entry {
 	var entries []Entry
@@ -216,7 +272,7 @@ func scanEntries(rows *sql.Rows) []Entry {
 		}
 		idx, exists := entryIndex[entryID]
 		if !exists {
-			entries = append(entries, Entry{Name: name})
+			entries = append(entries, Entry{ID: entryID, Name: name})
 			idx = len(entries) - 1
 			entryIndex[entryID] = idx
 		}

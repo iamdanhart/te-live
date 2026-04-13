@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strconv"
 
 	"github.com/iamdanhart/te-live/catalog"
 	"github.com/iamdanhart/te-live/config"
@@ -75,6 +76,25 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue) {
 
 	mux.Handle("POST /host/skip", auth(func(w http.ResponseWriter, r *http.Request) {
 		q.MoveCurrentToBottom()
+		data := struct{ Entries []queue.Entry }{q.Entries()}
+		if err := grab_templates.GetTemplates().ExecuteTemplate(w, "host_queue.html", data); err != nil {
+			slog.Error("template error", "err", err)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
+	}))
+
+	mux.Handle("POST /host/move", auth(func(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(r.FormValue("id"))
+		if err != nil {
+			http.Error(w, "invalid id", http.StatusBadRequest)
+			return
+		}
+		afterID, err := strconv.Atoi(r.FormValue("after_id"))
+		if err != nil {
+			http.Error(w, "invalid after_id", http.StatusBadRequest)
+			return
+		}
+		q.MoveEntry(id, afterID)
 		data := struct{ Entries []queue.Entry }{q.Entries()}
 		if err := grab_templates.GetTemplates().ExecuteTemplate(w, "host_queue.html", data); err != nil {
 			slog.Error("template error", "err", err)

@@ -1,11 +1,12 @@
 <h1>Queue <span class="queue-count">{{len .Entries}}</span></h1>
 {{if .Entries}}
     {{range $i, $e := .Entries}}
-    <div class="entry">
+    <div class="entry" draggable="true" data-id="{{$e.ID}}">
         <div class="position">
             {{if eq $i 0}}Now Singing{{else if eq $i 1}}On Deck{{else}}Up Next{{end}}
         </div>
         <div class="entry-header">
+            <span class="drag-handle" title="Drag to reorder">&#8597;</span>
             <div class="entry-name">{{$e.Name}}</div>
             {{if eq $i 0}}
             <form hx-post="/host/skip" hx-target="#queue-list" hx-swap="innerHTML" style="display:inline">

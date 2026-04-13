@@ -332,6 +332,22 @@
             color: var(--accent);
             margin-bottom: 4px;
         }
+
+        .drag-handle {
+            cursor: grab;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            padding-right: 6px;
+            flex-shrink: 0;
+        }
+
+        .entry.drag-over-top {
+            border-top: 2px solid var(--accent);
+        }
+
+        .entry.drag-over-bottom {
+            border-bottom: 2px solid var(--accent);
+        }
     </style>
 </head>
 <body>
@@ -431,6 +447,56 @@
                 btn.classList.toggle('open', open);
             });
     }
+
+    let draggedId = null;
+    const queueList = document.getElementById('queue-list');
+
+    queueList.addEventListener('dragstart', function(e) {
+        const entry = e.target.closest('[data-id]');
+        if (!entry) return;
+        draggedId = entry.dataset.id;
+        e.dataTransfer.effectAllowed = 'move';
+    });
+
+    queueList.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        const entry = e.target.closest('[data-id]');
+        queueList.querySelectorAll('[data-id]').forEach(el => el.classList.remove('drag-over-top', 'drag-over-bottom'));
+        if (!entry || entry.dataset.id === draggedId) return;
+        const rect = entry.getBoundingClientRect();
+        if (e.clientY < rect.top + rect.height / 2) {
+            entry.classList.add('drag-over-top');
+        } else {
+            entry.classList.add('drag-over-bottom');
+        }
+    });
+
+    queueList.addEventListener('dragleave', function(e) {
+        if (!queueList.contains(e.relatedTarget)) {
+            queueList.querySelectorAll('[data-id]').forEach(el => el.classList.remove('drag-over-top', 'drag-over-bottom'));
+        }
+    });
+
+    queueList.addEventListener('drop', function(e) {
+        e.preventDefault();
+        const target = e.target.closest('[data-id]');
+        queueList.querySelectorAll('[data-id]').forEach(el => el.classList.remove('drag-over-top', 'drag-over-bottom'));
+        if (!target || target.dataset.id === draggedId) return;
+        const rect = target.getBoundingClientRect();
+        let afterId;
+        if (e.clientY < rect.top + rect.height / 2) {
+            const prev = target.previousElementSibling;
+            afterId = (prev && prev.dataset.id) ? prev.dataset.id : '0';
+        } else {
+            afterId = target.dataset.id;
+        }
+        htmx.ajax('POST', '/host/move', {
+            target: '#queue-list',
+            swap: 'innerHTML',
+            values: { id: draggedId, after_id: afterId }
+        });
+    });
 
     function selectSong(i) {
         const song = filteredResults[i];

@@ -12,7 +12,7 @@ CREATE TABLE songs (
 CREATE TABLE signups (
     id             SERIAL PRIMARY KEY,
     name           TEXT NOT NULL,
-    position       INT  NOT NULL,
+    position       FLOAT8 NOT NULL,
     times_on_stage INT  NOT NULL DEFAULT 0,
     created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

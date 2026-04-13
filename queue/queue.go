@@ -10,6 +10,7 @@ type SongEntry struct {
 
 // Entry is a single singer signup in the queue.
 type Entry struct {
+	ID    int
 	Name  string
 	Songs []SongEntry
 }
@@ -30,4 +31,5 @@ type Queue interface {
 	AddSongToFirst(song catalog.Song)
 	MoveCurrentToBottom()
 	RemoveCurrent()
+	MoveEntry(id, afterID int)
 }
