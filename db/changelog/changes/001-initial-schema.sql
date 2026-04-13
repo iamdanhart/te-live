@@ -14,8 +14,11 @@ CREATE TABLE signups (
     name           TEXT NOT NULL,
     position       FLOAT8 NOT NULL,
     times_on_stage INT  NOT NULL DEFAULT 0,
-    created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    created_at     TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+--changeset dan:2b
+CREATE UNIQUE INDEX signups_position_date_idx ON signups (position, (created_at::date));
 
 --changeset dan:3
 CREATE TABLE entry_songs (
@@ -31,5 +34,5 @@ CREATE TABLE performed_songs (
     id           SERIAL PRIMARY KEY,
     singer       TEXT NOT NULL,
     song_id      INT  NOT NULL REFERENCES songs(id),
-    performed_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    performed_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
