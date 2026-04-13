@@ -47,22 +47,6 @@ func (q *PgQueue) Entries() []Entry {
 	return scanEntries(rows)
 }
 
-func (q *PgQueue) Current() *Entry {
-	entries := q.Entries()
-	if len(entries) == 0 {
-		return nil
-	}
-	return &entries[0]
-}
-
-func (q *PgQueue) Next() *Entry {
-	entries := q.Entries()
-	if len(entries) < 2 {
-		return nil
-	}
-	return &entries[1]
-}
-
 func (q *PgQueue) SignupsOpen() bool {
 	var value string
 	err := q.db.QueryRow(`SELECT value FROM settings WHERE key = 'signups_open'`).Scan(&value)

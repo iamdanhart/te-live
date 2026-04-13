@@ -31,6 +31,4 @@ type Queue interface {
 	AddSongToFirst(song catalog.Song)
 	MoveCurrentToBottom()
 	RemoveCurrent()
-	Current() *Entry
-	Next() *Entry
 }

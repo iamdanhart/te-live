@@ -46,25 +46,35 @@ func handleHealth(w http.ResponseWriter, r *http.Request) {
 	slog.Info("ok")
 }
 
-func handleQueueStatus(w http.ResponseWriter, r *http.Request, q queue.Queue) {
-	data := struct {
+func queueStatusData(q queue.Queue) struct {
+	Current     *queue.Entry
+	Next        *queue.Entry
+	SignupsOpen bool
+} {
+	entries := q.Entries()
+	var current, next *queue.Entry
+	if len(entries) > 0 {
+		current = &entries[0]
+	}
+	if len(entries) > 1 {
+		next = &entries[1]
+	}
+	return struct {
 		Current     *queue.Entry
 		Next        *queue.Entry
 		SignupsOpen bool
-	}{q.Current(), q.Next(), q.SignupsOpen()}
-	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "index_queue.html", data); err != nil {
+	}{current, next, q.SignupsOpen()}
+}
+
+func handleQueueStatus(w http.ResponseWriter, r *http.Request, q queue.Queue) {
+	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "index_queue.html", queueStatusData(q)); err != nil {
 		slog.Error("template error", "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}
 }
 
 func handleIndex(w http.ResponseWriter, r *http.Request, q queue.Queue) {
-	data := struct {
-		Current     *queue.Entry
-		Next        *queue.Entry
-		SignupsOpen bool
-	}{q.Current(), q.Next(), q.SignupsOpen()}
-	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "index.html", data); err != nil {
+	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "index.html", queueStatusData(q)); err != nil {
 		slog.Error("template error", "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}
