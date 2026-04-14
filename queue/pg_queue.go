@@ -195,6 +195,20 @@ func (q *PgQueue) AddSongToFirst(song catalog.Song) {
 	}
 }
 
+func (q *PgQueue) HasName(name string) bool {
+	var exists bool
+	err := q.db.QueryRow(`
+		SELECT EXISTS(
+			SELECT 1 FROM signups
+			WHERE LOWER(name) = LOWER($1) AND `+todayQueueEntries+`
+		)`, name).Scan(&exists)
+	if err != nil {
+		slog.Error("HasName query", "err", err)
+		return false
+	}
+	return exists
+}
+
 func (q *PgQueue) MoveEntry(id, afterID int) {
 	rows, err := q.db.Query(`
 		SELECT id, position FROM signups

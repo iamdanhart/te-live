@@ -32,4 +32,5 @@ type Queue interface {
 	MoveCurrentToBottom()
 	RemoveCurrent()
 	MoveEntry(id, afterID int)
+	HasName(name string) bool
 }

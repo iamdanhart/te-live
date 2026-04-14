@@ -165,6 +165,12 @@
         }
         #status-modal button:hover { background: #fcd34d; }
 
+        .name-warning {
+            color: #f87171;
+            font-size: 0.85rem;
+            margin: 4px 0 0 0;
+        }
+
 @media (max-width: 600px) {
             #submit-btn {
                 position: fixed;
@@ -181,7 +187,12 @@
 <form method="post" hx-post="/signup" hx-target="#status">
     <div id="name-bar">
         <label for="name">Your name</label>
-        <input id="name" name="name" type="text" placeholder="Enter your name">
+        <input id="name" name="name" type="text" placeholder="Enter your name"
+            hx-get="/signup/check-name"
+            hx-trigger="input changed delay:400ms"
+            hx-target="#name-warning"
+            hx-include="this">
+        <div id="name-warning"></div>
     </div>
 
     <input id="search" type="text" placeholder="Search songs or artists..." aria-label="Search songs or artists">
@@ -262,7 +273,8 @@
 
     let signupSucceeded = false;
 
-    document.body.addEventListener('htmx:afterSwap', function() {
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        if (evt.detail.target.id !== 'status') return;
         signupSucceeded = true;
         const modal = document.getElementById('status-modal');
         if (!modal.open) modal.showModal();

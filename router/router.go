@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/iamdanhart/te-live/catalog"
@@ -29,6 +30,14 @@ func NewRouter(cfg config.Props) *http.ServeMux {
 	})
 	mux.HandleFunc("GET /signup", func(w http.ResponseWriter, r *http.Request) {
 		handleSignupPage(w, r)
+	})
+	mux.HandleFunc("GET /signup/check-name", func(w http.ResponseWriter, r *http.Request) {
+		name := strings.TrimSpace(r.URL.Query().Get("name"))
+		if name != "" && q.HasName(name) {
+			if err := grab_templates.GetTemplates().ExecuteTemplate(w, "name_warning.html", nil); err != nil {
+				slog.Error("template error", "err", err)
+			}
+		}
 	})
 	mux.Handle("POST /signup", rl.Limit(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		handleSignup(w, r, q)
