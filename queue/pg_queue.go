@@ -227,6 +227,33 @@ func (q *PgQueue) HasName(name string) bool {
 	return exists
 }
 
+type positionRow struct {
+	id  int
+	pos float64
+}
+
+// computeNewPosition returns the position value that places the moved entry
+// after the entry with afterID. afterID=0 means move to front; this relies on
+// Postgres SERIAL IDs starting at 1, so 0 is never a valid entry ID.
+// Returns false if afterID is non-zero and not found in entries.
+func computeNewPosition(entries []positionRow, afterID int) (float64, bool) {
+	if afterID == 0 {
+		if len(entries) == 0 {
+			return 1, true
+		}
+		return entries[0].pos - 1, true
+	}
+	for i, e := range entries {
+		if e.id == afterID {
+			if i == len(entries)-1 {
+				return e.pos + 1, true
+			}
+			return (e.pos + entries[i+1].pos) / 2, true
+		}
+	}
+	return 0, false
+}
+
 func (q *PgQueue) MoveEntry(id, afterID int) {
 	rows, err := q.db.Query(`
 		SELECT id, position FROM signups
@@ -238,13 +265,9 @@ func (q *PgQueue) MoveEntry(id, afterID int) {
 	}
 	defer rows.Close()
 
-	type row struct {
-		id  int
-		pos float64
-	}
-	var entries []row
+	var entries []positionRow
 	for rows.Next() {
-		var r row
+		var r positionRow
 		if err := rows.Scan(&r.id, &r.pos); err != nil {
 			slog.Error("MoveEntry scan", "err", err)
 			return
@@ -252,30 +275,10 @@ func (q *PgQueue) MoveEntry(id, afterID int) {
 		entries = append(entries, r)
 	}
 
-	var newPos float64
-	if afterID == 0 {
-		if len(entries) == 0 {
-			newPos = 1
-		} else {
-			newPos = entries[0].pos - 1
-		}
-	} else {
-		afterIdx := -1
-		for i, e := range entries {
-			if e.id == afterID {
-				afterIdx = i
-				break
-			}
-		}
-		if afterIdx == -1 {
-			slog.Error("MoveEntry afterID not found", "afterID", afterID)
-			return
-		}
-		if afterIdx == len(entries)-1 {
-			newPos = entries[afterIdx].pos + 1
-		} else {
-			newPos = (entries[afterIdx].pos + entries[afterIdx+1].pos) / 2
-		}
+	newPos, ok := computeNewPosition(entries, afterID)
+	if !ok {
+		slog.Error("MoveEntry afterID not found", "afterID", afterID)
+		return
 	}
 
 	if _, err := q.db.Exec(`UPDATE signups SET position = $1 WHERE id = $2`, newPos, id); err != nil {
