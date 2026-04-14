@@ -22,8 +22,7 @@
                 {{if eq $i 0}}
                 <form hx-post="/host/performed" hx-target="#performed-list" hx-swap="innerHTML" style="display:inline">
                     <input type="hidden" name="singer" value="{{$e.Name}}">
-                    <input type="hidden" name="title" value="{{.Song.Title}}">
-                    <input type="hidden" name="artist" value="{{.Song.Artist}}">
+                    <input type="hidden" name="song_id" value="{{.Song.ID}}">
                     <button type="submit" class="performed-btn">&#10003;</button>
                 </form>
                 {{end}}

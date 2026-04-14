@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/iamdanhart/te-live/catalog"
 	"github.com/iamdanhart/te-live/config"
 	"github.com/iamdanhart/te-live/grab_templates"
 	"github.com/iamdanhart/te-live/middleware"
@@ -39,8 +38,12 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue) {
 	}))
 
 	mux.Handle("POST /host/performed", auth(func(w http.ResponseWriter, r *http.Request) {
-		song := catalog.Song{Title: r.FormValue("title"), Artist: r.FormValue("artist")}
-		q.CompleteCurrentSong(r.FormValue("singer"), song)
+		songID, err := strconv.Atoi(r.FormValue("song_id"))
+		if err != nil {
+			http.Error(w, "invalid song_id", http.StatusBadRequest)
+			return
+		}
+		q.CompleteCurrentSong(r.FormValue("singer"), songID)
 		q.MoveCurrentToBottom()
 		tmpl := grab_templates.GetTemplates()
 		if err := tmpl.ExecuteTemplate(w, "host_performed.html", struct{ Performed []queue.PerformedSong }{q.Performed()}); err != nil {
@@ -54,10 +57,12 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue) {
 	}))
 
 	mux.Handle("POST /host/add-song", auth(func(w http.ResponseWriter, r *http.Request) {
-		q.AddSongToFirst(catalog.Song{
-			Title:  r.FormValue("title"),
-			Artist: r.FormValue("artist"),
-		})
+		songID, err := strconv.Atoi(r.FormValue("song_id"))
+		if err != nil {
+			http.Error(w, "invalid song_id", http.StatusBadRequest)
+			return
+		}
+		q.AddSongToFirst(songID)
 		data := struct{ Entries []queue.Entry }{q.Entries()}
 		if err := grab_templates.GetTemplates().ExecuteTemplate(w, "host_queue.html", data); err != nil {
 			slog.Error("template error", "err", err)

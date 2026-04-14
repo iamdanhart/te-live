@@ -503,7 +503,7 @@
         htmx.ajax('POST', '/host/add-song', {
             target: '#queue-list',
             swap: 'innerHTML',
-            values: {title: song.title, artist: song.artist}
+            values: {song_id: song.id}
         });
         document.getElementById('add-song-picker').style.display = 'none';
         document.getElementById('add-song-search').value = '';

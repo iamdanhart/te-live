@@ -3,6 +3,7 @@ package catalog
 import (
 	_ "embed"
 	"encoding/json"
+	"fmt"
 )
 
 //go:embed catalog.json
@@ -33,6 +34,18 @@ func buildIDIndex() map[int]Song {
 func FindByID(id int) (Song, bool) {
 	s, ok := byID[id]
 	return s, ok
+}
+
+func FindByIDs(ids []int) ([]Song, error) {
+	songs := make([]Song, len(ids))
+	for i, id := range ids {
+		s, ok := byID[id]
+		if !ok {
+			return nil, fmt.Errorf("song not found: %d", id)
+		}
+		songs[i] = s
+	}
+	return songs, nil
 }
 
 func mustParse() Catalog {

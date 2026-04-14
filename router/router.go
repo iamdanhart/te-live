@@ -98,7 +98,7 @@ func handleSignupPage(w http.ResponseWriter, r *http.Request) {
 
 func handleSignup(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 	name := r.FormValue("name")
-	var songs []catalog.Song
+	var songIDs []int
 	for _, s := range r.Form["song"] {
 		var id int
 		if _, err := fmt.Sscan(s, &id); err != nil {
@@ -106,20 +106,19 @@ func handleSignup(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 			http.Error(w, "invalid song id", http.StatusBadRequest)
 			return
 		}
-		song, ok := catalog.FindByID(id)
-		if !ok {
-			slog.Error("song not found", "id", id)
-			http.Error(w, "song not found", http.StatusBadRequest)
-			return
-		}
-		songs = append(songs, song)
+		songIDs = append(songIDs, id)
 	}
-	if err := q.Add(name, songs); err != nil {
+	if _, err := catalog.FindByIDs(songIDs); err != nil {
+		slog.Error("song not found", "err", err)
+		http.Error(w, "song not found", http.StatusBadRequest)
+		return
+	}
+	if err := q.Add(name, songIDs); err != nil {
 		slog.Error("failed to add signup", "name", name, "err", err)
 		http.Error(w, "failed to save signup", http.StatusInternalServerError)
 		return
 	}
-	slog.Info("signup", "name", name, "songs", songs)
+	slog.Info("signup", "name", name, "songIDs", songIDs)
 	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "signup_success.html", name); err != nil {
 		slog.Error("template error", "err", err)
 	}

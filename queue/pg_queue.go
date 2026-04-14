@@ -71,7 +71,7 @@ func (q *PgQueue) ToggleSignups() bool {
 	return value == "true"
 }
 
-func (q *PgQueue) Add(name string, songs []catalog.Song) error {
+func (q *PgQueue) Add(name string, songIDs []int) error {
 	tx, err := q.db.Begin()
 	if err != nil {
 		return err
@@ -87,11 +87,11 @@ func (q *PgQueue) Add(name string, songs []catalog.Song) error {
 		return err
 	}
 
-	for i, song := range songs {
+	for i, songID := range songIDs {
 		_, err = tx.Exec(`
 			INSERT INTO entry_songs (entry_id, song_id, sort_order)
-			VALUES ($1, (SELECT id FROM songs WHERE title = $2 AND artist = $3), $4)`,
-			entryID, song.Title, song.Artist, i)
+			VALUES ($1, $2, $3)`,
+			entryID, songID, i)
 		if err != nil {
 			return err
 		}
@@ -117,7 +117,7 @@ func (q *PgQueue) RemoveCurrent() {
 	}
 }
 
-func (q *PgQueue) CompleteCurrentSong(singer string, song catalog.Song) {
+func (q *PgQueue) CompleteCurrentSong(singer string, songID int) {
 	tx, err := q.db.Begin()
 	if err != nil {
 		slog.Error("CompleteCurrentSong begin tx", "err", err)
@@ -128,8 +128,8 @@ func (q *PgQueue) CompleteCurrentSong(singer string, song catalog.Song) {
 	_, err = tx.Exec(`
 		UPDATE entry_songs SET performed = true
 		WHERE entry_id = `+firstTodayID+`
-		  AND song_id = (SELECT id FROM songs WHERE title = $1 AND artist = $2)`,
-		song.Title, song.Artist)
+		  AND song_id = $1`,
+		songID)
 	if err != nil {
 		slog.Error("CompleteCurrentSong mark performed", "err", err)
 		return
@@ -137,8 +137,8 @@ func (q *PgQueue) CompleteCurrentSong(singer string, song catalog.Song) {
 
 	_, err = tx.Exec(`
 		INSERT INTO performed_songs (singer, song_id)
-		VALUES ($1, (SELECT id FROM songs WHERE title = $2 AND artist = $3))`,
-		singer, song.Title, song.Artist)
+		VALUES ($1, $2)`,
+		singer, songID)
 	if err != nil {
 		slog.Error("CompleteCurrentSong insert performed_songs", "err", err)
 		return
@@ -182,14 +182,14 @@ func (q *PgQueue) Performed() []PerformedSong {
 	return result
 }
 
-func (q *PgQueue) AddSongToFirst(song catalog.Song) {
+func (q *PgQueue) AddSongToFirst(songID int) {
 	_, err := q.db.Exec(`
 		INSERT INTO entry_songs (entry_id, song_id, sort_order)
 		VALUES (
 			`+firstTodayID+`,
-			(SELECT id FROM songs WHERE title = $1 AND artist = $2),
+			$1,
 			COALESCE((SELECT MAX(sort_order) FROM entry_songs WHERE entry_id = `+firstTodayID+`), 0) + 1
-		)`, song.Title, song.Artist)
+		)`, songID)
 	if err != nil {
 		slog.Error("AddSongToFirst", "err", err)
 	}

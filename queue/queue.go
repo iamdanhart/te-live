@@ -25,10 +25,10 @@ type Queue interface {
 	Entries() []Entry
 	SignupsOpen() bool
 	ToggleSignups() bool
-	Add(name string, songs []catalog.Song) error
-	CompleteCurrentSong(singer string, song catalog.Song)
+	Add(name string, songIDs []int) error
+	CompleteCurrentSong(singer string, songID int)
 	Performed() []PerformedSong
-	AddSongToFirst(song catalog.Song)
+	AddSongToFirst(songID int)
 	MoveCurrentToBottom()
 	RemoveCurrent()
 	MoveEntry(id, afterID int)
