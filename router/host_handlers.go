@@ -49,7 +49,7 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue) {
 		q.CompleteCurrentSong(r.FormValue("singer"), songID)
 		q.MoveCurrentToBottom()
 		tmpl := grab_templates.GetTemplates()
-		if err := tmpl.ExecuteTemplate(w, "host_performed.html", struct{ Performed []queue.PerformedSong }{q.Performed()}); err != nil {
+		if err := tmpl.ExecuteTemplate(w, "host_performed.html", q.Performed()); err != nil {
 			slog.Error("template error", "err", err)
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 			return
