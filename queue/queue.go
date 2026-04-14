@@ -23,6 +23,7 @@ type PerformedSong struct {
 
 type Queue interface {
 	Entries() []Entry
+	Songs() []catalog.Song
 	SignupsOpen() bool
 	ToggleSignups() bool
 	Add(name string, songIDs []int) error

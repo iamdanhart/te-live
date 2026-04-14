@@ -1,6 +1,7 @@
 package router
 
 import (
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -29,7 +30,7 @@ func NewRouter(cfg config.Props) *http.ServeMux {
 		handleIndex(w, r, q)
 	})
 	mux.HandleFunc("GET /signup", func(w http.ResponseWriter, r *http.Request) {
-		handleSignupPage(w, r)
+		handleSignupPage(w, r, q)
 	})
 	mux.HandleFunc("GET /signup/check-name", func(w http.ResponseWriter, r *http.Request) {
 		name := strings.TrimSpace(r.URL.Query().Get("name"))
@@ -46,7 +47,9 @@ func NewRouter(cfg config.Props) *http.ServeMux {
 		handleQueueStatus(w, r, q)
 	})
 	registerHostRoutes(mux, cfg, q)
-	mux.HandleFunc("GET /catalog", handleCatalog)
+	mux.HandleFunc("GET /catalog", func(w http.ResponseWriter, r *http.Request) {
+		handleCatalog(w, r, q)
+	})
 	mux.Handle("GET /static/", staticHandler())
 	return mux
 }
@@ -89,8 +92,9 @@ func handleIndex(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 	}
 }
 
-func handleSignupPage(w http.ResponseWriter, r *http.Request) {
-	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "signup.html", catalog.FullCatalog); err != nil {
+func handleSignupPage(w http.ResponseWriter, r *http.Request, q queue.Queue) {
+	data := struct{ Songs []catalog.Song }{q.Songs()}
+	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "signup.html", data); err != nil {
 		slog.Error("template error", "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}
@@ -108,11 +112,6 @@ func handleSignup(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 		}
 		songIDs = append(songIDs, id)
 	}
-	if _, err := catalog.FindByIDs(songIDs); err != nil {
-		slog.Error("song not found", "err", err)
-		http.Error(w, "song not found", http.StatusBadRequest)
-		return
-	}
 	if err := q.Add(name, songIDs); err != nil {
 		slog.Error("failed to add signup", "name", name, "err", err)
 		http.Error(w, "failed to save signup", http.StatusInternalServerError)
@@ -124,9 +123,11 @@ func handleSignup(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 	}
 }
 
-func handleCatalog(w http.ResponseWriter, r *http.Request) {
+func handleCatalog(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 	w.Header().Set("Content-Type", "application/json")
-	if _, err := w.Write(catalog.JSONBytes); err != nil {
-		slog.Error("write error", "err", err)
+	if err := json.NewEncoder(w).Encode(struct {
+		Songs []catalog.Song `json:"songs"`
+	}{q.Songs()}); err != nil {
+		slog.Error("catalog encode error", "err", err)
 	}
 }

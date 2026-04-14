@@ -31,6 +31,25 @@ func NewPgQueue(dsn string) (*PgQueue, error) {
 	return &PgQueue{db: db}, nil
 }
 
+func (q *PgQueue) Songs() []catalog.Song {
+	rows, err := q.db.Query(`SELECT id, title, artist, COALESCE(tab_url, '') FROM songs ORDER BY title ASC`)
+	if err != nil {
+		slog.Error("Songs query", "err", err)
+		return nil
+	}
+	defer rows.Close()
+	var songs []catalog.Song
+	for rows.Next() {
+		var s catalog.Song
+		if err := rows.Scan(&s.ID, &s.Title, &s.Artist, &s.TabUrl); err != nil {
+			slog.Error("Songs scan", "err", err)
+			return nil
+		}
+		songs = append(songs, s)
+	}
+	return songs
+}
+
 func (q *PgQueue) Entries() []Entry {
 	rows, err := q.db.Query(`
 		SELECT qe.id, qe.name, s.id, s.title, s.artist, s.tab_url, es.performed
