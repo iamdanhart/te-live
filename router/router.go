@@ -120,7 +120,9 @@ func handleSignup(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 		return
 	}
 	slog.Info("signup", "name", name, "songs", songs)
-	fmt.Fprintf(w, `<p>You're on the list, %s! See you up there.</p>`, name)
+	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "signup_success.html", name); err != nil {
+		slog.Error("template error", "err", err)
+	}
 }
 
 func handleCatalog(w http.ResponseWriter, r *http.Request) {
