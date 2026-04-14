@@ -365,7 +365,7 @@
             {{if .SignupsOpen}}Close Signups{{else}}Open Signups{{end}}
         </button>
         <div id="queue-list" hx-get="/host/queue" hx-trigger="every 3s" hx-swap="innerHTML">
-            {{template "host_queue.html" .}}
+            {{template "host_queue.html" .Entries}}
         </div>
     </div>
 </div>

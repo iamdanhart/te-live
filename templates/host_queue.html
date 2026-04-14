@@ -1,6 +1,6 @@
-<h1>Queue <span class="queue-count">{{len .Entries}}</span></h1>
-{{if .Entries}}
-    {{range $i, $e := .Entries}}
+<h1>Queue <span class="queue-count">{{len .}}</span></h1>
+{{if .}}
+    {{range $i, $e := .}}
     <div class="entry" draggable="true" data-id="{{$e.ID}}">
         <div class="position">
             {{if eq $i 0}}Now Singing{{else if eq $i 1}}On Deck{{else}}Up Next{{end}}
