@@ -18,7 +18,7 @@ run-prod:
 	-DATABASE_URL=$(DB_URL) ENV=production ENFORCE_SIGNUP_LIMIT=1 ENFORCE_ADMIN_AUTH=1 go run .
 
 build:
-	go build -tags production -o te-live .
+	CGO_ENABLED=0 go build -tags production -o te-live .
 
 db-up:
 	docker compose up -d db
