@@ -1,10 +1,16 @@
 package queue
 
-import "github.com/iamdanhart/te-live/catalog"
+// Song is a single song in the catalog.
+type Song struct {
+	ID     int    `json:"id"`
+	Title  string `json:"title"`
+	Artist string `json:"artist"`
+	TabUrl string `json:"tabUrl,omitempty"`
+}
 
 // SongEntry pairs a song with a flag indicating whether it has been performed.
 type SongEntry struct {
-	Song      catalog.Song
+	Song      Song
 	Performed bool
 }
 
@@ -18,12 +24,12 @@ type Entry struct {
 // PerformedSong records a song that has been sung, along with the singer's name.
 type PerformedSong struct {
 	Singer string
-	Song   catalog.Song
+	Song   Song
 }
 
 type Queue interface {
 	Entries() []Entry
-	Songs() []catalog.Song
+	Songs() []Song
 	SignupsOpen() bool
 	ToggleSignups() bool
 	Add(name string, songIDs []int) error

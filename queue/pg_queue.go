@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"log/slog"
 
-	"github.com/iamdanhart/te-live/catalog"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -31,16 +30,16 @@ func NewPgQueue(dsn string) (*PgQueue, error) {
 	return &PgQueue{db: db}, nil
 }
 
-func (q *PgQueue) Songs() []catalog.Song {
+func (q *PgQueue) Songs() []Song {
 	rows, err := q.db.Query(`SELECT id, title, artist, COALESCE(tab_url, '') FROM songs ORDER BY title ASC`)
 	if err != nil {
 		slog.Error("Songs query", "err", err)
 		return nil
 	}
 	defer rows.Close()
-	var songs []catalog.Song
+	var songs []Song
 	for rows.Next() {
-		var s catalog.Song
+		var s Song
 		if err := rows.Scan(&s.ID, &s.Title, &s.Artist, &s.TabUrl); err != nil {
 			slog.Error("Songs scan", "err", err)
 			return nil
@@ -310,7 +309,7 @@ func scanEntries(rows *sql.Rows) []Entry {
 			entryIndex[entryID] = idx
 		}
 		entries[idx].Songs = append(entries[idx].Songs, SongEntry{
-			Song:      catalog.Song{ID: songID, Title: title, Artist: artist, TabUrl: tabUrl},
+			Song:      Song{ID: songID, Title: title, Artist: artist, TabUrl: tabUrl},
 			Performed: performed,
 		})
 	}

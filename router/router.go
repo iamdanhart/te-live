@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/iamdanhart/te-live/catalog"
 	"github.com/iamdanhart/te-live/config"
 	"github.com/iamdanhart/te-live/grab_templates"
 	"github.com/iamdanhart/te-live/middleware"
@@ -93,7 +92,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 }
 
 func handleSignupPage(w http.ResponseWriter, r *http.Request, q queue.Queue) {
-	data := struct{ Songs []catalog.Song }{q.Songs()}
+	data := struct{ Songs []queue.Song }{q.Songs()}
 	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "signup.html", data); err != nil {
 		slog.Error("template error", "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
@@ -126,7 +125,7 @@ func handleSignup(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 func handleCatalog(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(struct {
-		Songs []catalog.Song `json:"songs"`
+		Songs []queue.Song `json:"songs"`
 	}{q.Songs()}); err != nil {
 		slog.Error("catalog encode error", "err", err)
 	}
