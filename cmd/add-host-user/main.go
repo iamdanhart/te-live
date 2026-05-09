@@ -5,9 +5,8 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
-	"strings"
 
+	"github.com/iamdanhart/te-live/config"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -21,16 +20,8 @@ func main() {
 		log.Fatal("both -label and -passcode are required")
 	}
 
-	dbURL := os.Getenv("DATABASE_URL")
-	if schema := os.Getenv("DB_SCHEMA"); schema != "" {
-		if strings.Contains(dbURL, "?") {
-			dbURL += "&search_path=" + schema
-		} else {
-			dbURL += "?search_path=" + schema
-		}
-	}
-
-	db, err := sql.Open("pgx", dbURL)
+	cfg := config.Load()
+	db, err := sql.Open("pgx", cfg.DatabaseURL)
 	if err != nil {
 		log.Fatalf("open db: %v", err)
 	}

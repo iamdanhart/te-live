@@ -15,7 +15,7 @@ import (
 	"github.com/iamdanhart/te-live/queue"
 )
 
-func NewRouter(cfg config.Props) *http.ServeMux {
+func NewRouter(cfg config.Props) http.Handler {
 	rl := middleware.NewRateLimiter(2*time.Minute, cfg.EnforceSignupLimit, cfg.Env == "production")
 	q, err := queue.NewPgQueue(cfg.DatabaseURL)
 	if err != nil {
@@ -50,11 +50,11 @@ func NewRouter(cfg config.Props) *http.ServeMux {
 		handleCatalog(w, r, q)
 	})
 	mux.Handle("GET /static/", staticHandler())
-	return mux
+	return middleware.RequestLogger([]string{"/health", "/queue-status", "/host/queue"}, mux)
 }
 
 func handleHealth(w http.ResponseWriter, r *http.Request) {
-	slog.Info("ok")
+	// Implicit 200 signals healthy to Fly. No DB ping — a DB blip shouldn't trigger a machine restart.
 }
 
 func queueStatusData(q queue.Queue) struct {
@@ -122,7 +122,7 @@ func handleSignup(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 		http.Error(w, "failed to save signup", http.StatusInternalServerError)
 		return
 	}
-	slog.Info("signup", "name", name, "songIDs", songIDs)
+	slog.Info("signup", "name", name, "songs", len(songIDs))
 	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "signup_success.html", name); err != nil {
 		slog.Error("template error", "err", err)
 	}
