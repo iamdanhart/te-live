@@ -40,4 +40,5 @@ type Queue interface {
 	RemoveCurrent()
 	MoveEntry(id, afterID int)
 	HasName(name string) bool
+	AuthenticateHost(passcode string) bool
 }

@@ -5,6 +5,7 @@ import (
 	"log/slog"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // todayFilter is appended to WHERE clauses on signups and performed_songs
@@ -323,4 +324,24 @@ func scanEntries(rows *sql.Rows) []Entry {
 		})
 	}
 	return entries
+}
+
+func (q *PgQueue) AuthenticateHost(passcode string) bool {
+	rows, err := q.db.Query(`SELECT passcode_hash FROM host_users WHERE active = TRUE`)
+	if err != nil {
+		slog.Error("AuthenticateHost query", "err", err)
+		return false
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var hash string
+		if err := rows.Scan(&hash); err != nil {
+			slog.Error("AuthenticateHost scan", "err", err)
+			continue
+		}
+		if bcrypt.CompareHashAndPassword([]byte(hash), []byte(passcode)) == nil {
+			return true
+		}
+	}
+	return false
 }

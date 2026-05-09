@@ -21,7 +21,7 @@ func renderQueue(w http.ResponseWriter, q queue.Queue) {
 
 func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue) {
 	auth := func(h http.HandlerFunc) http.Handler {
-		return middleware.AdminAuth(cfg.EnforceAdminAuth, h)
+		return middleware.AdminAuth(cfg.EnforceAdminAuth, q.AuthenticateHost, h)
 	}
 
 	mux.Handle("GET /host", auth(func(w http.ResponseWriter, r *http.Request) {

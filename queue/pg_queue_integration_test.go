@@ -13,6 +13,7 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	tcpostgres "github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var testDSN string
@@ -32,6 +33,7 @@ func TestMain(m *testing.M) {
 			filepath.Join(changesDir, "001-initial-schema.sql"),
 			filepath.Join(changesDir, "002-seed-songs.sql"),
 			filepath.Join(changesDir, "003-settings.sql"),
+			filepath.Join(changesDir, "004-host-users.sql"),
 		),
 		testcontainers.WithWaitStrategy(
 			wait.ForLog("database system is ready to accept connections").WithOccurrence(2),
@@ -59,6 +61,43 @@ func openTestQueue(t *testing.T) *PgQueue {
 	q, err := NewPgQueue(testDSN)
 	require.NoError(t, err)
 	return q
+}
+
+func insertHostUser(t *testing.T, q *PgQueue, label, passcode string, active bool) int {
+	t.Helper()
+	hash, err := bcrypt.GenerateFromPassword([]byte(passcode), 12)
+	require.NoError(t, err)
+	var id int
+	err = q.db.QueryRow(
+		`INSERT INTO host_users (label, passcode_hash, active) VALUES ($1, $2, $3) RETURNING id`,
+		label, string(hash), active,
+	).Scan(&id)
+	require.NoError(t, err)
+	return id
+}
+
+func TestAuthenticateHost_CorrectPasscode(t *testing.T) {
+	q := openTestQueue(t)
+	id := insertHostUser(t, q, "dan", "correct-code", true)
+	t.Cleanup(func() { q.db.Exec(`DELETE FROM host_users WHERE id = $1`, id) })
+
+	assert.True(t, q.AuthenticateHost("correct-code"))
+}
+
+func TestAuthenticateHost_WrongPasscode(t *testing.T) {
+	q := openTestQueue(t)
+	id := insertHostUser(t, q, "dan", "correct-code", true)
+	t.Cleanup(func() { q.db.Exec(`DELETE FROM host_users WHERE id = $1`, id) })
+
+	assert.False(t, q.AuthenticateHost("wrong-code"))
+}
+
+func TestAuthenticateHost_InactiveUser(t *testing.T) {
+	q := openTestQueue(t)
+	id := insertHostUser(t, q, "dan", "correct-code", false)
+	t.Cleanup(func() { q.db.Exec(`DELETE FROM host_users WHERE id = $1`, id) })
+
+	assert.False(t, q.AuthenticateHost("correct-code"))
 }
 
 func TestToggleSignups_OpenClearsOldSignups(t *testing.T) {

@@ -26,6 +26,13 @@ db-up:
 db-migrate:
     docker compose run --rm --build liquibase
 
+add-host-user label passcode:
+    @DATABASE_URL={{db_url}} DB_SCHEMA={{db_schema}} go run ./cmd/add-host-user -label={{label}} -passcode={{passcode}}
+
+add-host-user-prod label passcode:
+    @source .env && DATABASE_URL=$MPG_URL DB_SCHEMA=$MPG_SCHEMA go run ./cmd/add-host-user -label={{label}} -passcode={{passcode}}
+
+# For a full prod reinit: drop and recreate the telive database in the Fly dashboard first, then run this.
 db-migrate-prod:
     source .env && docker compose run --rm --build liquibase \
       --url=$MPG_URL --username=$MPG_USER --password=$MPG_PASS \

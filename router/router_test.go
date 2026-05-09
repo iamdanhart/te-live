@@ -25,7 +25,8 @@ func (s *stubQueue) AddSongToFirst(int)         { panic("not implemented") }
 func (s *stubQueue) MoveCurrentToBottom()       { panic("not implemented") }
 func (s *stubQueue) RemoveCurrent()             { panic("not implemented") }
 func (s *stubQueue) MoveEntry(int, int)         { panic("not implemented") }
-func (s *stubQueue) HasName(string) bool        { panic("not implemented") }
+func (s *stubQueue) HasName(string) bool              { panic("not implemented") }
+func (s *stubQueue) AuthenticateHost(string) bool     { panic("not implemented") }
 
 func TestQueueStatusData_EmptyQueue(t *testing.T) {
 	q := &stubQueue{entries: nil, signupsOpen: false}
