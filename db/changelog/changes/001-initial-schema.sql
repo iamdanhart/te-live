@@ -1,5 +1,8 @@
 --liquibase formatted sql
 
+--changeset dan:0
+CREATE SCHEMA IF NOT EXISTS telive;
+
 --changeset dan:1
 CREATE TABLE songs (
     id      SERIAL PRIMARY KEY,

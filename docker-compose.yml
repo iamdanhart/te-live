@@ -20,6 +20,8 @@ services:
       --url=jdbc:postgresql://db:5432/telive
       --username=telive
       --password=telive
+      --defaultSchemaName=telive
+      --liquibaseSchemaName=public
       --changeLogFile=root.yaml
       update
 
