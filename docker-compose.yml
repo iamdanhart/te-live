@@ -22,6 +22,7 @@ services:
       --password=telive
       --defaultSchemaName=telive
       --liquibaseSchemaName=public
+      --search-path=/liquibase/changelog
       --changeLogFile=root.yaml
       update
 
