@@ -4,6 +4,10 @@
     <p class="warmup">Signups are closed!</p>
 {{end}}
 
+{{if .Count}}
+    <p class="signup-count">{{.Count}} singer{{if gt .Count 1}}s{{end}} in queue</p>
+{{end}}
+
 {{if .Current}}
     <div class="card">
         <div class="card-label">Current Singer</div>

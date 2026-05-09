@@ -61,6 +61,7 @@ func queueStatusData(q queue.Queue) struct {
 	Current     *queue.Entry
 	Next        *queue.Entry
 	SignupsOpen bool
+	Count       int
 } {
 	entries := q.Entries()
 	var current, next *queue.Entry
@@ -74,7 +75,8 @@ func queueStatusData(q queue.Queue) struct {
 		Current     *queue.Entry
 		Next        *queue.Entry
 		SignupsOpen bool
-	}{current, next, q.SignupsOpen()}
+		Count       int
+	}{current, next, q.SignupsOpen(), len(entries)}
 }
 
 func handleQueueStatus(w http.ResponseWriter, r *http.Request, q queue.Queue) {

@@ -86,6 +86,12 @@ func (q *PgQueue) ToggleSignups() bool {
 		slog.Error("ToggleSignups query", "err", err)
 		return false
 	}
+	if value == "true" {
+		_, err = q.db.Exec(`DELETE FROM signups WHERE created_at < CURRENT_DATE`)
+		if err != nil {
+			slog.Error("ToggleSignups clear old signups", "err", err)
+		}
+	}
 	return value == "true"
 }
 
