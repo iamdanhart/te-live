@@ -117,6 +117,7 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue, rl 
 
 	mux.Handle("POST /signups/toggle", authPost(func(w http.ResponseWriter, r *http.Request) {
 		open := q.ToggleSignups(r.Context())
+		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, `{"signups_open":%t}`, open)
 	}))
 }

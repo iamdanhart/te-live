@@ -154,7 +154,9 @@ func handleSignup(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
-	buf.WriteTo(w)
+	if _, err := buf.WriteTo(w); err != nil {
+		slog.Error("failed to write signup response", "err", err)
+	}
 }
 
 func handleCatalog(w http.ResponseWriter, r *http.Request, q queue.Queue) {
