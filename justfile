@@ -1,20 +1,19 @@
 db_url := env("DB_URL", "postgres://telive:telive@localhost:5432/telive")
-db_schema := env("DB_SCHEMA", "telive")
 
 run:
-    -DATABASE_URL={{db_url}} DB_SCHEMA={{db_schema}} ENFORCE_SIGNUP_LIMIT=1 ENFORCE_ADMIN_AUTH=1 go run .
+    -DATABASE_URL={{db_url}} ENFORCE_SIGNUP_LIMIT=1 ENFORCE_ADMIN_AUTH=1 go run .
 
 run-nolimit:
-    -DATABASE_URL={{db_url}} DB_SCHEMA={{db_schema}} ENFORCE_ADMIN_AUTH=1 go run .
+    -DATABASE_URL={{db_url}} ENFORCE_ADMIN_AUTH=1 go run .
 
 run-noadmin:
-    -DATABASE_URL={{db_url}} DB_SCHEMA={{db_schema}} ENFORCE_SIGNUP_LIMIT=1 go run .
+    -DATABASE_URL={{db_url}} ENFORCE_SIGNUP_LIMIT=1 go run .
 
 run-noenforce:
-    -DATABASE_URL={{db_url}} DB_SCHEMA={{db_schema}} go run .
+    -DATABASE_URL={{db_url}} go run .
 
 run-prod:
-    -DATABASE_URL={{db_url}} DB_SCHEMA={{db_schema}} ENV=production ENFORCE_SIGNUP_LIMIT=1 ENFORCE_ADMIN_AUTH=1 go run .
+    -DATABASE_URL={{db_url}} ENV=production ENFORCE_SIGNUP_LIMIT=1 ENFORCE_ADMIN_AUTH=1 go run .
 
 build:
     CGO_ENABLED=0 go test ./...
@@ -27,10 +26,10 @@ db-migrate:
     docker compose run --rm --build liquibase
 
 add-host-user label passcode:
-    @DATABASE_URL={{db_url}} DB_SCHEMA={{db_schema}} go run ./cmd/add-host-user -label={{label}} -passcode={{passcode}}
+    @DATABASE_URL={{db_url}} go run ./cmd/add-host-user -label={{label}} -passcode={{passcode}}
 
 add-host-user-prod label passcode:
-    @source .env && DATABASE_URL="postgresql://$MPG_USER:$(cat ~/telive_password)@localhost:15432/telive?sslmode=disable" go run ./cmd/add-host-user -label={{label}} -passcode={{passcode}}
+    @source .env && DATABASE_URL="postgresql://$MPG_USER:$MPG_PASS@localhost:15432/telive?sslmode=disable" go run ./cmd/add-host-user -label={{label}} -passcode={{passcode}}
 
 test-add-users:
     hurl dev_tools/add_users_to_queue.hurl
