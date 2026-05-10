@@ -113,7 +113,11 @@ func handleSignupPage(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 }
 
 func handleSignup(w http.ResponseWriter, r *http.Request, q queue.Queue) {
-	name := r.FormValue("name")
+	name := strings.TrimSpace(r.FormValue("name"))
+	if name == "" {
+		http.Error(w, "name is required", http.StatusBadRequest)
+		return
+	}
 	if len(name) > 50 {
 		http.Error(w, "name too long", http.StatusBadRequest)
 		return
@@ -127,6 +131,10 @@ func handleSignup(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 			return
 		}
 		songIDs = append(songIDs, id)
+	}
+	if len(songIDs) == 0 {
+		http.Error(w, "at least one song is required", http.StatusBadRequest)
+		return
 	}
 	if err := q.Add(name, songIDs); err != nil {
 		if errors.Is(err, queue.ErrInvalidSongID) {

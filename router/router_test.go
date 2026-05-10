@@ -32,6 +32,36 @@ func (s *stubQueue) MoveEntry(int, int)         { panic("not implemented") }
 func (s *stubQueue) HasName(string) bool              { panic("not implemented") }
 func (s *stubQueue) AuthenticateHost(string) bool     { panic("not implemented") }
 
+func TestHandleSignup_EmptyName(t *testing.T) {
+	form := url.Values{"name": {""}}
+	req := httptest.NewRequest(http.MethodPost, "/signup", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rr := httptest.NewRecorder()
+	handleSignup(rr, req, nil)
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
+	assert.Contains(t, rr.Body.String(), "name is required")
+}
+
+func TestHandleSignup_WhitespaceName(t *testing.T) {
+	form := url.Values{"name": {"   "}}
+	req := httptest.NewRequest(http.MethodPost, "/signup", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rr := httptest.NewRecorder()
+	handleSignup(rr, req, nil)
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
+	assert.Contains(t, rr.Body.String(), "name is required")
+}
+
+func TestHandleSignup_NoSongs(t *testing.T) {
+	form := url.Values{"name": {"Dan"}}
+	req := httptest.NewRequest(http.MethodPost, "/signup", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rr := httptest.NewRecorder()
+	handleSignup(rr, req, nil)
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
+	assert.Contains(t, rr.Body.String(), "at least one song is required")
+}
+
 func TestHandleSignup_NameTooLong(t *testing.T) {
 	form := url.Values{"name": {strings.Repeat("a", 51)}}
 	req := httptest.NewRequest(http.MethodPost, "/signup", strings.NewReader(form.Encode()))
