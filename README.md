@@ -99,6 +99,13 @@ DATABASE_URL=postgres://... just run
 just db-reinit   # tears down volumes, restarts, and re-runs migrations
 ```
 
+### Run tests
+
+```sh
+just test    # vet + unit tests (config, middleware, router)
+just itest   # integration tests (queue package, requires Docker)
+```
+
 ---
 
 ## Build System
@@ -236,7 +243,9 @@ A manual GitHub Actions workflow (`.github/workflows/check-htmx.yml`) runs `chec
 The app runs on [Fly.io](https://fly.io) with a Fly Managed Postgres cluster.
 
 ```sh
-just deploy        # fly deploy
+just deploy           # fly deploy
+just generate-qr      # generate docs/qr.svg from APP_URL in .env
+just db-migrate-prod  # run Liquibase migrations against production
 ```
 
 `DATABASE_URL` and the managed Postgres credentials are stored as Fly secrets and are never committed.
