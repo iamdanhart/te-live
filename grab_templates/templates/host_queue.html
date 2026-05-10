@@ -12,7 +12,7 @@
             <form hx-post="/host/skip" hx-target="#queue-list" hx-swap="innerHTML" style="display:inline">
                 <button type="submit" class="skip-btn">Skip</button>
             </form>
-            <button class="remove-btn" onclick="openRemoveDialog('{{$e.Name}}')">Remove</button>
+            <button class="remove-btn" data-name="{{$e.Name}}">Remove</button>
             {{end}}
         </div>
         <ul class="entry-songs">
@@ -30,9 +30,9 @@
             {{end}}
         </ul>
         {{if eq $i 0}}
-        <button class="add-song-btn" onclick="toggleAddSong()">+ Add Song</button>
-        <div id="add-song-picker" style="display:none">
-            <input id="add-song-search" type="text" placeholder="Search songs…" oninput="renderResults(this.value)" autocomplete="off">
+        <button class="add-song-btn">+ Add Song</button>
+        <div id="add-song-picker">
+            <input id="add-song-search" type="text" placeholder="Search songs…" autocomplete="off">
             <ul id="add-song-results"></ul>
         </div>
         {{end}}

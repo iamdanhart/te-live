@@ -86,6 +86,22 @@ document.querySelector('.dialog-confirm-btn').addEventListener('click', confirmR
 let draggedId = null;
 const queueList = document.getElementById('queue-list');
 
+queueList.addEventListener('click', function(e) {
+    if (e.target.closest('.remove-btn')) {
+        openRemoveDialog(e.target.closest('.remove-btn').dataset.name);
+        return;
+    }
+    if (e.target.closest('.add-song-btn')) {
+        toggleAddSong();
+    }
+});
+
+queueList.addEventListener('input', function(e) {
+    if (e.target.id === 'add-song-search') {
+        renderResults(e.target.value);
+    }
+});
+
 queueList.addEventListener('dragstart', function(e) {
     const entry = e.target.closest('[data-id]');
     if (!entry) return;
