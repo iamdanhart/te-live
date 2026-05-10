@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/iamdanhart/te-live/config"
 	"github.com/iamdanhart/te-live/grab_templates"
@@ -56,12 +57,22 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue, rl 
 	}))
 
 	mux.Handle("POST /host/performed", authPost(func(w http.ResponseWriter, r *http.Request) {
+		// singer is pre-populated from signups.name (validated at signup), but guard against crafted requests.
+		singer := strings.TrimSpace(r.FormValue("singer"))
+		if singer == "" {
+			http.Error(w, "singer is required", http.StatusBadRequest)
+			return
+		}
+		if len(singer) > 50 {
+			http.Error(w, "singer name too long", http.StatusBadRequest)
+			return
+		}
 		songID, err := strconv.Atoi(r.FormValue("song_id"))
 		if err != nil {
 			http.Error(w, "invalid song_id", http.StatusBadRequest)
 			return
 		}
-		if err := q.CompleteCurrentSong(r.Context(), r.FormValue("singer"), songID); err != nil {
+		if err := q.CompleteCurrentSong(r.Context(), singer, songID); err != nil {
 			http.Error(w, "failed to complete song", http.StatusInternalServerError)
 			return
 		}

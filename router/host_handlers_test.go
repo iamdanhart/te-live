@@ -44,6 +44,7 @@ type hostStub struct {
 	removeCurrentErr       error
 	addSongToFirstErr      error
 	moveEntryErr           error
+	toggleSignupsErr       error
 
 	completeCurrentSongCalled bool
 	moveCurrentToBottomCalled bool
@@ -63,7 +64,7 @@ func (s *hostStub) Add(context.Context, string, []int) error           { return 
 
 func (s *hostStub) ToggleSignups(context.Context) (bool, error) {
 	s.toggleSignupsCalled = true
-	return s.signupsOpen, nil
+	return s.signupsOpen, s.toggleSignupsErr
 }
 func (s *hostStub) CompleteCurrentSong(_ context.Context, _ string, _ int) error {
 	s.completeCurrentSongCalled = true
@@ -263,6 +264,13 @@ func TestHostToggleSignups_ReturnsFalse(t *testing.T) {
 	q := &hostStub{signupsOpen: false}
 	rr := postForm(newHostMux(q), "/signups/toggle", url.Values{})
 	assert.JSONEq(t, `{"signups_open":false}`, rr.Body.String())
+}
+
+func TestHostToggleSignups_Error(t *testing.T) {
+	q := &hostStub{toggleSignupsErr: errors.New("db error")}
+	rr := postForm(newHostMux(q), "/signups/toggle", url.Values{})
+	assert.Equal(t, http.StatusInternalServerError, rr.Code)
+	assert.True(t, q.toggleSignupsCalled)
 }
 
 // --- GET /host ---
