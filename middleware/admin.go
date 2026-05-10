@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"log/slog"
 	"net/http"
 )
 
@@ -13,6 +14,7 @@ func AdminAuth(enforce bool, check func(context.Context, string) bool, next http
 		if enforce {
 			_, pass, ok := r.BasicAuth()
 			if !ok || !check(r.Context(), pass) {
+				slog.Warn("unauthorized host auth attempt", "ip", r.RemoteAddr, "method", r.Method, "path", r.URL.Path)
 				w.Header().Set("WWW-Authenticate", `Basic realm="sign in"`)
 				http.Error(w, "unauthorized", http.StatusUnauthorized)
 				return
