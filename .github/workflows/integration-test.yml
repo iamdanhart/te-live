@@ -1,4 +1,4 @@
-name: Integration Tests
+name: CI - Integration Tests
 
 on:
   push:
@@ -14,4 +14,4 @@ jobs:
           go-version-file: go.mod
 
       - name: Integration test
-        run: go test ./queue/...
+        run: CGO_ENABLED=0 go test ./queue/...

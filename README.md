@@ -193,6 +193,9 @@ just flyproxy      # open a local proxy to the prod DB on localhost:15432
 - **Real favicon** — A placeholder emoji favicon is in use. A proper `.ico` file (mic icon, potentially commissioned) should be added to `router/static/` and the skip list in `router.go` updated.
 - **OG image** — An `og:image` meta tag is stubbed out but commented in `base.html`. Needs an actual image asset.
 
+### Data
+- **Tab URLs** — `tab_url` is only populated for Bohemian Rhapsody (PoC). Remaining songs need their URLs updated directly in the DB.
+
 ### Nice to Have
 - **Song catalog management** — Songs are currently managed via direct SQL. A host-only UI for adding and removing songs would make setlist changes self-serve without needing DB access.
 - **Uptime monitoring** — Fly has no built-in alerting. Point a free UptimeRobot monitor at `/health` to get email notifications if the app goes down.

@@ -8,6 +8,13 @@ run:
 run-prod:
     -DATABASE_URL={{DATABASE_URL}} ENV=production go run .
 
+test:
+    CGO_ENABLED=0 go vet ./...
+    CGO_ENABLED=0 go test ./config/... ./middleware/... ./router/...
+
+itest:
+    CGO_ENABLED=0 go test ./queue/...
+
 build:
     CGO_ENABLED=0 go test ./...
     CGO_ENABLED=0 go build -tags production -o te-live .
@@ -26,6 +33,9 @@ add-host-user-prod label passcode:
 
 test-add-users:
     hurl dev_tools/add_users_to_queue.hurl
+
+test-toggle-signups:
+    hurl dev_tools/toggle_signups.hurl
 
 deploy:
     fly deploy
