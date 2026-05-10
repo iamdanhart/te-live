@@ -1,0 +1,24 @@
+name: Liquibase Migrate (Prod)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  migrate:
+    name: Run Liquibase migrations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Liquibase image
+        run: docker build -f Dockerfile.liquibase -t te-live-liquibase .
+      - name: Run migrations
+        run: |
+          docker run --rm te-live-liquibase \
+            --url="jdbc:postgresql://direct.82ylg01lgmmrzx19.flympg.net/telive" \
+            --username=liquibase-user \
+            --password=${{ secrets.MPG_MIGRATE_PASS }} \
+            --defaultSchemaName=telive \
+            --liquibaseSchemaName=public \
+            --search-path=/liquibase/changelog \
+            --changeLogFile=root.yaml \
+            update

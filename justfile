@@ -29,7 +29,11 @@ add-host-user label passcode:
     @DATABASE_URL={{DATABASE_URL}} go run ./cmd/add-host-user -label={{label}} -passcode={{passcode}}
 
 add-host-user-prod label passcode:
-    @source .env && DATABASE_URL="postgresql://$MPG_USER:$MPG_PASS@localhost:15432/telive?sslmode=disable" go run ./cmd/add-host-user -label={{label}} -passcode={{passcode}}
+    @source .env && fly mpg proxy $MPG_CLUSTER_ID -p 15432 & \
+    PROXY_PID=$! && \
+    sleep 2 && \
+    DATABASE_URL="postgresql://$MPG_USER:$MPG_PASS@localhost:15432/telive?sslmode=disable" go run ./cmd/add-host-user -label={{label}} -passcode={{passcode}}; \
+    kill $PROXY_PID
 
 test-add-users:
     hurl dev_tools/add_users_to_queue.hurl
@@ -40,22 +44,19 @@ test-toggle-signups:
 deploy:
     fly deploy
 
-flyproxy:
-    # Creates a local proxy to the Fly Managed Postgres cluster on localhost:15432.
-    # Run this in a separate terminal before db-migrate-prod or add-host-user-prod.
-    # MPG_CLUSTER_ID is set in .env
-    source .env && fly mpg proxy $MPG_CLUSTER_ID -p 15432
-
 # For a full prod reinit: drop and recreate the telive database in the Fly dashboard first, then run this.
-# Requires flyproxy running in another terminal.
 # Note: host.docker.internal resolves on macOS/Windows Docker Desktop only.
 # On Linux, pass --add-host=host.docker.internal:host-gateway to docker run instead.
 db-migrate-prod:
-    source .env && docker build -f Dockerfile.liquibase -t te-live-liquibase . && docker run --rm te-live-liquibase \
+    source .env && fly mpg proxy $MPG_CLUSTER_ID -p 15432 & \
+    PROXY_PID=$! && \
+    sleep 2 && \
+    docker build -f Dockerfile.liquibase -t te-live-liquibase . && docker run --rm te-live-liquibase \
       --url="jdbc:postgresql://host.docker.internal:15432/telive?sslmode=disable" \
       --username=liquibase-user --password=$MPG_MIGRATE_PASS \
       --defaultSchemaName=telive --liquibaseSchemaName=public \
-      --search-path=/liquibase/changelog --changeLogFile=root.yaml update
+      --search-path=/liquibase/changelog --changeLogFile=root.yaml update; \
+    kill $PROXY_PID
 
 db-down:
     docker compose down
