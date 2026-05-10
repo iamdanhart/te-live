@@ -2,6 +2,7 @@ package router
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -123,6 +124,10 @@ func handleSignup(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 		songIDs = append(songIDs, id)
 	}
 	if err := q.Add(name, songIDs); err != nil {
+		if errors.Is(err, queue.ErrInvalidSongID) {
+			http.Error(w, "invalid song id", http.StatusBadRequest)
+			return
+		}
 		slog.Error("failed to add signup", "name", name, "err", err)
 		http.Error(w, "failed to save signup", http.StatusInternalServerError)
 		return

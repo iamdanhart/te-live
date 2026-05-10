@@ -113,6 +113,63 @@ func insertHostUser(t *testing.T, q *PgQueue, label, passcode string, active boo
 	return id
 }
 
+func insertSong(t *testing.T, q *PgQueue, title, artist string) int {
+	t.Helper()
+	var id int
+	err := q.db.QueryRow(
+		`INSERT INTO songs (title, artist) VALUES ($1, $2) RETURNING id`,
+		title, artist,
+	).Scan(&id)
+	require.NoError(t, err)
+	return id
+}
+
+func TestAdd_InvalidSongID(t *testing.T) {
+	q := openTestQueue(t)
+
+	err := q.Add("Dan", []int{999999})
+	assert.ErrorIs(t, err, ErrInvalidSongID)
+}
+
+func TestAdd_ValidSongID(t *testing.T) {
+	q := openTestQueue(t)
+	songID := insertSong(t, q, "Test Song", "Test Artist")
+	t.Cleanup(func() {
+		q.db.Exec(`DELETE FROM songs WHERE id = $1`, songID)
+		q.db.Exec(`DELETE FROM signups WHERE name = 'Dan'`)
+	})
+
+	err := q.Add("Dan", []int{songID})
+	assert.NoError(t, err)
+}
+
+func TestAdd_TwoValidSongIDs(t *testing.T) {
+	q := openTestQueue(t)
+	song1 := insertSong(t, q, "Test Song 1", "Test Artist")
+	song2 := insertSong(t, q, "Test Song 2", "Test Artist")
+	t.Cleanup(func() {
+		q.db.Exec(`DELETE FROM songs WHERE id = ANY($1)`, []int{song1, song2})
+		q.db.Exec(`DELETE FROM signups WHERE name = 'Dan'`)
+	})
+
+	err := q.Add("Dan", []int{song1, song2})
+	assert.NoError(t, err)
+}
+
+func TestAdd_ThreeValidSongIDs(t *testing.T) {
+	q := openTestQueue(t)
+	song1 := insertSong(t, q, "Test Song 1", "Test Artist")
+	song2 := insertSong(t, q, "Test Song 2", "Test Artist")
+	song3 := insertSong(t, q, "Test Song 3", "Test Artist")
+	t.Cleanup(func() {
+		q.db.Exec(`DELETE FROM songs WHERE id = ANY($1)`, []int{song1, song2, song3})
+		q.db.Exec(`DELETE FROM signups WHERE name = 'Dan'`)
+	})
+
+	err := q.Add("Dan", []int{song1, song2, song3})
+	assert.NoError(t, err)
+}
+
 func TestAuthenticateHost_CorrectPasscode(t *testing.T) {
 	q := openTestQueue(t)
 	id := insertHostUser(t, q, "dan", "correct-code", true)

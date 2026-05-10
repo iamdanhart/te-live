@@ -2,11 +2,16 @@ package queue
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 	"log/slog"
+	"strings"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"golang.org/x/crypto/bcrypt"
 )
+
+var ErrInvalidSongID = errors.New("one or more song IDs are invalid")
 
 // todayFilter is appended to WHERE clauses on signups and performed_songs
 // to scope all queries to the current calendar day.
@@ -97,6 +102,23 @@ func (q *PgQueue) ToggleSignups() bool {
 }
 
 func (q *PgQueue) Add(name string, songIDs []int) error {
+	placeholders := make([]string, len(songIDs))
+	args := make([]any, len(songIDs))
+	for i, id := range songIDs {
+		placeholders[i] = fmt.Sprintf("$%d", i+1)
+		args[i] = id
+	}
+	var count int
+	if err := q.db.QueryRow(
+		`SELECT COUNT(*) FROM telive.songs WHERE id IN (`+strings.Join(placeholders, ",")+`)`,
+		args...,
+	).Scan(&count); err != nil {
+		return err
+	}
+	if count != len(songIDs) {
+		return ErrInvalidSongID
+	}
+
 	tx, err := q.db.Begin()
 	if err != nil {
 		return err
