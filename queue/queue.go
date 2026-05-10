@@ -1,5 +1,7 @@
 package queue
 
+import "context"
+
 // Song is a single song in the catalog.
 type Song struct {
 	ID     int    `json:"id"`
@@ -28,17 +30,17 @@ type PerformedSong struct {
 }
 
 type Queue interface {
-	Entries() []Entry
-	Songs() []Song
-	SignupsOpen() bool
-	ToggleSignups() bool
-	Add(name string, songIDs []int) error
-	CompleteCurrentSong(singer string, songID int)
-	Performed() []PerformedSong
-	AddSongToFirst(songID int)
-	MoveCurrentToBottom()
-	RemoveCurrent()
-	MoveEntry(id, afterID int)
-	HasName(name string) bool
-	AuthenticateHost(passcode string) bool
+	Entries(ctx context.Context) []Entry
+	Songs(ctx context.Context) []Song
+	SignupsOpen(ctx context.Context) bool
+	ToggleSignups(ctx context.Context) bool
+	Add(ctx context.Context, name string, songIDs []int) error
+	CompleteCurrentSong(ctx context.Context, singer string, songID int)
+	Performed(ctx context.Context) []PerformedSong
+	AddSongToFirst(ctx context.Context, songID int)
+	MoveCurrentToBottom(ctx context.Context)
+	RemoveCurrent(ctx context.Context)
+	MoveEntry(ctx context.Context, id, afterID int)
+	HasName(ctx context.Context, name string) bool
+	AuthenticateHost(ctx context.Context, passcode string) bool
 }

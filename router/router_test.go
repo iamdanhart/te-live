@@ -1,6 +1,7 @@
 package router
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -18,19 +19,19 @@ type stubQueue struct {
 	signupsOpen bool
 }
 
-func (s *stubQueue) Entries() []queue.Entry    { return s.entries }
-func (s *stubQueue) SignupsOpen() bool          { return s.signupsOpen }
-func (s *stubQueue) Songs() []queue.Song        { panic("not implemented") }
-func (s *stubQueue) ToggleSignups() bool        { panic("not implemented") }
-func (s *stubQueue) Add(string, []int) error    { panic("not implemented") }
-func (s *stubQueue) CompleteCurrentSong(string, int) { panic("not implemented") }
-func (s *stubQueue) Performed() []queue.PerformedSong { panic("not implemented") }
-func (s *stubQueue) AddSongToFirst(int)         { panic("not implemented") }
-func (s *stubQueue) MoveCurrentToBottom()       { panic("not implemented") }
-func (s *stubQueue) RemoveCurrent()             { panic("not implemented") }
-func (s *stubQueue) MoveEntry(int, int)         { panic("not implemented") }
-func (s *stubQueue) HasName(string) bool              { panic("not implemented") }
-func (s *stubQueue) AuthenticateHost(string) bool     { panic("not implemented") }
+func (s *stubQueue) Entries(context.Context) []queue.Entry    { return s.entries }
+func (s *stubQueue) SignupsOpen(context.Context) bool          { return s.signupsOpen }
+func (s *stubQueue) Songs(context.Context) []queue.Song        { panic("not implemented") }
+func (s *stubQueue) ToggleSignups(context.Context) bool        { panic("not implemented") }
+func (s *stubQueue) Add(context.Context, string, []int) error  { panic("not implemented") }
+func (s *stubQueue) CompleteCurrentSong(context.Context, string, int) { panic("not implemented") }
+func (s *stubQueue) Performed(context.Context) []queue.PerformedSong  { panic("not implemented") }
+func (s *stubQueue) AddSongToFirst(context.Context, int)              { panic("not implemented") }
+func (s *stubQueue) MoveCurrentToBottom(context.Context)              { panic("not implemented") }
+func (s *stubQueue) RemoveCurrent(context.Context)                    { panic("not implemented") }
+func (s *stubQueue) MoveEntry(context.Context, int, int)              { panic("not implemented") }
+func (s *stubQueue) HasName(context.Context, string) bool             { panic("not implemented") }
+func (s *stubQueue) AuthenticateHost(context.Context, string) bool    { panic("not implemented") }
 
 func TestHandleSignup_EmptyName(t *testing.T) {
 	form := url.Values{"name": {""}}
@@ -74,7 +75,7 @@ func TestHandleSignup_NameTooLong(t *testing.T) {
 
 func TestQueueStatusData_EmptyQueue(t *testing.T) {
 	q := &stubQueue{entries: nil, signupsOpen: false}
-	data := queueStatusData(q)
+	data := queueStatusData(context.Background(), q)
 	assert.Nil(t, data.Current)
 	assert.Nil(t, data.Next)
 	assert.False(t, data.SignupsOpen)
@@ -83,7 +84,7 @@ func TestQueueStatusData_EmptyQueue(t *testing.T) {
 func TestQueueStatusData_OneEntry(t *testing.T) {
 	entries := []queue.Entry{{ID: 1, Name: "Alice"}}
 	q := &stubQueue{entries: entries, signupsOpen: true}
-	data := queueStatusData(q)
+	data := queueStatusData(context.Background(), q)
 	assert.Equal(t, "Alice", data.Current.Name)
 	assert.Nil(t, data.Next)
 	assert.True(t, data.SignupsOpen)
@@ -92,7 +93,7 @@ func TestQueueStatusData_OneEntry(t *testing.T) {
 func TestQueueStatusData_TwoEntries(t *testing.T) {
 	entries := []queue.Entry{{ID: 1, Name: "Alice"}, {ID: 2, Name: "Bob"}}
 	q := &stubQueue{entries: entries, signupsOpen: false}
-	data := queueStatusData(q)
+	data := queueStatusData(context.Background(), q)
 	assert.Equal(t, "Alice", data.Current.Name)
 	assert.Equal(t, "Bob", data.Next.Name)
 }
@@ -104,7 +105,7 @@ func TestQueueStatusData_ManyEntries(t *testing.T) {
 		{ID: 3, Name: "Carol"},
 	}
 	q := &stubQueue{entries: entries, signupsOpen: true}
-	data := queueStatusData(q)
+	data := queueStatusData(context.Background(), q)
 	assert.Equal(t, "Alice", data.Current.Name)
 	// Next is always only the second entry, regardless of queue length
 	assert.Equal(t, "Bob", data.Next.Name)

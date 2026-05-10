@@ -12,8 +12,8 @@ import (
 	"github.com/iamdanhart/te-live/queue"
 )
 
-func renderQueue(w http.ResponseWriter, q queue.Queue) {
-	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "host_queue.html", q.Entries()); err != nil {
+func renderQueue(w http.ResponseWriter, r *http.Request, q queue.Queue) {
+	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "host_queue.html", q.Entries(r.Context())); err != nil {
 		slog.Error("template error", "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}
@@ -32,7 +32,7 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue, rl 
 			Entries     []queue.Entry
 			Performed   []queue.PerformedSong
 			SignupsOpen bool
-		}{q.Entries(), q.Performed(), q.SignupsOpen()}
+		}{q.Entries(r.Context()), q.Performed(r.Context()), q.SignupsOpen(r.Context())}
 		if err := grab_templates.GetTemplates().ExecuteTemplate(w, "host.html", data); err != nil {
 			slog.Error("template error", "err", err)
 			http.Error(w, "internal server error", http.StatusInternalServerError)
@@ -40,7 +40,7 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue, rl 
 	}))
 
 	mux.Handle("GET /host/queue", auth(func(w http.ResponseWriter, r *http.Request) {
-		renderQueue(w, q)
+		renderQueue(w, r, q)
 	}))
 
 	mux.Handle("POST /host/performed", authPost(func(w http.ResponseWriter, r *http.Request) {
@@ -49,15 +49,15 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue, rl 
 			http.Error(w, "invalid song_id", http.StatusBadRequest)
 			return
 		}
-		q.CompleteCurrentSong(r.FormValue("singer"), songID)
-		q.MoveCurrentToBottom()
+		q.CompleteCurrentSong(r.Context(), r.FormValue("singer"), songID)
+		q.MoveCurrentToBottom(r.Context())
 		tmpl := grab_templates.GetTemplates()
-		if err := tmpl.ExecuteTemplate(w, "host_performed.html", q.Performed()); err != nil {
+		if err := tmpl.ExecuteTemplate(w, "host_performed.html", q.Performed(r.Context())); err != nil {
 			slog.Error("template error", "err", err)
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 			return
 		}
-		if err := tmpl.ExecuteTemplate(w, "host_queue_oob.html", q.Entries()); err != nil {
+		if err := tmpl.ExecuteTemplate(w, "host_queue_oob.html", q.Entries(r.Context())); err != nil {
 			slog.Error("template error", "err", err)
 		}
 	}))
@@ -68,18 +68,18 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue, rl 
 			http.Error(w, "invalid song_id", http.StatusBadRequest)
 			return
 		}
-		q.AddSongToFirst(songID)
-		renderQueue(w, q)
+		q.AddSongToFirst(r.Context(), songID)
+		renderQueue(w, r, q)
 	}))
 
 	mux.Handle("POST /host/remove", authPost(func(w http.ResponseWriter, r *http.Request) {
-		q.RemoveCurrent()
-		renderQueue(w, q)
+		q.RemoveCurrent(r.Context())
+		renderQueue(w, r, q)
 	}))
 
 	mux.Handle("POST /host/skip", authPost(func(w http.ResponseWriter, r *http.Request) {
-		q.MoveCurrentToBottom()
-		renderQueue(w, q)
+		q.MoveCurrentToBottom(r.Context())
+		renderQueue(w, r, q)
 	}))
 
 	mux.Handle("POST /host/move", authPost(func(w http.ResponseWriter, r *http.Request) {
@@ -93,12 +93,12 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue, rl 
 			http.Error(w, "invalid after_id", http.StatusBadRequest)
 			return
 		}
-		q.MoveEntry(id, afterID)
-		renderQueue(w, q)
+		q.MoveEntry(r.Context(), id, afterID)
+		renderQueue(w, r, q)
 	}))
 
 	mux.Handle("POST /signups/toggle", authPost(func(w http.ResponseWriter, r *http.Request) {
-		open := q.ToggleSignups()
+		open := q.ToggleSignups(r.Context())
 		fmt.Fprintf(w, `{"signups_open":%t}`, open)
 	}))
 }

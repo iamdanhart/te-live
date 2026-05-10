@@ -2,6 +2,7 @@ package router
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -37,7 +38,7 @@ func NewRouter(cfg config.Props) http.Handler {
 	})
 	mux.HandleFunc("GET /signup/check-name", func(w http.ResponseWriter, r *http.Request) {
 		name := strings.TrimSpace(r.URL.Query().Get("name"))
-		if name != "" && q.HasName(name) {
+		if name != "" && q.HasName(r.Context(), name) {
 			if err := grab_templates.GetTemplates().ExecuteTemplate(w, "name_warning.html", nil); err != nil {
 				slog.Error("template error", "err", err)
 			}
@@ -62,13 +63,13 @@ func handleHealth(w http.ResponseWriter, r *http.Request) {
 	// Implicit 200 signals healthy to Fly. No DB ping — a DB blip shouldn't trigger a machine restart.
 }
 
-func queueStatusData(q queue.Queue) struct {
+func queueStatusData(ctx context.Context, q queue.Queue) struct {
 	Current     *queue.Entry
 	Next        *queue.Entry
 	SignupsOpen bool
 	Count       int
 } {
-	entries := q.Entries()
+	entries := q.Entries(ctx)
 	var current, next *queue.Entry
 	if len(entries) > 0 {
 		current = &entries[0]
@@ -81,11 +82,11 @@ func queueStatusData(q queue.Queue) struct {
 		Next        *queue.Entry
 		SignupsOpen bool
 		Count       int
-	}{current, next, q.SignupsOpen(), len(entries)}
+	}{current, next, q.SignupsOpen(ctx), len(entries)}
 }
 
 func handleQueueStatus(w http.ResponseWriter, r *http.Request, q queue.Queue) {
-	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "index_queue.html", queueStatusData(q)); err != nil {
+	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "index_queue.html", queueStatusData(r.Context(), q)); err != nil {
 		slog.Error("template error", "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}
@@ -99,14 +100,14 @@ func handleIndex(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 		}
 		return
 	}
-	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "index.html", queueStatusData(q)); err != nil {
+	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "index.html", queueStatusData(r.Context(), q)); err != nil {
 		slog.Error("template error", "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}
 }
 
 func handleSignupPage(w http.ResponseWriter, r *http.Request, q queue.Queue) {
-	data := struct{ Songs []queue.Song }{q.Songs()}
+	data := struct{ Songs []queue.Song }{q.Songs(r.Context())}
 	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "signup.html", data); err != nil {
 		slog.Error("template error", "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
@@ -137,7 +138,7 @@ func handleSignup(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 		http.Error(w, "at least one song is required", http.StatusBadRequest)
 		return
 	}
-	if err := q.Add(name, songIDs); err != nil {
+	if err := q.Add(r.Context(), name, songIDs); err != nil {
 		if errors.Is(err, queue.ErrInvalidSongID) {
 			http.Error(w, "invalid song id", http.StatusBadRequest)
 			return
@@ -160,7 +161,7 @@ func handleCatalog(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(struct {
 		Songs []queue.Song `json:"songs"`
-	}{q.Songs()}); err != nil {
+	}{q.Songs(r.Context())}); err != nil {
 		slog.Error("catalog encode error", "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return

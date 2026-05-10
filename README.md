@@ -230,6 +230,9 @@ just deploy        # fly deploy
 ### sqlc Migration
 - **Migrate remaining queries** — Only `Songs()` has been moved to sqlc. The remaining queries in `pg_queue.go` are candidates, though some (e.g. dynamic position subqueries, multi-step transactions) will need care. `db/schema.sql` must also be kept in sync with any new Liquibase migrations.
 
+### Code Quality
+- **`scanEntries` missing `rows.Err()` check** — `scanEntries` in `queue/pg_queue.go` is a shared helper that returns `[]Entry` with no error return, so it can't propagate a mid-stream query failure without a signature change. Fixing it properly requires either adding an error return or switching to a different pattern. Deferred until broader error propagation is addressed.
+
 ### Known Limitations
 - **Float position drift** — `MoveEntry` uses a midpoint algorithm (`(a + b) / 2`) to reorder queue entries without renumbering. After many drag-drops in one session, positions can converge toward float64 precision limits, causing two entries to collide on the same value. Not a practical problem at current queue lengths, but a periodic rebalance (e.g. reassign integer positions 1, 2, 3… on `ToggleSignups` open) would eliminate the risk.
 - **`times_on_stage` is tracked but not displayed** — `CompleteCurrentSong` increments the counter but nothing reads it in templates or handlers. Could feed a fairness indicator in the host view ("sang 3 times tonight").

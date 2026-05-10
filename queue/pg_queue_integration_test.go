@@ -127,7 +127,7 @@ func insertSong(t *testing.T, q *PgQueue, title, artist string) int {
 func TestAdd_InvalidSongID(t *testing.T) {
 	q := openTestQueue(t)
 
-	err := q.Add("Dan", []int{999999})
+	err := q.Add(context.Background(), "Dan", []int{999999})
 	assert.ErrorIs(t, err, ErrInvalidSongID)
 }
 
@@ -139,7 +139,7 @@ func TestAdd_ValidSongID(t *testing.T) {
 		q.db.Exec(`DELETE FROM signups WHERE name = 'Dan'`)
 	})
 
-	err := q.Add("Dan", []int{songID})
+	err := q.Add(context.Background(), "Dan", []int{songID})
 	assert.NoError(t, err)
 }
 
@@ -152,7 +152,7 @@ func TestAdd_TwoValidSongIDs(t *testing.T) {
 		q.db.Exec(`DELETE FROM signups WHERE name = 'Dan'`)
 	})
 
-	err := q.Add("Dan", []int{song1, song2})
+	err := q.Add(context.Background(), "Dan", []int{song1, song2})
 	assert.NoError(t, err)
 }
 
@@ -166,7 +166,7 @@ func TestAdd_ThreeValidSongIDs(t *testing.T) {
 		q.db.Exec(`DELETE FROM signups WHERE name = 'Dan'`)
 	})
 
-	err := q.Add("Dan", []int{song1, song2, song3})
+	err := q.Add(context.Background(), "Dan", []int{song1, song2, song3})
 	assert.NoError(t, err)
 }
 
@@ -175,7 +175,7 @@ func TestAuthenticateHost_CorrectPasscode(t *testing.T) {
 	id := insertHostUser(t, q, "dan", "correct-code", true)
 	t.Cleanup(func() { q.db.Exec(`DELETE FROM host_users WHERE id = $1`, id) })
 
-	assert.True(t, q.AuthenticateHost("correct-code"))
+	assert.True(t, q.AuthenticateHost(context.Background(), "correct-code"))
 }
 
 func TestAuthenticateHost_WrongPasscode(t *testing.T) {
@@ -183,7 +183,7 @@ func TestAuthenticateHost_WrongPasscode(t *testing.T) {
 	id := insertHostUser(t, q, "dan", "correct-code", true)
 	t.Cleanup(func() { q.db.Exec(`DELETE FROM host_users WHERE id = $1`, id) })
 
-	assert.False(t, q.AuthenticateHost("wrong-code"))
+	assert.False(t, q.AuthenticateHost(context.Background(), "wrong-code"))
 }
 
 func TestAuthenticateHost_InactiveUser(t *testing.T) {
@@ -191,7 +191,7 @@ func TestAuthenticateHost_InactiveUser(t *testing.T) {
 	id := insertHostUser(t, q, "dan", "correct-code", false)
 	t.Cleanup(func() { q.db.Exec(`DELETE FROM host_users WHERE id = $1`, id) })
 
-	assert.False(t, q.AuthenticateHost("correct-code"))
+	assert.False(t, q.AuthenticateHost(context.Background(), "correct-code"))
 }
 
 func TestToggleSignups_OpenClearsOldSignups(t *testing.T) {
@@ -218,7 +218,7 @@ func TestToggleSignups_OpenClearsOldSignups(t *testing.T) {
 		q.db.Exec(`UPDATE settings SET value = 'false' WHERE key = 'signups_open'`)
 	})
 
-	open := q.ToggleSignups()
+	open := q.ToggleSignups(context.Background())
 	assert.True(t, open)
 
 	var count int
@@ -249,7 +249,7 @@ func TestToggleSignups_CloseDoesNotClearSignups(t *testing.T) {
 		q.db.Exec(`UPDATE settings SET value = 'false' WHERE key = 'signups_open'`)
 	})
 
-	open := q.ToggleSignups()
+	open := q.ToggleSignups(context.Background())
 	assert.False(t, open)
 
 	var count int

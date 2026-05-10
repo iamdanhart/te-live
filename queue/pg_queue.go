@@ -39,8 +39,8 @@ func NewPgQueue(dsn string) (*PgQueue, error) {
 	return &PgQueue{db: db, queries: sqlcdb.New(db)}, nil
 }
 
-func (q *PgQueue) Songs() []Song {
-	rows, err := q.queries.ListSongs(context.Background())
+func (q *PgQueue) Songs(ctx context.Context) []Song {
+	rows, err := q.queries.ListSongs(ctx)
 	if err != nil {
 		slog.Error("Songs query", "err", err)
 		return nil
@@ -52,13 +52,13 @@ func (q *PgQueue) Songs() []Song {
 	return songs
 }
 
-func (q *PgQueue) Entries() []Entry {
-	rows, err := q.db.Query(`
+func (q *PgQueue) Entries(ctx context.Context) []Entry {
+	rows, err := q.db.QueryContext(ctx, `
 		SELECT qe.id, qe.name, s.id, s.title, s.artist, s.tab_url, es.performed
 		FROM telive.signups qe
 		JOIN telive.entry_songs es ON es.entry_id = qe.id
 		JOIN telive.songs s ON s.id = es.song_id
-		WHERE ` + todayQueueEntries + `
+		WHERE `+todayQueueEntries+`
 		ORDER BY qe.position ASC, es.sort_order ASC`)
 	if err != nil {
 		slog.Error("Entries query", "err", err)
@@ -68,9 +68,9 @@ func (q *PgQueue) Entries() []Entry {
 	return scanEntries(rows)
 }
 
-func (q *PgQueue) SignupsOpen() bool {
+func (q *PgQueue) SignupsOpen(ctx context.Context) bool {
 	var value string
-	err := q.db.QueryRow(`SELECT value FROM telive.settings WHERE key = 'signups_open'`).Scan(&value)
+	err := q.db.QueryRowContext(ctx, `SELECT value FROM telive.settings WHERE key = 'signups_open'`).Scan(&value)
 	if err != nil {
 		slog.Error("SignupsOpen query", "err", err)
 		return false
@@ -78,9 +78,9 @@ func (q *PgQueue) SignupsOpen() bool {
 	return value == "true"
 }
 
-func (q *PgQueue) ToggleSignups() bool {
+func (q *PgQueue) ToggleSignups(ctx context.Context) bool {
 	var value string
-	err := q.db.QueryRow(`
+	err := q.db.QueryRowContext(ctx, `
 		UPDATE telive.settings
 		SET value = CASE WHEN value = 'true' THEN 'false' ELSE 'true' END
 		WHERE key = 'signups_open'
@@ -90,7 +90,7 @@ func (q *PgQueue) ToggleSignups() bool {
 		return false
 	}
 	if value == "true" {
-		_, err = q.db.Exec(`DELETE FROM telive.signups WHERE created_at < CURRENT_DATE`)
+		_, err = q.db.ExecContext(ctx, `DELETE FROM telive.signups WHERE created_at < CURRENT_DATE`)
 		if err != nil {
 			slog.Error("ToggleSignups clear old signups", "err", err)
 		}
@@ -98,7 +98,7 @@ func (q *PgQueue) ToggleSignups() bool {
 	return value == "true"
 }
 
-func (q *PgQueue) Add(name string, songIDs []int) error {
+func (q *PgQueue) Add(ctx context.Context, name string, songIDs []int) error {
 	placeholders := make([]string, len(songIDs))
 	args := make([]any, len(songIDs))
 	for i, id := range songIDs {
@@ -106,7 +106,7 @@ func (q *PgQueue) Add(name string, songIDs []int) error {
 		args[i] = id
 	}
 	var count int
-	if err := q.db.QueryRow(
+	if err := q.db.QueryRowContext(ctx,
 		`SELECT COUNT(*) FROM telive.songs WHERE id IN (`+strings.Join(placeholders, ",")+`)`,
 		args...,
 	).Scan(&count); err != nil {
@@ -116,14 +116,14 @@ func (q *PgQueue) Add(name string, songIDs []int) error {
 		return ErrInvalidSongID
 	}
 
-	tx, err := q.db.Begin()
+	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback()
 
 	var entryID int
-	err = tx.QueryRow(`
+	err = tx.QueryRowContext(ctx, `
 		INSERT INTO telive.signups (name, position)
 		VALUES ($1, COALESCE((SELECT MAX(position) FROM telive.signups WHERE `+todayQueueEntries+`), 0) + 1)
 		RETURNING id`, name).Scan(&entryID)
@@ -132,7 +132,7 @@ func (q *PgQueue) Add(name string, songIDs []int) error {
 	}
 
 	for i, songID := range songIDs {
-		_, err = tx.Exec(`
+		_, err = tx.ExecContext(ctx, `
 			INSERT INTO telive.entry_songs (entry_id, song_id, sort_order)
 			VALUES ($1, $2, $3)`,
 			entryID, songID, i)
@@ -144,32 +144,32 @@ func (q *PgQueue) Add(name string, songIDs []int) error {
 	return tx.Commit()
 }
 
-func (q *PgQueue) MoveCurrentToBottom() {
-	_, err := q.db.Exec(`
+func (q *PgQueue) MoveCurrentToBottom(ctx context.Context) {
+	_, err := q.db.ExecContext(ctx, `
 		UPDATE telive.signups
-		SET position = (SELECT MAX(position) FROM telive.signups WHERE ` + todayQueueEntries + `) + 1
-		WHERE id = ` + firstTodayID)
+		SET position = (SELECT MAX(position) FROM telive.signups WHERE `+todayQueueEntries+`) + 1
+		WHERE id = `+firstTodayID)
 	if err != nil {
 		slog.Error("MoveCurrentToBottom", "err", err)
 	}
 }
 
-func (q *PgQueue) RemoveCurrent() {
-	_, err := q.db.Exec(`DELETE FROM telive.signups WHERE id = ` + firstTodayID)
+func (q *PgQueue) RemoveCurrent(ctx context.Context) {
+	_, err := q.db.ExecContext(ctx, `DELETE FROM telive.signups WHERE id = `+firstTodayID)
 	if err != nil {
 		slog.Error("RemoveCurrent", "err", err)
 	}
 }
 
-func (q *PgQueue) CompleteCurrentSong(singer string, songID int) {
-	tx, err := q.db.Begin()
+func (q *PgQueue) CompleteCurrentSong(ctx context.Context, singer string, songID int) {
+	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		slog.Error("CompleteCurrentSong begin tx", "err", err)
 		return
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec(`
+	_, err = tx.ExecContext(ctx, `
 		UPDATE telive.entry_songs SET performed = true
 		WHERE entry_id = `+firstTodayID+`
 		  AND song_id = $1`,
@@ -179,7 +179,7 @@ func (q *PgQueue) CompleteCurrentSong(singer string, songID int) {
 		return
 	}
 
-	_, err = tx.Exec(`
+	_, err = tx.ExecContext(ctx, `
 		INSERT INTO telive.performed_songs (singer, song_id)
 		VALUES ($1, $2)`,
 		singer, songID)
@@ -188,9 +188,9 @@ func (q *PgQueue) CompleteCurrentSong(singer string, songID int) {
 		return
 	}
 
-	_, err = tx.Exec(`
+	_, err = tx.ExecContext(ctx, `
 		UPDATE telive.signups SET times_on_stage = times_on_stage + 1
-		WHERE id = ` + firstTodayID)
+		WHERE id = `+firstTodayID)
 	if err != nil {
 		slog.Error("CompleteCurrentSong increment times_on_stage", "err", err)
 		return
@@ -201,12 +201,12 @@ func (q *PgQueue) CompleteCurrentSong(singer string, songID int) {
 	}
 }
 
-func (q *PgQueue) Performed() []PerformedSong {
-	rows, err := q.db.Query(`
+func (q *PgQueue) Performed(ctx context.Context) []PerformedSong {
+	rows, err := q.db.QueryContext(ctx, `
 		SELECT ps.singer, s.id, s.title, s.artist, s.tab_url
 		FROM telive.performed_songs ps
 		JOIN telive.songs s ON s.id = ps.song_id
-		WHERE ` + todayPerformed + `
+		WHERE `+todayPerformed+`
 		ORDER BY ps.performed_at ASC`)
 	if err != nil {
 		slog.Error("Performed query", "err", err)
@@ -230,8 +230,8 @@ func (q *PgQueue) Performed() []PerformedSong {
 	return result
 }
 
-func (q *PgQueue) AddSongToFirst(songID int) {
-	_, err := q.db.Exec(`
+func (q *PgQueue) AddSongToFirst(ctx context.Context, songID int) {
+	_, err := q.db.ExecContext(ctx, `
 		INSERT INTO telive.entry_songs (entry_id, song_id, sort_order)
 		VALUES (
 			`+firstTodayID+`,
@@ -243,9 +243,9 @@ func (q *PgQueue) AddSongToFirst(songID int) {
 	}
 }
 
-func (q *PgQueue) HasName(name string) bool {
+func (q *PgQueue) HasName(ctx context.Context, name string) bool {
 	var exists bool
-	err := q.db.QueryRow(`
+	err := q.db.QueryRowContext(ctx, `
 		SELECT EXISTS(
 			SELECT 1 FROM telive.signups
 			WHERE LOWER(name) = LOWER($1) AND `+todayQueueEntries+`
@@ -284,10 +284,10 @@ func computeNewPosition(entries []positionRow, afterID int) (float64, bool) {
 	return 0, false
 }
 
-func (q *PgQueue) MoveEntry(id, afterID int) {
-	rows, err := q.db.Query(`
+func (q *PgQueue) MoveEntry(ctx context.Context, id, afterID int) {
+	rows, err := q.db.QueryContext(ctx, `
 		SELECT id, position FROM telive.signups
-		WHERE ` + todayQueueEntries + `
+		WHERE `+todayQueueEntries+`
 		ORDER BY position ASC`)
 	if err != nil {
 		slog.Error("MoveEntry query", "err", err)
@@ -315,7 +315,7 @@ func (q *PgQueue) MoveEntry(id, afterID int) {
 		return
 	}
 
-	if _, err := q.db.Exec(`UPDATE telive.signups SET position = $1 WHERE id = $2`, newPos, id); err != nil {
+	if _, err := q.db.ExecContext(ctx, `UPDATE telive.signups SET position = $1 WHERE id = $2`, newPos, id); err != nil {
 		slog.Error("MoveEntry update", "err", err)
 	}
 }
@@ -353,8 +353,8 @@ func scanEntries(rows *sql.Rows) []Entry {
 	return entries
 }
 
-func (q *PgQueue) AuthenticateHost(passcode string) bool {
-	rows, err := q.db.Query(`SELECT passcode_hash FROM telive.host_users WHERE active = TRUE`)
+func (q *PgQueue) AuthenticateHost(ctx context.Context, passcode string) bool {
+	rows, err := q.db.QueryContext(ctx, `SELECT passcode_hash FROM telive.host_users WHERE active = TRUE`)
 	if err != nil {
 		slog.Error("AuthenticateHost query", "err", err)
 		return false
