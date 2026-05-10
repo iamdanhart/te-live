@@ -85,7 +85,7 @@ just run       # uses config/dev.json — tweak that file to toggle enforcement
 just run-prod  # uses config/prod.json from disk (auth + limits enforced); templates still served from disk
 ```
 
-The server listens on `:8080`. The database defaults to `postgres://telive:telive@localhost:5432/telive`.
+The server listens on `:8080`. The database URL is configured in `.env` (see `.env.example`).
 
 To override the database URL:
 
@@ -168,8 +168,8 @@ Copy `.env.example` to `.env` and fill in the values. The file is gitignored and
 |----------|---------|---------------|
 | `MPG_CLUSTER_ID` | `just flyproxy` | `fly mpg list` |
 | `MPG_USER` | `just add-host-user-prod` | Fly dashboard > Postgres cluster > Connection details |
-| `MPG_PASS` | `just add-host-user-prod` | Same as above; reset via `ALTER ROLE telive WITH PASSWORD '...'` |
-| `MPG_MIGRATE_PASS` | `just db-migrate-prod` | Fly dashboard > Postgres cluster > Connection details (`liquibase-user`) |
+| `MPG_PASS` | `just add-host-user-prod` | Fly dashboard > Postgres cluster > Connection details |
+| `MPG_MIGRATE_PASS` | `just db-migrate-prod` | Fly dashboard > Postgres cluster > Connection details |
 
 ---
 
@@ -233,7 +233,7 @@ A manual GitHub Actions workflow (`.github/workflows/check-htmx.yml`) runs `chec
 
 ## Deployment
 
-The app runs on [Fly.io](https://fly.io) in the `ewr` region with a Fly Managed Postgres cluster.
+The app runs on [Fly.io](https://fly.io) with a Fly Managed Postgres cluster.
 
 ```sh
 just deploy        # fly deploy
