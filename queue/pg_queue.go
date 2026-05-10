@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
+	"time"
 
 	"github.com/iamdanhart/te-live/db/sqlcdb"
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -33,6 +34,10 @@ func NewPgQueue(dsn string) (*PgQueue, error) {
 	if err != nil {
 		return nil, err
 	}
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(5)
+	db.SetConnMaxLifetime(time.Hour)
+	db.SetConnMaxIdleTime(10 * time.Minute)
 	if err := db.Ping(); err != nil {
 		return nil, err
 	}
