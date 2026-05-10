@@ -2,6 +2,7 @@ package queue
 
 import (
 	"context"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -12,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 	tcpostgres "github.com/testcontainers/testcontainers-go/modules/postgres"
+	tcnetwork "github.com/testcontainers/testcontainers-go/network"
 	"github.com/testcontainers/testcontainers-go/wait"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -22,19 +24,20 @@ func TestMain(m *testing.M) {
 	ctx := context.Background()
 
 	_, thisFile, _, _ := runtime.Caller(0)
-	changesDir := filepath.Join(filepath.Dir(thisFile), "..", "db", "changelog", "changes")
+	projectRoot := filepath.Join(filepath.Dir(thisFile), "..")
+
+	net, err := tcnetwork.New(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer net.Remove(ctx)
 
 	pgc, err := tcpostgres.Run(ctx,
 		"postgres:16",
 		tcpostgres.WithDatabase("telive"),
 		tcpostgres.WithUsername("telive"),
 		tcpostgres.WithPassword("telive"),
-		tcpostgres.WithInitScripts(
-			filepath.Join(changesDir, "001-initial-schema.sql"),
-			filepath.Join(changesDir, "002-seed-songs.sql"),
-			filepath.Join(changesDir, "003-settings.sql"),
-			filepath.Join(changesDir, "004-host-users.sql"),
-		),
+		tcnetwork.WithNetwork([]string{"postgres"}, net),
 		testcontainers.WithWaitStrategy(
 			wait.ForLog("database system is ready to accept connections").WithOccurrence(2),
 		),
@@ -48,6 +51,40 @@ func TestMain(m *testing.M) {
 		}
 	}()
 
+	lbc, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
+		ContainerRequest: testcontainers.ContainerRequest{
+			FromDockerfile: testcontainers.FromDockerfile{
+				Context:    projectRoot,
+				Dockerfile: "Dockerfile.liquibase",
+			},
+			Networks: []string{net.Name},
+			Cmd: []string{
+				"--url=jdbc:postgresql://postgres:5432/telive?sslmode=disable",
+				"--username=telive",
+				"--password=telive",
+				"--defaultSchemaName=telive",
+				"--liquibaseSchemaName=public",
+				"--search-path=/liquibase/changelog",
+				"--changeLogFile=root.yaml",
+				"update",
+			},
+			WaitingFor: wait.ForExit(),
+		},
+		Started: true,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer lbc.Terminate(ctx)
+
+	state, err := lbc.State(ctx)
+	if err != nil || state.ExitCode != 0 {
+		if logs, lerr := lbc.Logs(ctx); lerr == nil {
+			io.Copy(os.Stderr, logs)
+		}
+		log.Fatal("liquibase migration failed")
+	}
+
 	testDSN, err = pgc.ConnectionString(ctx, "sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
@@ -58,7 +95,7 @@ func TestMain(m *testing.M) {
 
 func openTestQueue(t *testing.T) *PgQueue {
 	t.Helper()
-	q, err := NewPgQueue(testDSN)
+	q, err := NewPgQueue(testDSN, "telive")
 	require.NoError(t, err)
 	return q
 }

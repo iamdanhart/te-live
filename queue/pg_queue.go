@@ -1,10 +1,13 @@
 package queue
 
 import (
+	"context"
 	"database/sql"
+	"fmt"
 	"log/slog"
 
-	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/stdlib"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -20,11 +23,19 @@ type PgQueue struct {
 	db *sql.DB
 }
 
-func NewPgQueue(dsn string) (*PgQueue, error) {
-	db, err := sql.Open("pgx", dsn)
+func NewPgQueue(dsn, schema string) (*PgQueue, error) {
+	config, err := pgx.ParseConfig(dsn)
 	if err != nil {
 		return nil, err
 	}
+	var afterConnect func(context.Context, *pgx.Conn) error
+	if schema != "" {
+		afterConnect = func(ctx context.Context, conn *pgx.Conn) error {
+			_, err := conn.Exec(ctx, fmt.Sprintf("SET search_path TO %s", schema))
+			return err
+		}
+	}
+	db := stdlib.OpenDB(*config, stdlib.OptionAfterConnect(afterConnect))
 	if err := db.Ping(); err != nil {
 		return nil, err
 	}
@@ -264,7 +275,7 @@ func computeNewPosition(entries []positionRow, afterID int) (float64, bool) {
 func (q *PgQueue) MoveEntry(id, afterID int) {
 	rows, err := q.db.Query(`
 		SELECT id, position FROM signups
-		WHERE `+todayQueueEntries+`
+		WHERE ` + todayQueueEntries + `
 		ORDER BY position ASC`)
 	if err != nil {
 		slog.Error("MoveEntry query", "err", err)
