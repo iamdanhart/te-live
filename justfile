@@ -1,12 +1,12 @@
-db_url := env("DB_URL", "postgres://telive:telive@localhost:5432/telive")
+DATABASE_URL := env("DATABASE_URL", "postgres://telive:telive@localhost:5432/telive")
 
 run:
-    -DATABASE_URL={{db_url}} go run .
+    -DATABASE_URL={{DATABASE_URL}} go run .
 
 # Runs with prod config (auth + rate limiting enforced, allowed_hosts active) but
 # templates and static files are still served from disk, not the embedded binary.
 run-prod:
-    -DATABASE_URL={{db_url}} ENV=production go run .
+    -DATABASE_URL={{DATABASE_URL}} ENV=production go run .
 
 build:
     CGO_ENABLED=0 go test ./...
@@ -19,7 +19,7 @@ db-migrate:
     docker compose run --rm --build liquibase
 
 add-host-user label passcode:
-    @DATABASE_URL={{db_url}} go run ./cmd/add-host-user -label={{label}} -passcode={{passcode}}
+    @DATABASE_URL={{DATABASE_URL}} go run ./cmd/add-host-user -label={{label}} -passcode={{passcode}}
 
 add-host-user-prod label passcode:
     @source .env && DATABASE_URL="postgresql://$MPG_USER:$MPG_PASS@localhost:15432/telive?sslmode=disable" go run ./cmd/add-host-user -label={{label}} -passcode={{passcode}}

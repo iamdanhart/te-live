@@ -52,7 +52,7 @@ The server listens on `:8080`. The database defaults to `postgres://telive:teliv
 To override the database URL:
 
 ```sh
-DB_URL=postgres://... just run
+DATABASE_URL=postgres://... just run
 ```
 
 ### Reset the database
