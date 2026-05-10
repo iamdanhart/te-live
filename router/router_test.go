@@ -98,6 +98,61 @@ func TestQueueStatusData_TwoEntries(t *testing.T) {
 	assert.Equal(t, "Bob", data.Next.Name)
 }
 
+// addableStub extends stubQueue with a working Add method for signup success tests.
+type addableStub struct {
+	*stubQueue
+	addErr error
+}
+
+func (s *addableStub) Add(_ context.Context, _ string, _ []int) error { return s.addErr }
+
+// songsStub extends stubQueue with a working Songs method for catalog tests.
+type songsStub struct {
+	*stubQueue
+	songs []queue.Song
+}
+
+func (s *songsStub) Songs(_ context.Context) []queue.Song { return s.songs }
+
+func TestHandleSignup_Success(t *testing.T) {
+	form := url.Values{"name": {"Alice"}, "song": {"1"}}
+	req := httptest.NewRequest(http.MethodPost, "/signup", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rr := httptest.NewRecorder()
+	q := &addableStub{stubQueue: &stubQueue{}}
+	handleSignup(rr, req, q)
+	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.Contains(t, rr.Body.String(), "Alice")
+}
+
+func TestHandleSignup_AddError(t *testing.T) {
+	form := url.Values{"name": {"Alice"}, "song": {"1"}}
+	req := httptest.NewRequest(http.MethodPost, "/signup", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rr := httptest.NewRecorder()
+	q := &addableStub{stubQueue: &stubQueue{}, addErr: queue.ErrInvalidSongID}
+	handleSignup(rr, req, q)
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
+}
+
+func TestHandleCatalog_JSON(t *testing.T) {
+	songs := []queue.Song{{ID: 1, Title: "Bohemian Rhapsody", Artist: "Queen"}}
+	req := httptest.NewRequest(http.MethodGet, "/catalog", nil)
+	rr := httptest.NewRecorder()
+	handleCatalog(rr, req, &songsStub{stubQueue: &stubQueue{}, songs: songs})
+	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
+	assert.JSONEq(t, `{"songs":[{"id":1,"title":"Bohemian Rhapsody","artist":"Queen"}]}`, rr.Body.String())
+}
+
+func TestHandleCatalog_EmptySongs(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/catalog", nil)
+	rr := httptest.NewRecorder()
+	handleCatalog(rr, req, &songsStub{stubQueue: &stubQueue{}, songs: []queue.Song{}})
+	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.JSONEq(t, `{"songs":[]}`, rr.Body.String())
+}
+
 func TestQueueStatusData_ManyEntries(t *testing.T) {
 	entries := []queue.Entry{
 		{ID: 1, Name: "Alice"},
