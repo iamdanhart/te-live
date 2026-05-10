@@ -96,9 +96,16 @@
     <div id="queue-status" hx-get="/queue-status" hx-trigger="every 5s" hx-swap="innerHTML">
         {{template "index_queue.html" .}}
     </div>
-    <a id="tip-link" href="https://venmo.com/u/troublesendlbk" target="_blank" rel="noopener noreferrer">
+    <a id="tip-link" href="https://venmo.com/u/troublesendlbk" rel="noopener noreferrer">
         💚 Tip the band on Venmo
     </a>
 </div>
+<script>
+    document.getElementById('tip-link').addEventListener('click', function(e) {
+        e.preventDefault();
+        window.location = 'venmo://paycharge?txn=pay&recipients=troublesendlbk&note=Tip%20the%20band';
+        setTimeout(() => window.location = 'https://venmo.com/u/troublesendlbk', 500);
+    });
+</script>
 </body>
 </html>

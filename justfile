@@ -34,6 +34,9 @@ add-host-user-prod label passcode:
 test-add-users:
     hurl dev_tools/add_users_to_queue.hurl
 
+deploy:
+    fly deploy
+
 flyproxy:
     # Creates a local proxy to the Fly Managed Postgres cluster on localhost:15432.
     # Run this in a separate terminal before db-migrate-prod or add-host-user-prod.
