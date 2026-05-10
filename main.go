@@ -23,7 +23,10 @@ func main() {
 		slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, nil)))
 	}
 
-	srv := &http.Server{Addr: ":8080", Handler: router.NewRouter(cfg)}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	srv := &http.Server{Addr: ":8080", Handler: router.NewRouter(ctx, cfg)}
 
 	go func() {
 		slog.Info("Listening on :8080")
@@ -38,9 +41,10 @@ func main() {
 	<-quit
 
 	slog.Info("Shutting down...")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if err := srv.Shutdown(ctx); err != nil {
+	cancel()
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer shutdownCancel()
+	if err := srv.Shutdown(shutdownCtx); err != nil {
 		slog.Error("shutdown error", "err", err)
 	}
 }
