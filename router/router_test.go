@@ -24,12 +24,12 @@ func (s *stubQueue) SignupsOpen(context.Context) bool          { return s.signup
 func (s *stubQueue) Songs(context.Context) []queue.Song        { panic("not implemented") }
 func (s *stubQueue) ToggleSignups(context.Context) bool        { panic("not implemented") }
 func (s *stubQueue) Add(context.Context, string, []int) error  { panic("not implemented") }
-func (s *stubQueue) CompleteCurrentSong(context.Context, string, int) { panic("not implemented") }
-func (s *stubQueue) Performed(context.Context) []queue.PerformedSong  { panic("not implemented") }
-func (s *stubQueue) AddSongToFirst(context.Context, int)              { panic("not implemented") }
-func (s *stubQueue) MoveCurrentToBottom(context.Context)              { panic("not implemented") }
-func (s *stubQueue) RemoveCurrent(context.Context)                    { panic("not implemented") }
-func (s *stubQueue) MoveEntry(context.Context, int, int)              { panic("not implemented") }
+func (s *stubQueue) CompleteCurrentSong(context.Context, string, int) error { panic("not implemented") }
+func (s *stubQueue) Performed(context.Context) []queue.PerformedSong         { panic("not implemented") }
+func (s *stubQueue) AddSongToFirst(context.Context, int) error               { panic("not implemented") }
+func (s *stubQueue) MoveCurrentToBottom(context.Context) error               { panic("not implemented") }
+func (s *stubQueue) RemoveCurrent(context.Context) error                     { panic("not implemented") }
+func (s *stubQueue) MoveEntry(context.Context, int, int) error               { panic("not implemented") }
 func (s *stubQueue) HasName(context.Context, string) bool             { panic("not implemented") }
 func (s *stubQueue) AuthenticateHost(context.Context, string) bool    { panic("not implemented") }
 

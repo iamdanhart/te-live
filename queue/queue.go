@@ -35,12 +35,12 @@ type Queue interface {
 	SignupsOpen(ctx context.Context) bool
 	ToggleSignups(ctx context.Context) bool
 	Add(ctx context.Context, name string, songIDs []int) error
-	CompleteCurrentSong(ctx context.Context, singer string, songID int)
+	CompleteCurrentSong(ctx context.Context, singer string, songID int) error
 	Performed(ctx context.Context) []PerformedSong
-	AddSongToFirst(ctx context.Context, songID int)
-	MoveCurrentToBottom(ctx context.Context)
-	RemoveCurrent(ctx context.Context)
-	MoveEntry(ctx context.Context, id, afterID int)
+	AddSongToFirst(ctx context.Context, songID int) error
+	MoveCurrentToBottom(ctx context.Context) error
+	RemoveCurrent(ctx context.Context) error
+	MoveEntry(ctx context.Context, id, afterID int) error
 	HasName(ctx context.Context, name string) bool
 	AuthenticateHost(ctx context.Context, passcode string) bool
 }

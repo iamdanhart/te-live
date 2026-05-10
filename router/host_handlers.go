@@ -49,8 +49,14 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue, rl 
 			http.Error(w, "invalid song_id", http.StatusBadRequest)
 			return
 		}
-		q.CompleteCurrentSong(r.Context(), r.FormValue("singer"), songID)
-		q.MoveCurrentToBottom(r.Context())
+		if err := q.CompleteCurrentSong(r.Context(), r.FormValue("singer"), songID); err != nil {
+			http.Error(w, "failed to complete song", http.StatusInternalServerError)
+			return
+		}
+		if err := q.MoveCurrentToBottom(r.Context()); err != nil {
+			http.Error(w, "failed to move entry", http.StatusInternalServerError)
+			return
+		}
 		tmpl := grab_templates.GetTemplates()
 		if err := tmpl.ExecuteTemplate(w, "host_performed.html", q.Performed(r.Context())); err != nil {
 			slog.Error("template error", "err", err)
@@ -68,17 +74,26 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue, rl 
 			http.Error(w, "invalid song_id", http.StatusBadRequest)
 			return
 		}
-		q.AddSongToFirst(r.Context(), songID)
+		if err := q.AddSongToFirst(r.Context(), songID); err != nil {
+			http.Error(w, "failed to add song", http.StatusInternalServerError)
+			return
+		}
 		renderQueue(w, r, q)
 	}))
 
 	mux.Handle("POST /host/remove", authPost(func(w http.ResponseWriter, r *http.Request) {
-		q.RemoveCurrent(r.Context())
+		if err := q.RemoveCurrent(r.Context()); err != nil {
+			http.Error(w, "failed to remove entry", http.StatusInternalServerError)
+			return
+		}
 		renderQueue(w, r, q)
 	}))
 
 	mux.Handle("POST /host/skip", authPost(func(w http.ResponseWriter, r *http.Request) {
-		q.MoveCurrentToBottom(r.Context())
+		if err := q.MoveCurrentToBottom(r.Context()); err != nil {
+			http.Error(w, "failed to skip entry", http.StatusInternalServerError)
+			return
+		}
 		renderQueue(w, r, q)
 	}))
 
@@ -93,7 +108,10 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue, rl 
 			http.Error(w, "invalid after_id", http.StatusBadRequest)
 			return
 		}
-		q.MoveEntry(r.Context(), id, afterID)
+		if err := q.MoveEntry(r.Context(), id, afterID); err != nil {
+			http.Error(w, "failed to move entry", http.StatusInternalServerError)
+			return
+		}
 		renderQueue(w, r, q)
 	}))
 

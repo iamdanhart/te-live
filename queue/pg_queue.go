@@ -149,7 +149,7 @@ func (q *PgQueue) Add(ctx context.Context, name string, songIDs []int) error {
 	return tx.Commit()
 }
 
-func (q *PgQueue) MoveCurrentToBottom(ctx context.Context) {
+func (q *PgQueue) MoveCurrentToBottom(ctx context.Context) error {
 	_, err := q.db.ExecContext(ctx, `
 		UPDATE telive.signups
 		SET position = (SELECT MAX(position) FROM telive.signups WHERE `+todayQueueEntries+`) + 1
@@ -157,20 +157,22 @@ func (q *PgQueue) MoveCurrentToBottom(ctx context.Context) {
 	if err != nil {
 		slog.Error("MoveCurrentToBottom", "err", err)
 	}
+	return err
 }
 
-func (q *PgQueue) RemoveCurrent(ctx context.Context) {
+func (q *PgQueue) RemoveCurrent(ctx context.Context) error {
 	_, err := q.db.ExecContext(ctx, `DELETE FROM telive.signups WHERE id = `+firstTodayID)
 	if err != nil {
 		slog.Error("RemoveCurrent", "err", err)
 	}
+	return err
 }
 
-func (q *PgQueue) CompleteCurrentSong(ctx context.Context, singer string, songID int) {
+func (q *PgQueue) CompleteCurrentSong(ctx context.Context, singer string, songID int) error {
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		slog.Error("CompleteCurrentSong begin tx", "err", err)
-		return
+		return err
 	}
 	defer tx.Rollback()
 
@@ -181,7 +183,7 @@ func (q *PgQueue) CompleteCurrentSong(ctx context.Context, singer string, songID
 		songID)
 	if err != nil {
 		slog.Error("CompleteCurrentSong mark performed", "err", err)
-		return
+		return err
 	}
 
 	_, err = tx.ExecContext(ctx, `
@@ -190,7 +192,7 @@ func (q *PgQueue) CompleteCurrentSong(ctx context.Context, singer string, songID
 		singer, songID)
 	if err != nil {
 		slog.Error("CompleteCurrentSong insert performed_songs", "err", err)
-		return
+		return err
 	}
 
 	_, err = tx.ExecContext(ctx, `
@@ -198,12 +200,14 @@ func (q *PgQueue) CompleteCurrentSong(ctx context.Context, singer string, songID
 		WHERE id = `+firstTodayID)
 	if err != nil {
 		slog.Error("CompleteCurrentSong increment times_on_stage", "err", err)
-		return
+		return err
 	}
 
 	if err := tx.Commit(); err != nil {
 		slog.Error("CompleteCurrentSong commit", "err", err)
+		return err
 	}
+	return nil
 }
 
 func (q *PgQueue) Performed(ctx context.Context) []PerformedSong {
@@ -235,7 +239,7 @@ func (q *PgQueue) Performed(ctx context.Context) []PerformedSong {
 	return result
 }
 
-func (q *PgQueue) AddSongToFirst(ctx context.Context, songID int) {
+func (q *PgQueue) AddSongToFirst(ctx context.Context, songID int) error {
 	_, err := q.db.ExecContext(ctx, `
 		INSERT INTO telive.entry_songs (entry_id, song_id, sort_order)
 		VALUES (
@@ -246,6 +250,7 @@ func (q *PgQueue) AddSongToFirst(ctx context.Context, songID int) {
 	if err != nil {
 		slog.Error("AddSongToFirst", "err", err)
 	}
+	return err
 }
 
 func (q *PgQueue) HasName(ctx context.Context, name string) bool {
@@ -289,14 +294,14 @@ func computeNewPosition(entries []positionRow, afterID int) (float64, bool) {
 	return 0, false
 }
 
-func (q *PgQueue) MoveEntry(ctx context.Context, id, afterID int) {
+func (q *PgQueue) MoveEntry(ctx context.Context, id, afterID int) error {
 	rows, err := q.db.QueryContext(ctx, `
 		SELECT id, position FROM telive.signups
 		WHERE `+todayQueueEntries+`
 		ORDER BY position ASC`)
 	if err != nil {
 		slog.Error("MoveEntry query", "err", err)
-		return
+		return err
 	}
 	defer rows.Close()
 
@@ -305,24 +310,26 @@ func (q *PgQueue) MoveEntry(ctx context.Context, id, afterID int) {
 		var r positionRow
 		if err := rows.Scan(&r.id, &r.pos); err != nil {
 			slog.Error("MoveEntry scan", "err", err)
-			return
+			return err
 		}
 		entries = append(entries, r)
 	}
 	if err := rows.Err(); err != nil {
 		slog.Error("MoveEntry rows", "err", err)
-		return
+		return err
 	}
 
 	newPos, ok := computeNewPosition(entries, afterID)
 	if !ok {
 		slog.Warn("MoveEntry afterID not found", "afterID", afterID)
-		return
+		return nil
 	}
 
 	if _, err := q.db.ExecContext(ctx, `UPDATE telive.signups SET position = $1 WHERE id = $2`, newPos, id); err != nil {
 		slog.Error("MoveEntry update", "err", err)
+		return err
 	}
+	return nil
 }
 
 // scanEntries collapses the joined rows into []Entry, grouping songs by singer.
