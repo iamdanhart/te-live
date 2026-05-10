@@ -406,11 +406,19 @@
             s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q)
         );
         const ul = document.getElementById('add-song-results');
-        ul.innerHTML = filteredResults.map((s, i) =>
-            '<li class="add-song-result" onclick="selectSong(' + i + ')">' +
-            '<span>' + s.title + '</span> &mdash; ' + s.artist +
-            '</li>'
-        ).join('');
+        ul.innerHTML = '';
+        // Build DOM nodes instead of HTML strings so song data is never interpreted as markup
+        filteredResults.forEach((s, i) => {
+            const li = document.createElement('li');
+            li.className = 'add-song-result';
+            li.onclick = () => selectSong(i);
+            const title = document.createElement('span');
+            title.textContent = s.title;
+            const artist = document.createTextNode(' — ' + s.artist);
+            li.appendChild(title);
+            li.appendChild(artist);
+            ul.appendChild(li);
+        });
     }
 
     function openRemoveDialog(name) {

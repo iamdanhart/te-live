@@ -223,6 +223,10 @@ func (q *PgQueue) Performed() []PerformedSong {
 		}
 		result = append(result, ps)
 	}
+	if err := rows.Err(); err != nil {
+		slog.Error("Performed rows", "err", err)
+		return nil
+	}
 	return result
 }
 
@@ -300,6 +304,10 @@ func (q *PgQueue) MoveEntry(id, afterID int) {
 		}
 		entries = append(entries, r)
 	}
+	if err := rows.Err(); err != nil {
+		slog.Error("MoveEntry rows", "err", err)
+		return
+	}
 
 	newPos, ok := computeNewPosition(entries, afterID)
 	if !ok {
@@ -361,6 +369,9 @@ func (q *PgQueue) AuthenticateHost(passcode string) bool {
 		if bcrypt.CompareHashAndPassword([]byte(hash), []byte(passcode)) == nil {
 			return true
 		}
+	}
+	if err := rows.Err(); err != nil {
+		slog.Error("AuthenticateHost rows", "err", err)
 	}
 	return false
 }
