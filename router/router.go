@@ -54,7 +54,7 @@ func NewRouter(cfg config.Props) http.Handler {
 	})
 	mux.Handle("GET /static/", staticHandler())
 	// TODO: add a real favicon.ico to static and remove from skip list
-	return middleware.RequestLogger([]string{"/health", "/queue-status", "/host/queue", "/favicon.ico"}, mux)
+	return middleware.SecureHeaders(middleware.RequestLogger([]string{"/health", "/queue-status", "/host/queue", "/favicon.ico"}, mux))
 }
 
 func handleHealth(w http.ResponseWriter, r *http.Request) {
