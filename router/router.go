@@ -1,6 +1,7 @@
 package router
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -146,16 +147,26 @@ func handleSignup(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 		return
 	}
 	slog.Info("signup", "name", name, "songs", len(songIDs))
-	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "signup_success.html", name); err != nil {
+	var buf bytes.Buffer
+	if err := grab_templates.GetTemplates().ExecuteTemplate(&buf, "signup_success.html", name); err != nil {
 		slog.Error("template error", "err", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
 	}
+	buf.WriteTo(w)
 }
 
 func handleCatalog(w http.ResponseWriter, r *http.Request, q queue.Queue) {
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(struct {
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(struct {
 		Songs []queue.Song `json:"songs"`
 	}{q.Songs()}); err != nil {
 		slog.Error("catalog encode error", "err", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if _, err := buf.WriteTo(w); err != nil {
+		slog.Error("catalog write error", "err", err)
 	}
 }
