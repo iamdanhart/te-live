@@ -6,6 +6,34 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestIsNoOpMove(t *testing.T) {
+	entries := []positionRow{
+		{id: 1, pos: 1.0},
+		{id: 2, pos: 2.0},
+		{id: 3, pos: 3.0},
+	}
+
+	tests := []struct {
+		name    string
+		id      int
+		afterID int
+		want    bool
+	}{
+		{"first entry moved to front is no-op", 1, 0, true},
+		{"non-first entry moved to front is not no-op", 2, 0, false},
+		{"entry moved after its current predecessor is no-op", 2, 1, true},
+		{"entry moved after its current predecessor is no-op (last)", 3, 2, true},
+		{"entry moved after a non-predecessor is not no-op", 3, 1, false},
+		{"id not in entries", 99, 1, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, isNoOpMove(entries, tt.id, tt.afterID))
+		})
+	}
+}
+
 func TestComputeNewPosition(t *testing.T) {
 	entries := []positionRow{
 		{id: 1, pos: 1.0},

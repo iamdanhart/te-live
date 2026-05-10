@@ -272,6 +272,21 @@ type positionRow struct {
 	pos float64
 }
 
+// isNoOpMove reports whether id is already immediately after afterID in entries,
+// meaning a move would produce the same order and should be skipped.
+func isNoOpMove(entries []positionRow, id, afterID int) bool {
+	for i, e := range entries {
+		if e.id != id {
+			continue
+		}
+		if afterID == 0 {
+			return i == 0
+		}
+		return i > 0 && entries[i-1].id == afterID
+	}
+	return false
+}
+
 // computeNewPosition returns the position value that places the moved entry
 // after the entry with afterID. afterID=0 means move to front; this relies on
 // Postgres SERIAL IDs starting at 1, so 0 is never a valid entry ID.
@@ -317,6 +332,10 @@ func (q *PgQueue) MoveEntry(ctx context.Context, id, afterID int) error {
 	if err := rows.Err(); err != nil {
 		slog.Error("MoveEntry rows", "err", err)
 		return err
+	}
+
+	if isNoOpMove(entries, id, afterID) {
+		return nil
 	}
 
 	newPos, ok := computeNewPosition(entries, afterID)
