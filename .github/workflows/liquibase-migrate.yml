@@ -17,7 +17,7 @@ jobs:
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
       - name: Wait for proxy
-        run: sleep 5
+        run: timeout 30 bash -c 'until nc -z localhost 15432; do sleep 3; done'
       - name: Build Liquibase image
         run: docker build -f Dockerfile.liquibase -t te-live-liquibase .
       - name: Run migrations
