@@ -24,6 +24,24 @@ The `Queue` interface (`queue/queue.go`) is the boundary between HTTP handlers a
 
 ---
 
+## Live Polling
+
+Two views poll the server automatically using HTMX:
+
+| View | Element | Endpoint | Interval |
+|------|---------|----------|----------|
+| Audience (`/`) | `#queue-status` | `GET /queue-status` | every 5s |
+| Host (`/host`) | `#queue-list` | `GET /host/queue` | every 3s |
+
+**Host poll pausing** — the 3-second queue poll is suppressed while the host is mid-interaction to prevent HTMX from destroying the UI underneath them. The `htmx:beforeRequest` listener in `host.js` cancels the poll via `evt.preventDefault()` when either of these is true:
+
+- The **add-song picker** is open (`#add-song-picker` is visible)
+- The **remove dialog** is open (`#remove-dialog` has the `open` attribute)
+
+Once the interaction completes (song selected, or dialog confirmed/cancelled), the next scheduled tick resumes normally — there is no explicit resume call.
+
+---
+
 ## Queue Ordering
 
 Queue entries are ordered by a `position` column (`DOUBLE PRECISION`) in `telive.signups`. Fractional indexing is used to reorder entries without renumbering every row.
