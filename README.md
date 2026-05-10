@@ -100,7 +100,7 @@ To add a host user locally:
 just add-host-user dan mysecretpasscode
 ```
 
-To add a host user in production (requires `just flyproxy` running in another terminal):
+To add a host user in production:
 
 ```sh
 just add-host-user-prod dan mysecretpasscode
@@ -112,7 +112,7 @@ just add-host-user-prod dan mysecretpasscode
 
 Migrations are managed with [Liquibase](https://www.liquibase.com/) and live in `db/changelog/changes/`. The `Dockerfile.liquibase` image runs them.
 
-To run migrations against production (requires `just flyproxy`):
+To run migrations against production:
 
 ```sh
 just db-migrate-prod
@@ -141,6 +141,18 @@ Two workflows run on every push:
 
 - **CI** (`.github/workflows/ci.yml`) — unit tests across `config`, `middleware`, and `router`
 - **Integration Tests** (`.github/workflows/integration-test.yml`) — runs `./queue/...` using testcontainers (spins up Postgres and Liquibase in Docker)
+
+Two workflows are triggered manually via the GitHub Actions UI:
+
+- **Fly Deploy** (`.github/workflows/fly-deploy.yml`) — deploys the app to Fly.io
+- **Liquibase Migrate (Prod)** (`.github/workflows/liquibase-migrate.yml`) — runs Liquibase migrations against the production database
+
+### GitHub Secrets
+
+| Secret | Used by | Notes |
+|--------|---------|-------|
+| `FLY_API_TOKEN` | Deploy, Liquibase Migrate | Generate with `fly tokens create deploy -x 999999h`; refresh by running that command and updating the secret |
+| `MPG_MIGRATE_PASS` | Liquibase Migrate | Liquibase user password from the Fly Managed Postgres cluster |
 
 ---
 
@@ -183,7 +195,6 @@ The app runs on [Fly.io](https://fly.io) in the `ewr` region with a Fly Managed 
 
 ```sh
 just deploy        # fly deploy
-just flyproxy      # open a local proxy to the prod DB on localhost:15432
 ```
 
 `DATABASE_URL` and the managed Postgres credentials are stored as Fly secrets and are never committed.

@@ -9,12 +9,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - name: Start Fly proxy
+        run: fly mpg proxy 82ylg01lgmmrzx19 -p 15432 &
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - name: Wait for proxy
+        run: sleep 5
       - name: Build Liquibase image
         run: docker build -f Dockerfile.liquibase -t te-live-liquibase .
       - name: Run migrations
         run: |
-          docker run --rm te-live-liquibase \
-            --url="jdbc:postgresql://direct.82ylg01lgmmrzx19.flympg.net/telive" \
+          docker run --rm --network=host te-live-liquibase \
+            --url="jdbc:postgresql://localhost:15432/telive" \
             --username=liquibase-user \
             --password=${{ secrets.MPG_MIGRATE_PASS }} \
             --defaultSchemaName=telive \
