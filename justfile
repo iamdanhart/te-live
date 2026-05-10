@@ -41,6 +41,9 @@ test-add-users:
 test-toggle-signups:
     hurl dev_tools/toggle_signups.hurl
 
+generate-qr:
+    source .env && qrencode -t SVG -o docs/qr.svg "$APP_URL"
+
 deploy:
     fly deploy
 
