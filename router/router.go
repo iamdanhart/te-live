@@ -89,7 +89,10 @@ func handleQueueStatus(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 
 func handleIndex(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 	if r.URL.Path != "/" {
-		http.NotFound(w, r)
+		w.WriteHeader(http.StatusNotFound)
+		if err := grab_templates.GetTemplates().ExecuteTemplate(w, "404.html", nil); err != nil {
+			slog.Error("template error", "err", err)
+		}
 		return
 	}
 	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "index.html", queueStatusData(q)); err != nil {
