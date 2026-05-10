@@ -1,0 +1,5 @@
+{
+  "enforce_signup_limit": true,
+  "enforce_admin_auth": true,
+  "allowed_hosts": ["te-live.fly.dev"]
+}

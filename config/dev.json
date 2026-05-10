@@ -1,0 +1,5 @@
+{
+  "enforce_signup_limit": false,
+  "enforce_admin_auth": false,
+  "allowed_hosts": []
+}
