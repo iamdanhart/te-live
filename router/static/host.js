@@ -138,7 +138,7 @@ queueList.addEventListener('drop', function(e) {
     let afterId;
     if (e.clientY < rect.top + rect.height / 2) {
         const prev = target.previousElementSibling;
-        afterId = (prev && prev.dataset.id) ? prev.dataset.id : '0';
+        afterId = (prev && prev.dataset.id) ? prev.dataset.id : '0'; // '0' = move to front sentinel (server requires SERIAL IDs ≥ 1)
     } else {
         afterId = target.dataset.id;
     }
