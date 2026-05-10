@@ -38,11 +38,13 @@ flyproxy:
 
 # For a full prod reinit: drop and recreate the telive database in the Fly dashboard first, then run this.
 # Requires flyproxy running in another terminal.
+# Note: host.docker.internal resolves on macOS/Windows Docker Desktop only.
+# On Linux, pass --add-host=host.docker.internal:host-gateway to docker run instead.
 db-migrate-prod:
     source .env && docker build -f Dockerfile.liquibase -t te-live-liquibase . && docker run --rm te-live-liquibase \
       --url="jdbc:postgresql://host.docker.internal:15432/telive?sslmode=disable" \
-      --username=$MPG_MIGRATE_USER --password=$MPG_MIGRATE_PASS \
-      --defaultSchemaName=$MPG_SCHEMA --liquibaseSchemaName=$MPG_LB_SCHEMA \
+      --username=liquibase-user --password=$MPG_MIGRATE_PASS \
+      --defaultSchemaName=telive --liquibaseSchemaName=public \
       --search-path=/liquibase/changelog --changeLogFile=root.yaml update
 
 db-down:

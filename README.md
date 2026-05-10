@@ -31,7 +31,7 @@ The `Queue` interface (`queue/queue.go`) is the boundary between HTTP handlers a
 - Go 1.26+
 - Docker (for the local database)
 - [`just`](https://github.com/casey/just) task runner
-- A `.env` file for secrets (see `.env` below)
+- A `.env` file for secrets (see [`.env.example`](.env.example))
 
 ### Start the database
 
@@ -119,6 +119,19 @@ just db-migrate-prod
 ```
 
 All tables live under the `telive` schema.
+
+---
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and fill in the values. The file is gitignored and never committed.
+
+| Variable | Used by | Where to find |
+|----------|---------|---------------|
+| `MPG_CLUSTER_ID` | `just flyproxy` | `fly mpg list` |
+| `MPG_USER` | `just add-host-user-prod` | Fly dashboard > Postgres cluster > Connection details |
+| `MPG_PASS` | `just add-host-user-prod` | Same as above; reset via `ALTER ROLE telive WITH PASSWORD '...'` |
+| `MPG_MIGRATE_PASS` | `just db-migrate-prod` | Fly dashboard > Postgres cluster > Connection details (`liquibase-user`) |
 
 ---
 
