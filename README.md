@@ -135,6 +135,15 @@ Copy `.env.example` to `.env` and fill in the values. The file is gitignored and
 
 ---
 
+## CI
+
+Two workflows run on every push:
+
+- **CI** (`.github/workflows/ci.yml`) — unit tests across `config`, `middleware`, and `router`
+- **Integration Tests** (`.github/workflows/integration-test.yml`) — runs `./queue/...` using testcontainers (spins up Postgres and Liquibase in Docker)
+
+---
+
 ## Vendored Dependencies
 
 HTMX is vendored at `router/static/vendor/htmx.min.js`. Two scripts in `dev_tools/` manage it:
