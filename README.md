@@ -152,10 +152,12 @@ just flyproxy      # open a local proxy to the prod DB on localhost:15432
 
 | Layer | Mechanism |
 |-------|-----------|
+| Transport | HTTPS enforced by Fly (`force_https = true`) — Basic Auth depends on this; credentials would be exposed in plaintext on a plain HTTP deployment |
 | Audience signups | IP-based rate limit (2-minute window) |
 | Host POST routes | IP-based failure limit (blocks after 10 failed auth attempts in 15 minutes) |
 | CSRF | Origin/Referer header checked against `allowed_hosts` |
 | Host credentials | bcrypt (cost 12) |
+| Input validation | Name required, max 50 chars; at least one song required; song IDs validated against the DB |
 | Framing | `X-Frame-Options: DENY` |
 | MIME sniffing | `X-Content-Type-Options: nosniff` |
 | Referrer | `Referrer-Policy: strict-origin` |
@@ -165,7 +167,7 @@ just flyproxy      # open a local proxy to the prod DB on localhost:15432
 ## TODOs
 
 ### Features
-- **Host session invalidation** — Host auth uses HTTP Basic Auth with browser-cached credentials. There is no server-side session, so there is no way to forcibly sign out a host mid-session. Implementing this would require a sessions table and cookie-based auth.
+- **Cookie-based host auth** — Host auth currently uses HTTP Basic Auth. Upgrading to a login form with signed `HttpOnly; Secure; SameSite=Strict` cookies would add: automatic session expiry (e.g. 8 hours), a working logout endpoint, and no credentials sent on every request. Requires a `sessions` table, a login page, and a few new routes.
 - **Real favicon** — A placeholder emoji favicon is in use. A proper `.ico` file (mic icon, potentially commissioned) should be added to `router/static/` and the skip list in `router.go` updated.
 - **OG image** — An `og:image` meta tag is stubbed out but commented in `base.html`. Needs an actual image asset.
 
