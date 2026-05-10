@@ -17,6 +17,7 @@ import (
 
 func NewRouter(cfg config.Props) http.Handler {
 	rl := middleware.NewRateLimiter(2*time.Minute, cfg.EnforceSignupLimit)
+	fl := middleware.NewFailureLimiter(15*time.Minute, 10)
 	q, err := queue.NewPgQueue(cfg.DatabaseURL)
 	if err != nil {
 		slog.Error("failed to connect to database", "err", err)
@@ -45,7 +46,7 @@ func NewRouter(cfg config.Props) http.Handler {
 	mux.HandleFunc("GET /queue-status", func(w http.ResponseWriter, r *http.Request) {
 		handleQueueStatus(w, r, q)
 	})
-	registerHostRoutes(mux, cfg, q)
+	registerHostRoutes(mux, cfg, q, fl)
 	mux.HandleFunc("GET /catalog", func(w http.ResponseWriter, r *http.Request) {
 		handleCatalog(w, r, q)
 	})

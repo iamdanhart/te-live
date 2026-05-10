@@ -7,6 +7,12 @@ import (
 	"time"
 )
 
+// Limiter is implemented by any middleware that can wrap an http.Handler
+// to enforce request limits.
+type Limiter interface {
+	Limit(next http.Handler) http.Handler
+}
+
 // RateLimiter tracks the last request time per client IP and rejects
 // requests that arrive within the cooldown window.
 type RateLimiter struct {

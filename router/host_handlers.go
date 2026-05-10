@@ -19,9 +19,12 @@ func renderQueue(w http.ResponseWriter, q queue.Queue) {
 	}
 }
 
-func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue) {
+func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue, rl middleware.Limiter) {
 	auth := func(h http.HandlerFunc) http.Handler {
 		return middleware.AdminAuth(cfg.EnforceAdminAuth, q.AuthenticateHost, h)
+	}
+	authPost := func(h http.HandlerFunc) http.Handler {
+		return withHostPostMiddleware(rl, auth(h))
 	}
 
 	mux.Handle("GET /host", auth(func(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +43,7 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue) {
 		renderQueue(w, q)
 	}))
 
-	mux.Handle("POST /host/performed", auth(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("POST /host/performed", authPost(func(w http.ResponseWriter, r *http.Request) {
 		songID, err := strconv.Atoi(r.FormValue("song_id"))
 		if err != nil {
 			http.Error(w, "invalid song_id", http.StatusBadRequest)
@@ -59,7 +62,7 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue) {
 		}
 	}))
 
-	mux.Handle("POST /host/add-song", auth(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("POST /host/add-song", authPost(func(w http.ResponseWriter, r *http.Request) {
 		songID, err := strconv.Atoi(r.FormValue("song_id"))
 		if err != nil {
 			http.Error(w, "invalid song_id", http.StatusBadRequest)
@@ -69,17 +72,17 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue) {
 		renderQueue(w, q)
 	}))
 
-	mux.Handle("POST /host/remove", auth(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("POST /host/remove", authPost(func(w http.ResponseWriter, r *http.Request) {
 		q.RemoveCurrent()
 		renderQueue(w, q)
 	}))
 
-	mux.Handle("POST /host/skip", auth(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("POST /host/skip", authPost(func(w http.ResponseWriter, r *http.Request) {
 		q.MoveCurrentToBottom()
 		renderQueue(w, q)
 	}))
 
-	mux.Handle("POST /host/move", auth(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("POST /host/move", authPost(func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(r.FormValue("id"))
 		if err != nil {
 			http.Error(w, "invalid id", http.StatusBadRequest)
@@ -94,8 +97,12 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue) {
 		renderQueue(w, q)
 	}))
 
-	mux.Handle("POST /signups/toggle", auth(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("POST /signups/toggle", authPost(func(w http.ResponseWriter, r *http.Request) {
 		open := q.ToggleSignups()
 		fmt.Fprintf(w, `{"signups_open":%t}`, open)
 	}))
+}
+
+func withHostPostMiddleware(l middleware.Limiter, h http.Handler) http.Handler {
+	return l.Limit(h)
 }
