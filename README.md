@@ -219,6 +219,11 @@ just flyproxy      # open a local proxy to the prod DB on localhost:15432
 ### sqlc Migration
 - **Migrate remaining queries** — Only `Songs()` has been moved to sqlc. The remaining queries in `pg_queue.go` are candidates, though some (e.g. dynamic position subqueries, multi-step transactions) will need care. `db/schema.sql` must also be kept in sync with any new Liquibase migrations.
 
+### Known Limitations
+- **Float position drift** — `MoveEntry` uses a midpoint algorithm (`(a + b) / 2`) to reorder queue entries without renumbering. After many drag-drops in one session, positions can converge toward float64 precision limits, causing two entries to collide on the same value. Not a practical problem at current queue lengths, but a periodic rebalance (e.g. reassign integer positions 1, 2, 3… on `ToggleSignups` open) would eliminate the risk.
+- **`times_on_stage` is tracked but not displayed** — `CompleteCurrentSong` increments the counter but nothing reads it in templates or handlers. Could feed a fairness indicator in the host view ("sang 3 times tonight").
+- **Shallow health check** — `GET /health` returns 200 immediately with no DB ping. A DB blip won't cause a machine restart (intentional), but UptimeRobot will show green while all DB-backed requests are failing.
+
 ### Nice to Have
 - **Song catalog management** — Songs are currently managed via direct SQL. A host-only UI for adding and removing songs would make setlist changes self-serve without needing DB access.
 - **Uptime monitoring** — Fly has no built-in alerting. Point a free UptimeRobot monitor at `/health` to get email notifications if the app goes down.
