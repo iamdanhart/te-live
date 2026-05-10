@@ -147,6 +147,10 @@ Two workflows are triggered manually via the GitHub Actions UI:
 - **Fly Deploy** (`.github/workflows/fly-deploy.yml`) — deploys the app to Fly.io
 - **Liquibase Migrate (Prod)** (`.github/workflows/liquibase-migrate.yml`) — runs Liquibase migrations against the production database
 
+One workflow runs on a schedule:
+
+- **Warm Machine** (`.github/workflows/warm-machine.yml`) — pings `/health` on Friday nights to keep the Fly machine warm for the show. Runs every 5 minutes from 7–10 PM EDT (peak signup period) and every 10 minutes from 10 PM–midnight EDT (winding down). No secrets required.
+
 ### GitHub Secrets
 
 | Secret | Used by | Notes |
@@ -221,7 +225,7 @@ just deploy        # fly deploy
 
 ### Features
 - **Cookie-based host auth** — Host auth currently uses HTTP Basic Auth. Upgrading to a login form with signed `HttpOnly; Secure; SameSite=Strict` cookies would add: automatic session expiry (e.g. 8 hours), a working logout endpoint, and no credentials sent on every request. Requires a `sessions` table, a login page, and a few new routes.
-- **Real favicon** — A placeholder emoji favicon is in use. A proper `.ico` file (mic icon, potentially commissioned) should be added to `router/static/` and the skip list in `router.go` updated.
+- **Real favicon** — A placeholder emoji favicon is in use. A proper `.ico` file (mic icon, potentially commissioned) should be added to `router/static/` and the skip list in `router.go` updated. Once done, remove `data:` from the `img-src` directive in `middleware/secure_headers.go` to tighten the CSP.
 - **OG image** — An `og:image` meta tag is stubbed out but commented in `base.html`. Needs an actual image asset.
 
 ### Data

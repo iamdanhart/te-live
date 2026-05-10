@@ -1,0 +1,17 @@
+name: Warm Machine (Friday Shows)
+
+on:
+  schedule:
+    # 11 PM Friday–2 AM UTC Saturday (7–10 PM EDT): every 5 min — peak signup period
+    - cron: '*/5 23 * * 5'
+    - cron: '*/5 0-1 * * 6'
+    # 2–4 AM UTC Saturday (10 PM–midnight EDT): every 10 min — winding down
+    - cron: '*/10 2-3 * * 6'
+
+jobs:
+  ping:
+    name: Ping health endpoint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - run: curl --fail https://te-live.fly.dev/health
