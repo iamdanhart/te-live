@@ -33,7 +33,7 @@ func main() {
 	}
 
 	_, err = db.Exec(
-		`INSERT INTO host_users (label, passcode_hash) VALUES ($1, $2)`,
+		`INSERT INTO telive.host_users (label, passcode_hash) VALUES ($1, $2)`,
 		*label, string(hash),
 	)
 	if err != nil {

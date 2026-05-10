@@ -8,7 +8,6 @@ type Props struct {
 	EnforceSignupLimit bool
 	EnforceAdminAuth   bool
 	DatabaseURL        string
-	Schema             string
 }
 
 // Load reads configuration from environment variables.
@@ -18,6 +17,5 @@ func Load() Props {
 		EnforceSignupLimit: os.Getenv("ENFORCE_SIGNUP_LIMIT") != "",
 		EnforceAdminAuth:   os.Getenv("ENFORCE_ADMIN_AUTH") != "",
 		DatabaseURL:        os.Getenv("DATABASE_URL"),
-		Schema:             os.Getenv("DB_SCHEMA"),
 	}
 }

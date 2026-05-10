@@ -12,6 +12,9 @@ primary_region = 'ewr'
 
 [env]
   PORT = '8080'
+  ENFORCE_ADMIN_AUTH = '1'
+  ENFORCE_SIGNUP_LIMIT = '1'
+  ENV = 'production'
 
 [http_service]
   internal_port = 8080

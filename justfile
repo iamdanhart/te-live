@@ -30,7 +30,7 @@ add-host-user label passcode:
     @DATABASE_URL={{db_url}} DB_SCHEMA={{db_schema}} go run ./cmd/add-host-user -label={{label}} -passcode={{passcode}}
 
 add-host-user-prod label passcode:
-    @source .env && DATABASE_URL=$MPG_APP_URL DB_SCHEMA=$MPG_SCHEMA go run ./cmd/add-host-user -label={{label}} -passcode={{passcode}}
+    @source .env && DATABASE_URL="postgresql://$MPG_USER:$(cat ~/telive_password)@localhost:15432/telive?sslmode=disable" go run ./cmd/add-host-user -label={{label}} -passcode={{passcode}}
 
 test-add-users:
     hurl dev_tools/add_users_to_queue.hurl
@@ -43,8 +43,8 @@ flyproxy:
 # For a full prod reinit: drop and recreate the telive database in the Fly dashboard first, then run this.
 # Requires flyproxy running in another terminal.
 db-migrate-prod:
-    source .env && docker build -f Dockerfile.liquibase -t te-live-liquibase . && docker run --rm --network host te-live-liquibase \
-      --url="jdbc:postgresql://localhost:15432/telive?sslmode=disable" \
+    source .env && docker build -f Dockerfile.liquibase -t te-live-liquibase . && docker run --rm te-live-liquibase \
+      --url="jdbc:postgresql://host.docker.internal:15432/telive?sslmode=disable" \
       --username=$MPG_MIGRATE_USER --password=$MPG_MIGRATE_PASS \
       --defaultSchemaName=$MPG_SCHEMA --liquibaseSchemaName=$MPG_LB_SCHEMA \
       --search-path=/liquibase/changelog --changeLogFile=root.yaml update

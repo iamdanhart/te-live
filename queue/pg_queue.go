@@ -1,13 +1,10 @@
 package queue
 
 import (
-	"context"
 	"database/sql"
-	"fmt"
 	"log/slog"
 
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/stdlib"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -17,25 +14,17 @@ const todayQueueEntries = `created_at >= CURRENT_DATE`
 const todayPerformed = `performed_at >= CURRENT_DATE`
 
 // firstTodayID is a subquery that returns the id of the first entry in today's queue.
-const firstTodayID = `(SELECT id FROM signups WHERE created_at >= CURRENT_DATE ORDER BY position ASC LIMIT 1)`
+const firstTodayID = `(SELECT id FROM telive.signups WHERE created_at >= CURRENT_DATE ORDER BY position ASC LIMIT 1)`
 
 type PgQueue struct {
 	db *sql.DB
 }
 
-func NewPgQueue(dsn, schema string) (*PgQueue, error) {
-	config, err := pgx.ParseConfig(dsn)
+func NewPgQueue(dsn string) (*PgQueue, error) {
+	db, err := sql.Open("pgx", dsn)
 	if err != nil {
 		return nil, err
 	}
-	var afterConnect func(context.Context, *pgx.Conn) error
-	if schema != "" {
-		afterConnect = func(ctx context.Context, conn *pgx.Conn) error {
-			_, err := conn.Exec(ctx, fmt.Sprintf("SET search_path TO %s", schema))
-			return err
-		}
-	}
-	db := stdlib.OpenDB(*config, stdlib.OptionAfterConnect(afterConnect))
 	if err := db.Ping(); err != nil {
 		return nil, err
 	}
@@ -43,7 +32,7 @@ func NewPgQueue(dsn, schema string) (*PgQueue, error) {
 }
 
 func (q *PgQueue) Songs() []Song {
-	rows, err := q.db.Query(`SELECT id, title, artist, COALESCE(tab_url, '') FROM songs ORDER BY title ASC`)
+	rows, err := q.db.Query(`SELECT id, title, artist, COALESCE(tab_url, '') FROM telive.songs ORDER BY title ASC`)
 	if err != nil {
 		slog.Error("Songs query", "err", err)
 		return nil
@@ -64,9 +53,9 @@ func (q *PgQueue) Songs() []Song {
 func (q *PgQueue) Entries() []Entry {
 	rows, err := q.db.Query(`
 		SELECT qe.id, qe.name, s.id, s.title, s.artist, s.tab_url, es.performed
-		FROM signups qe
-		JOIN entry_songs es ON es.entry_id = qe.id
-		JOIN songs s ON s.id = es.song_id
+		FROM telive.signups qe
+		JOIN telive.entry_songs es ON es.entry_id = qe.id
+		JOIN telive.songs s ON s.id = es.song_id
 		WHERE ` + todayQueueEntries + `
 		ORDER BY qe.position ASC, es.sort_order ASC`)
 	if err != nil {
@@ -79,7 +68,7 @@ func (q *PgQueue) Entries() []Entry {
 
 func (q *PgQueue) SignupsOpen() bool {
 	var value string
-	err := q.db.QueryRow(`SELECT value FROM settings WHERE key = 'signups_open'`).Scan(&value)
+	err := q.db.QueryRow(`SELECT value FROM telive.settings WHERE key = 'signups_open'`).Scan(&value)
 	if err != nil {
 		slog.Error("SignupsOpen query", "err", err)
 		return false
@@ -90,7 +79,7 @@ func (q *PgQueue) SignupsOpen() bool {
 func (q *PgQueue) ToggleSignups() bool {
 	var value string
 	err := q.db.QueryRow(`
-		UPDATE settings
+		UPDATE telive.settings
 		SET value = CASE WHEN value = 'true' THEN 'false' ELSE 'true' END
 		WHERE key = 'signups_open'
 		RETURNING value`).Scan(&value)
@@ -99,7 +88,7 @@ func (q *PgQueue) ToggleSignups() bool {
 		return false
 	}
 	if value == "true" {
-		_, err = q.db.Exec(`DELETE FROM signups WHERE created_at < CURRENT_DATE`)
+		_, err = q.db.Exec(`DELETE FROM telive.signups WHERE created_at < CURRENT_DATE`)
 		if err != nil {
 			slog.Error("ToggleSignups clear old signups", "err", err)
 		}
@@ -116,8 +105,8 @@ func (q *PgQueue) Add(name string, songIDs []int) error {
 
 	var entryID int
 	err = tx.QueryRow(`
-		INSERT INTO signups (name, position)
-		VALUES ($1, COALESCE((SELECT MAX(position) FROM signups WHERE `+todayQueueEntries+`), 0) + 1)
+		INSERT INTO telive.signups (name, position)
+		VALUES ($1, COALESCE((SELECT MAX(position) FROM telive.signups WHERE `+todayQueueEntries+`), 0) + 1)
 		RETURNING id`, name).Scan(&entryID)
 	if err != nil {
 		return err
@@ -125,7 +114,7 @@ func (q *PgQueue) Add(name string, songIDs []int) error {
 
 	for i, songID := range songIDs {
 		_, err = tx.Exec(`
-			INSERT INTO entry_songs (entry_id, song_id, sort_order)
+			INSERT INTO telive.entry_songs (entry_id, song_id, sort_order)
 			VALUES ($1, $2, $3)`,
 			entryID, songID, i)
 		if err != nil {
@@ -138,8 +127,8 @@ func (q *PgQueue) Add(name string, songIDs []int) error {
 
 func (q *PgQueue) MoveCurrentToBottom() {
 	_, err := q.db.Exec(`
-		UPDATE signups
-		SET position = (SELECT MAX(position) FROM signups WHERE ` + todayQueueEntries + `) + 1
+		UPDATE telive.signups
+		SET position = (SELECT MAX(position) FROM telive.signups WHERE ` + todayQueueEntries + `) + 1
 		WHERE id = ` + firstTodayID)
 	if err != nil {
 		slog.Error("MoveCurrentToBottom", "err", err)
@@ -147,7 +136,7 @@ func (q *PgQueue) MoveCurrentToBottom() {
 }
 
 func (q *PgQueue) RemoveCurrent() {
-	_, err := q.db.Exec(`DELETE FROM signups WHERE id = ` + firstTodayID)
+	_, err := q.db.Exec(`DELETE FROM telive.signups WHERE id = ` + firstTodayID)
 	if err != nil {
 		slog.Error("RemoveCurrent", "err", err)
 	}
@@ -162,7 +151,7 @@ func (q *PgQueue) CompleteCurrentSong(singer string, songID int) {
 	defer tx.Rollback()
 
 	_, err = tx.Exec(`
-		UPDATE entry_songs SET performed = true
+		UPDATE telive.entry_songs SET performed = true
 		WHERE entry_id = `+firstTodayID+`
 		  AND song_id = $1`,
 		songID)
@@ -172,7 +161,7 @@ func (q *PgQueue) CompleteCurrentSong(singer string, songID int) {
 	}
 
 	_, err = tx.Exec(`
-		INSERT INTO performed_songs (singer, song_id)
+		INSERT INTO telive.performed_songs (singer, song_id)
 		VALUES ($1, $2)`,
 		singer, songID)
 	if err != nil {
@@ -181,7 +170,7 @@ func (q *PgQueue) CompleteCurrentSong(singer string, songID int) {
 	}
 
 	_, err = tx.Exec(`
-		UPDATE signups SET times_on_stage = times_on_stage + 1
+		UPDATE telive.signups SET times_on_stage = times_on_stage + 1
 		WHERE id = ` + firstTodayID)
 	if err != nil {
 		slog.Error("CompleteCurrentSong increment times_on_stage", "err", err)
@@ -196,8 +185,8 @@ func (q *PgQueue) CompleteCurrentSong(singer string, songID int) {
 func (q *PgQueue) Performed() []PerformedSong {
 	rows, err := q.db.Query(`
 		SELECT ps.singer, s.id, s.title, s.artist, s.tab_url
-		FROM performed_songs ps
-		JOIN songs s ON s.id = ps.song_id
+		FROM telive.performed_songs ps
+		JOIN telive.songs s ON s.id = ps.song_id
 		WHERE ` + todayPerformed + `
 		ORDER BY ps.performed_at ASC`)
 	if err != nil {
@@ -220,11 +209,11 @@ func (q *PgQueue) Performed() []PerformedSong {
 
 func (q *PgQueue) AddSongToFirst(songID int) {
 	_, err := q.db.Exec(`
-		INSERT INTO entry_songs (entry_id, song_id, sort_order)
+		INSERT INTO telive.entry_songs (entry_id, song_id, sort_order)
 		VALUES (
 			`+firstTodayID+`,
 			$1,
-			COALESCE((SELECT MAX(sort_order) FROM entry_songs WHERE entry_id = `+firstTodayID+`), 0) + 1
+			COALESCE((SELECT MAX(sort_order) FROM telive.entry_songs WHERE entry_id = `+firstTodayID+`), 0) + 1
 		)`, songID)
 	if err != nil {
 		slog.Error("AddSongToFirst", "err", err)
@@ -235,7 +224,7 @@ func (q *PgQueue) HasName(name string) bool {
 	var exists bool
 	err := q.db.QueryRow(`
 		SELECT EXISTS(
-			SELECT 1 FROM signups
+			SELECT 1 FROM telive.signups
 			WHERE LOWER(name) = LOWER($1) AND `+todayQueueEntries+`
 		)`, name).Scan(&exists)
 	if err != nil {
@@ -274,7 +263,7 @@ func computeNewPosition(entries []positionRow, afterID int) (float64, bool) {
 
 func (q *PgQueue) MoveEntry(id, afterID int) {
 	rows, err := q.db.Query(`
-		SELECT id, position FROM signups
+		SELECT id, position FROM telive.signups
 		WHERE ` + todayQueueEntries + `
 		ORDER BY position ASC`)
 	if err != nil {
@@ -299,7 +288,7 @@ func (q *PgQueue) MoveEntry(id, afterID int) {
 		return
 	}
 
-	if _, err := q.db.Exec(`UPDATE signups SET position = $1 WHERE id = $2`, newPos, id); err != nil {
+	if _, err := q.db.Exec(`UPDATE telive.signups SET position = $1 WHERE id = $2`, newPos, id); err != nil {
 		slog.Error("MoveEntry update", "err", err)
 	}
 }
@@ -338,7 +327,7 @@ func scanEntries(rows *sql.Rows) []Entry {
 }
 
 func (q *PgQueue) AuthenticateHost(passcode string) bool {
-	rows, err := q.db.Query(`SELECT passcode_hash FROM host_users WHERE active = TRUE`)
+	rows, err := q.db.Query(`SELECT passcode_hash FROM telive.host_users WHERE active = TRUE`)
 	if err != nil {
 		slog.Error("AuthenticateHost query", "err", err)
 		return false

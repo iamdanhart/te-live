@@ -95,7 +95,7 @@ func TestMain(m *testing.M) {
 
 func openTestQueue(t *testing.T) *PgQueue {
 	t.Helper()
-	q, err := NewPgQueue(testDSN, "telive")
+	q, err := NewPgQueue(testDSN)
 	require.NoError(t, err)
 	return q
 }
