@@ -48,7 +48,7 @@ func (q *PgQueue) Songs(ctx context.Context) []Song {
 	rows, err := q.queries.ListSongs(ctx)
 	if err != nil {
 		slog.Error("Songs query", "err", err)
-		return nil
+		return []Song{}
 	}
 	songs := make([]Song, len(rows))
 	for i, r := range rows {
