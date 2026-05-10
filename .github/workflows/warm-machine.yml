@@ -1,6 +1,7 @@
 name: Warm Machine (Friday Shows)
 
 on:
+  workflow_dispatch:
   schedule:
     # 11 PM Friday–2 AM UTC Saturday (7–10 PM EDT): every 5 min — peak signup period
     - cron: '*/5 23 * * 5'
