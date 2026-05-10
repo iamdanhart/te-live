@@ -28,7 +28,7 @@ jobs:
       - name: Run migrations
         run: |
           docker run --rm --network=host te-live-liquibase \
-            --url="jdbc:postgresql://localhost:15432/telive" \
+            --url="jdbc:postgresql://localhost:15432/telive?sslmode=disable" \
             --username=liquibase-user \
             --password=${{ secrets.MPG_MIGRATE_PASS }} \
             --defaultSchemaName=telive \
