@@ -311,7 +311,7 @@ func (q *PgQueue) MoveEntry(ctx context.Context, id, afterID int) {
 
 	newPos, ok := computeNewPosition(entries, afterID)
 	if !ok {
-		slog.Error("MoveEntry afterID not found", "afterID", afterID)
+		slog.Warn("MoveEntry afterID not found", "afterID", afterID)
 		return
 	}
 

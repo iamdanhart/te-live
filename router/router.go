@@ -128,7 +128,7 @@ func handleSignup(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 	for _, s := range r.Form["song"] {
 		var id int
 		if _, err := fmt.Sscan(s, &id); err != nil {
-			slog.Error("failed to parse song id", "err", err)
+			slog.Warn("failed to parse song id", "err", err)
 			http.Error(w, "invalid song id", http.StatusBadRequest)
 			return
 		}
