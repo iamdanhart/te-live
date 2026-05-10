@@ -19,12 +19,12 @@ func renderQueue(w http.ResponseWriter, q queue.Queue) {
 	}
 }
 
-func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue, rl middleware.Limiter) {
+func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue, rl middleware.Limiter, csrf func(http.Handler) http.Handler) {
 	auth := func(h http.HandlerFunc) http.Handler {
 		return middleware.AdminAuth(cfg.EnforceAdminAuth, q.AuthenticateHost, h)
 	}
 	authPost := func(h http.HandlerFunc) http.Handler {
-		return withHostPostMiddleware(rl, auth(h))
+		return csrf(withHostPostMiddleware(rl, auth(h)))
 	}
 
 	mux.Handle("GET /host", auth(func(w http.ResponseWriter, r *http.Request) {
