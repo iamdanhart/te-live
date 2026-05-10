@@ -1,6 +1,7 @@
 package router
 
 import (
+	"bytes"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -58,13 +59,19 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue, rl 
 			return
 		}
 		tmpl := grab_templates.GetTemplates()
-		if err := tmpl.ExecuteTemplate(w, "host_performed.html", q.Performed(r.Context())); err != nil {
+		var buf bytes.Buffer
+		if err := tmpl.ExecuteTemplate(&buf, "host_performed.html", q.Performed(r.Context())); err != nil {
 			slog.Error("template error", "err", err)
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 			return
 		}
-		if err := tmpl.ExecuteTemplate(w, "host_queue_oob.html", q.Entries(r.Context())); err != nil {
+		if err := tmpl.ExecuteTemplate(&buf, "host_queue_oob.html", q.Entries(r.Context())); err != nil {
 			slog.Error("template error", "err", err)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
+		if _, err := buf.WriteTo(w); err != nil {
+			slog.Error("failed to write performed response", "err", err)
 		}
 	}))
 
