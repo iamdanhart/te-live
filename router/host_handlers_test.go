@@ -140,6 +140,13 @@ func TestHostAddSong_InvalidSongID(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, rr.Code)
 }
 
+func TestHostAddSong_InvalidSongIDFromDB(t *testing.T) {
+	q := &hostStub{addSongToFirstErr: queue.ErrInvalidSongID}
+	rr := postForm(newHostMux(q), "/host/add-song", url.Values{"song_id": {"99"}})
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
+	assert.True(t, q.addSongToFirstCalled)
+}
+
 func TestHostAddSong_Error(t *testing.T) {
 	q := &hostStub{addSongToFirstErr: errors.New("db error")}
 	rr := postForm(newHostMux(q), "/host/add-song", url.Values{"song_id": {"1"}})

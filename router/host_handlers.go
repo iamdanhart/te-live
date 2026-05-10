@@ -2,6 +2,7 @@ package router
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -82,6 +83,10 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue, rl 
 			return
 		}
 		if err := q.AddSongToFirst(r.Context(), songID); err != nil {
+			if errors.Is(err, queue.ErrInvalidSongID) {
+				http.Error(w, "invalid song id", http.StatusBadRequest)
+				return
+			}
 			http.Error(w, "failed to add song", http.StatusInternalServerError)
 			return
 		}

@@ -240,6 +240,15 @@ func (q *PgQueue) Performed(ctx context.Context) []PerformedSong {
 }
 
 func (q *PgQueue) AddSongToFirst(ctx context.Context, songID int) error {
+	var count int
+	if err := q.db.QueryRowContext(ctx,
+		`SELECT COUNT(*) FROM telive.songs WHERE id = $1`, songID,
+	).Scan(&count); err != nil {
+		return err
+	}
+	if count == 0 {
+		return ErrInvalidSongID
+	}
 	_, err := q.db.ExecContext(ctx, `
 		INSERT INTO telive.entry_songs (entry_id, song_id, sort_order)
 		VALUES (

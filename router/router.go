@@ -86,31 +86,52 @@ func queueStatusData(ctx context.Context, q queue.Queue) struct {
 }
 
 func handleQueueStatus(w http.ResponseWriter, r *http.Request, q queue.Queue) {
-	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "index_queue.html", queueStatusData(r.Context(), q)); err != nil {
+	var buf bytes.Buffer
+	if err := grab_templates.GetTemplates().ExecuteTemplate(&buf, "index_queue.html", queueStatusData(r.Context(), q)); err != nil {
 		slog.Error("template error", "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	if _, err := buf.WriteTo(w); err != nil {
+		slog.Error("failed to write queue status response", "err", err)
 	}
 }
 
 func handleIndex(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 	if r.URL.Path != "/" {
-		w.WriteHeader(http.StatusNotFound)
-		if err := grab_templates.GetTemplates().ExecuteTemplate(w, "404.html", nil); err != nil {
+		var buf bytes.Buffer
+		if err := grab_templates.GetTemplates().ExecuteTemplate(&buf, "404.html", nil); err != nil {
 			slog.Error("template error", "err", err)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusNotFound)
+		if _, err := buf.WriteTo(w); err != nil {
+			slog.Error("failed to write 404 response", "err", err)
 		}
 		return
 	}
-	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "index.html", queueStatusData(r.Context(), q)); err != nil {
+	var buf bytes.Buffer
+	if err := grab_templates.GetTemplates().ExecuteTemplate(&buf, "index.html", queueStatusData(r.Context(), q)); err != nil {
 		slog.Error("template error", "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	if _, err := buf.WriteTo(w); err != nil {
+		slog.Error("failed to write index response", "err", err)
 	}
 }
 
 func handleSignupPage(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 	data := struct{ Songs []queue.Song }{q.Songs(r.Context())}
-	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "signup.html", data); err != nil {
+	var buf bytes.Buffer
+	if err := grab_templates.GetTemplates().ExecuteTemplate(&buf, "signup.html", data); err != nil {
 		slog.Error("template error", "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	if _, err := buf.WriteTo(w); err != nil {
+		slog.Error("failed to write signup page response", "err", err)
 	}
 }
 
