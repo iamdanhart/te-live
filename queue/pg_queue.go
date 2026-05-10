@@ -83,7 +83,7 @@ func (q *PgQueue) SignupsOpen(ctx context.Context) bool {
 	return value == "true"
 }
 
-func (q *PgQueue) ToggleSignups(ctx context.Context) bool {
+func (q *PgQueue) ToggleSignups(ctx context.Context) (bool, error) {
 	var value string
 	err := q.db.QueryRowContext(ctx, `
 		UPDATE telive.settings
@@ -92,7 +92,7 @@ func (q *PgQueue) ToggleSignups(ctx context.Context) bool {
 		RETURNING value`).Scan(&value)
 	if err != nil {
 		slog.Error("ToggleSignups query", "err", err)
-		return false
+		return false, err
 	}
 	if value == "true" {
 		_, err = q.db.ExecContext(ctx, `DELETE FROM telive.signups WHERE created_at < CURRENT_DATE`)
@@ -100,7 +100,7 @@ func (q *PgQueue) ToggleSignups(ctx context.Context) bool {
 			slog.Error("ToggleSignups clear old signups", "err", err)
 		}
 	}
-	return value == "true"
+	return value == "true", nil
 }
 
 func (q *PgQueue) Add(ctx context.Context, name string, songIDs []int) error {

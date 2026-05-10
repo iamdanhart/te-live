@@ -33,7 +33,7 @@ type Queue interface {
 	Entries(ctx context.Context) []Entry
 	Songs(ctx context.Context) []Song
 	SignupsOpen(ctx context.Context) bool
-	ToggleSignups(ctx context.Context) bool
+	ToggleSignups(ctx context.Context) (bool, error)
 	Add(ctx context.Context, name string, songIDs []int) error
 	CompleteCurrentSong(ctx context.Context, singer string, songID int) error
 	Performed(ctx context.Context) []PerformedSong

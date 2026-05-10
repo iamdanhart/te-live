@@ -19,19 +19,19 @@ type stubQueue struct {
 	signupsOpen bool
 }
 
-func (s *stubQueue) Entries(context.Context) []queue.Entry    { return s.entries }
-func (s *stubQueue) SignupsOpen(context.Context) bool          { return s.signupsOpen }
-func (s *stubQueue) Songs(context.Context) []queue.Song        { panic("not implemented") }
-func (s *stubQueue) ToggleSignups(context.Context) bool        { panic("not implemented") }
-func (s *stubQueue) Add(context.Context, string, []int) error  { panic("not implemented") }
+func (s *stubQueue) Entries(context.Context) []queue.Entry                  { return s.entries }
+func (s *stubQueue) SignupsOpen(context.Context) bool                       { return s.signupsOpen }
+func (s *stubQueue) Songs(context.Context) []queue.Song                     { panic("not implemented") }
+func (s *stubQueue) ToggleSignups(context.Context) (bool, error)            { panic("not implemented") }
+func (s *stubQueue) Add(context.Context, string, []int) error               { panic("not implemented") }
 func (s *stubQueue) CompleteCurrentSong(context.Context, string, int) error { panic("not implemented") }
-func (s *stubQueue) Performed(context.Context) []queue.PerformedSong         { panic("not implemented") }
-func (s *stubQueue) AddSongToFirst(context.Context, int) error               { panic("not implemented") }
-func (s *stubQueue) MoveCurrentToBottom(context.Context) error               { panic("not implemented") }
-func (s *stubQueue) RemoveCurrent(context.Context) error                     { panic("not implemented") }
-func (s *stubQueue) MoveEntry(context.Context, int, int) error               { panic("not implemented") }
-func (s *stubQueue) HasName(context.Context, string) bool             { panic("not implemented") }
-func (s *stubQueue) AuthenticateHost(context.Context, string) bool    { panic("not implemented") }
+func (s *stubQueue) Performed(context.Context) []queue.PerformedSong        { panic("not implemented") }
+func (s *stubQueue) AddSongToFirst(context.Context, int) error              { panic("not implemented") }
+func (s *stubQueue) MoveCurrentToBottom(context.Context) error              { panic("not implemented") }
+func (s *stubQueue) RemoveCurrent(context.Context) error                    { panic("not implemented") }
+func (s *stubQueue) MoveEntry(context.Context, int, int) error              { panic("not implemented") }
+func (s *stubQueue) HasName(context.Context, string) bool                   { panic("not implemented") }
+func (s *stubQueue) AuthenticateHost(context.Context, string) bool          { panic("not implemented") }
 
 func TestHandleSignup_EmptyName(t *testing.T) {
 	form := url.Values{"name": {""}}

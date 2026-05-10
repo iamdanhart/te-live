@@ -61,9 +61,9 @@ func (s *hostStub) AuthenticateHost(context.Context, string) bool      { return 
 func (s *hostStub) Performed(context.Context) []queue.PerformedSong    { return s.performed }
 func (s *hostStub) Add(context.Context, string, []int) error           { return nil }
 
-func (s *hostStub) ToggleSignups(context.Context) bool {
+func (s *hostStub) ToggleSignups(context.Context) (bool, error) {
 	s.toggleSignupsCalled = true
-	return s.signupsOpen
+	return s.signupsOpen, nil
 }
 func (s *hostStub) CompleteCurrentSong(_ context.Context, _ string, _ int) error {
 	s.completeCurrentSongCalled = true

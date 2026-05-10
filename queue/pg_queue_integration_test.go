@@ -218,7 +218,8 @@ func TestToggleSignups_OpenClearsOldSignups(t *testing.T) {
 		q.db.Exec(`UPDATE settings SET value = 'false' WHERE key = 'signups_open'`)
 	})
 
-	open := q.ToggleSignups(context.Background())
+	open, err := q.ToggleSignups(context.Background())
+	require.NoError(t, err)
 	assert.True(t, open)
 
 	var count int
@@ -249,7 +250,8 @@ func TestToggleSignups_CloseDoesNotClearSignups(t *testing.T) {
 		q.db.Exec(`UPDATE settings SET value = 'false' WHERE key = 'signups_open'`)
 	})
 
-	open := q.ToggleSignups(context.Background())
+	open, err := q.ToggleSignups(context.Background())
+	require.NoError(t, err)
 	assert.False(t, open)
 
 	var count int
