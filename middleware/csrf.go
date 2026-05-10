@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"log/slog"
 	"net/http"
 	"net/url"
 )
@@ -27,6 +28,7 @@ func RequireSameOrigin(allowedHosts []string) func(http.Handler) http.Handler {
 			if header != "" {
 				u, err := url.Parse(header)
 				if err != nil || !allowed[u.Host] {
+					slog.Warn("CSRF check failed", "ip", r.RemoteAddr, "method", r.Method, "path", r.URL.Path, "header", header)
 					http.Error(w, "forbidden", http.StatusForbidden)
 					return
 				}
