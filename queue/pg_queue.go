@@ -1,12 +1,14 @@
 package queue
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
 
+	"github.com/iamdanhart/te-live/db/sqlcdb"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -22,7 +24,8 @@ const todayPerformed = `performed_at >= CURRENT_DATE`
 const firstTodayID = `(SELECT id FROM telive.signups WHERE created_at >= CURRENT_DATE ORDER BY position ASC LIMIT 1)`
 
 type PgQueue struct {
-	db *sql.DB
+	db      *sql.DB
+	queries *sqlcdb.Queries
 }
 
 func NewPgQueue(dsn string) (*PgQueue, error) {
@@ -33,24 +36,18 @@ func NewPgQueue(dsn string) (*PgQueue, error) {
 	if err := db.Ping(); err != nil {
 		return nil, err
 	}
-	return &PgQueue{db: db}, nil
+	return &PgQueue{db: db, queries: sqlcdb.New(db)}, nil
 }
 
 func (q *PgQueue) Songs() []Song {
-	rows, err := q.db.Query(`SELECT id, title, artist, COALESCE(tab_url, '') FROM telive.songs ORDER BY title ASC`)
+	rows, err := q.queries.ListSongs(context.Background())
 	if err != nil {
 		slog.Error("Songs query", "err", err)
 		return nil
 	}
-	defer rows.Close()
-	var songs []Song
-	for rows.Next() {
-		var s Song
-		if err := rows.Scan(&s.ID, &s.Title, &s.Artist, &s.TabUrl); err != nil {
-			slog.Error("Songs scan", "err", err)
-			return nil
-		}
-		songs = append(songs, s)
+	songs := make([]Song, len(rows))
+	for i, r := range rows {
+		songs[i] = Song{ID: int(r.ID), Title: r.Title, Artist: r.Artist, TabUrl: r.TabUrl}
 	}
 	return songs
 }

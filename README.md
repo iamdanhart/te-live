@@ -144,6 +144,26 @@ Two workflows run on every push:
 
 ---
 
+## Query Generation (sqlc)
+
+[sqlc](https://sqlc.dev) generates type-safe Go code from SQL queries. The generated files in `db/sqlcdb/` are committed — you only need the CLI if you're adding or changing queries.
+
+```sh
+brew install sqlc
+```
+
+Queries live in `db/queries/`. The schema used for generation is `db/schema.sql` (a plain SQL mirror of the Liquibase migrations — keep them in sync when adding tables). Config is in `sqlc.yaml`.
+
+To regenerate after changing a query:
+
+```sh
+sqlc generate
+```
+
+**Current status:** `Songs()` has been migrated as a proof of concept. The remaining queries in `pg_queue.go` still use raw SQL and are candidates for future migration.
+
+---
+
 ## Vendored Dependencies
 
 HTMX is vendored at `router/static/vendor/htmx.min.js`. Two scripts in `dev_tools/` manage it:
@@ -195,6 +215,9 @@ just flyproxy      # open a local proxy to the prod DB on localhost:15432
 
 ### Data
 - **Tab URLs** — `tab_url` is only populated for Bohemian Rhapsody (PoC). Remaining songs need their URLs updated directly in the DB.
+
+### sqlc Migration
+- **Migrate remaining queries** — Only `Songs()` has been moved to sqlc. The remaining queries in `pg_queue.go` are candidates, though some (e.g. dynamic position subqueries, multi-step transactions) will need care. `db/schema.sql` must also be kept in sync with any new Liquibase migrations.
 
 ### Nice to Have
 - **Song catalog management** — Songs are currently managed via direct SQL. A host-only UI for adding and removing songs would make setlist changes self-serve without needing DB access.

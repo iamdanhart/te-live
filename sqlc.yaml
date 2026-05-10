@@ -1,0 +1,17 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "db/queries/"
+    schema: "db/schema.sql"
+    gen:
+      go:
+        package: "sqlcdb"
+        out: "db/sqlcdb"
+        sql_package: "database/sql"
+        overrides:
+          - db_type: "pg_catalog.int4"
+            go_type:
+              type: "int"
+          - db_type: "pg_catalog.serial"
+            go_type:
+              type: "int"
