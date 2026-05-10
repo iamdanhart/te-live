@@ -1,90 +1,77 @@
 package middleware
 
 import (
-	"crypto/rand"
-	"encoding/hex"
+	"net"
 	"net/http"
 	"sync"
 	"time"
 )
 
-// RateLimiter tracks the last request time per session cookie and rejects
+// RateLimiter tracks the last request time per client IP and rejects
 // requests that arrive within the cooldown window.
 type RateLimiter struct {
 	mu       sync.Mutex
 	last     map[string]time.Time
 	cooldown time.Duration
 	enforce  bool
-	secure   bool
 }
 
 // NewRateLimiter creates a RateLimiter with the given cooldown and starts
 // a background goroutine to periodically evict expired entries. When enforce
 // is false, request times are still tracked but the limit is never applied.
-func NewRateLimiter(cooldown time.Duration, enforce bool, secure bool) *RateLimiter {
+func NewRateLimiter(cooldown time.Duration, enforce bool) *RateLimiter {
 	rl := &RateLimiter{
 		last:     make(map[string]time.Time),
 		cooldown: cooldown,
 		enforce:  enforce,
-		secure:   secure,
 	}
 	go rl.cleanup()
 	return rl
 }
 
-// sessionID returns the value of the session cookie, creating and setting
-// one on the response if the request does not already have one.
-func (rl *RateLimiter) sessionID(w http.ResponseWriter, r *http.Request) string {
-	if cookie, err := r.Cookie("session"); err == nil {
-		return cookie.Value
+// clientIP returns the real client IP. Fly-Client-IP is preferred over RemoteAddr
+// because RemoteAddr reflects the proxy, and Fly strips any client-supplied value of this header.
+func clientIP(r *http.Request) string {
+	if ip := r.Header.Get("Fly-Client-IP"); ip != "" {
+		return ip
 	}
-	b := make([]byte, 16)
-	if _, err := rand.Read(b); err != nil {
-		// should never happen
-		http.Error(w, "internal server error", http.StatusInternalServerError)
-		return ""
+	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return r.RemoteAddr
 	}
-	id := hex.EncodeToString(b)
-	http.SetCookie(w, &http.Cookie{
-		Name:     "session",
-		Value:    id,
-		HttpOnly: true,
-		Secure:   rl.secure,
-		SameSite: http.SameSiteStrictMode,
-	})
-	return id
+	return ip
 }
 
 // Limit is middleware that wraps the given handler. It allows the request
-// through if the session has not made a request within the cooldown window,
+// through if the client IP has not made a request within the cooldown window,
 // otherwise it responds with 429 Too Many Requests.
 func (rl *RateLimiter) Limit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		id := rl.sessionID(w, r)
+		ip := clientIP(r)
 
 		rl.mu.Lock()
 		if rl.enforce {
-			if last, ok := rl.last[id]; ok && time.Since(last) < rl.cooldown {
+			if last, ok := rl.last[ip]; ok && time.Since(last) < rl.cooldown {
 				rl.mu.Unlock()
 				http.Error(w, "too many requests", http.StatusTooManyRequests)
 				return
 			}
 		}
-		rl.last[id] = time.Now()
+		rl.last[ip] = time.Now()
 		rl.mu.Unlock()
 
 		next.ServeHTTP(w, r)
 	})
 }
 
-// cleanup runs forever, removing sessions from the map whose last request was
+// cleanup runs forever, removing IPs from the map whose last request was
 // longer ago than the cooldown. This prevents the map from growing unbounded.
 func (rl *RateLimiter) cleanup() {
 	for range time.Tick(time.Minute) {
 		rl.mu.Lock()
-		for id, last := range rl.last {
+		for ip, last := range rl.last {
 			if time.Since(last) > rl.cooldown {
-				delete(rl.last, id)
+				delete(rl.last, ip)
 			}
 		}
 		rl.mu.Unlock()
