@@ -135,6 +135,19 @@ Copy `.env.example` to `.env` and fill in the values. The file is gitignored and
 
 ---
 
+## Vendored Dependencies
+
+HTMX is vendored at `router/static/vendor/htmx.min.js`. Two scripts in `dev_tools/` manage it:
+
+```sh
+dev_tools/check-htmx.sh    # outputs JSON comparing vendored vs latest stable version
+dev_tools/vendor-htmx.sh   # downloads the latest stable release and replaces the vendored file
+```
+
+A manual GitHub Actions workflow (`.github/workflows/check-htmx.yml`) runs `check-htmx.sh` and fails if the vendored version is out of date.
+
+---
+
 ## Deployment
 
 The app runs on [Fly.io](https://fly.io) in the `ewr` region with a Fly Managed Postgres cluster.
@@ -170,6 +183,10 @@ just flyproxy      # open a local proxy to the prod DB on localhost:15432
 - **Cookie-based host auth** — Host auth currently uses HTTP Basic Auth. Upgrading to a login form with signed `HttpOnly; Secure; SameSite=Strict` cookies would add: automatic session expiry (e.g. 8 hours), a working logout endpoint, and no credentials sent on every request. Requires a `sessions` table, a login page, and a few new routes.
 - **Real favicon** — A placeholder emoji favicon is in use. A proper `.ico` file (mic icon, potentially commissioned) should be added to `router/static/` and the skip list in `router.go` updated.
 - **OG image** — An `og:image` meta tag is stubbed out but commented in `base.html`. Needs an actual image asset.
+
+### Nice to Have
+- **Song catalog management** — Songs are currently managed via direct SQL. A host-only UI for adding and removing songs would make setlist changes self-serve without needing DB access.
+- **Uptime monitoring** — Fly has no built-in alerting. Point a free UptimeRobot monitor at `/health` to get email notifications if the app goes down.
 
 ### Deployment
 - **Brewery custom domain** — Once the brewery picks a subdomain, add it to `config/prod.json` `allowed_hosts`, run `fly certs add <subdomain>`, and coordinate the DNS CNAME on their end.
