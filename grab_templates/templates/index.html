@@ -1,95 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" style="height: 100%;">
+<html lang="en">
 <head>
     <title>Live Band Karaoke</title>
     {{template "base-head" .}}
+    <link rel="stylesheet" href="/static/index.css">
     <script src="/static/vendor/htmx.min.js"></script>
-    <style>
-        body {
-            padding: 32px 16px;
-            min-width: 320px;
-        }
-
-        .container {
-            max-width: 480px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin: 0 0 24px 0;
-            color: var(--accent);
-            text-align: center;
-        }
-
-        .signup-link {
-            display: block;
-            text-align: center;
-            width: 50%;
-            margin-left: auto;
-            margin-right: auto;
-            padding: 10px 24px;
-            background: var(--accent);
-            color: #0f0f18;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 1rem;
-            letter-spacing: 0.05em;
-            text-decoration: none;
-            margin-bottom: 32px;
-        }
-        .signup-link:hover { background: #fcd34d; }
-
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 20px 24px;
-            margin-bottom: 16px;
-        }
-
-        .card-label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-
-        .card-name {
-            font-size: 1.4rem;
-            font-weight: 700;
-        }
-
-        .signup-count {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            text-align: center;
-            margin: 0 0 16px 0;
-        }
-
-        .warmup {
-            color: var(--text-muted);
-            font-size: 1.2rem;
-            margin-top: 8px;
-            text-align: center;
-        }
-
-        #tip-link {
-            display: block;
-            text-align: center;
-            margin-top: 32px;
-            padding: 12px;
-            background: transparent;
-            border: 1px solid var(--accent);
-            border-radius: 8px;
-            color: var(--accent);
-            font-size: 0.85rem;
-            text-decoration: none;
-        }
-    </style>
 </head>
 <body>
 <div class="container">
@@ -102,16 +17,6 @@
         💚 Tip the band on Venmo
     </a>
 </div>
-<script>
-    document.getElementById('tip-link').addEventListener('click', function(e) {
-        e.preventDefault();
-        if (/Mobi|Android/i.test(navigator.userAgent)) {
-            window.location = 'venmo://paycharge?txn=pay&recipients=troublesendlbk&note=Tip%20the%20band';
-            setTimeout(() => window.location = 'https://venmo.com/u/troublesendlbk', 500);
-        } else {
-            window.open('https://venmo.com/u/troublesendlbk', '_blank', 'noopener,noreferrer');
-        }
-    });
-</script>
+<script src="/static/index.js"></script>
 </body>
 </html>

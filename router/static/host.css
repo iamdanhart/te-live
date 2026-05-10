@@ -1,0 +1,346 @@
+html { height: 100%; }
+
+body {
+    padding: 32px 16px;
+    min-width: 320px;
+}
+
+.layout {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 24px 0;
+    color: var(--accent);
+}
+
+.queue-count {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+/* Performed sidebar */
+
+.sidebar {
+    width: 220px;
+    flex-shrink: 0;
+}
+
+.sidebar h2 {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin: 0 0 12px 0;
+}
+
+.performed-item {
+    margin-bottom: 10px;
+}
+
+.performed-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.performed-singer {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Queue */
+
+.queue {
+    flex: 1;
+    min-width: 0;
+}
+
+.entry {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+}
+
+.entry-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.entry-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    flex: 1;
+}
+
+.toggle-signups-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    font-family: inherit;
+    margin-bottom: 16px;
+}
+.toggle-signups-btn.open {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.toggle-signups-btn.open:hover {
+    background: var(--accent-dark);
+}
+.toggle-signups-btn:not(.open) {
+    border-color: #f87171;
+    color: #f87171;
+}
+.toggle-signups-btn:not(.open):hover {
+    background: rgba(248, 113, 113, 0.1);
+}
+
+.skip-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    font-family: inherit;
+}
+
+.skip-btn:hover {
+    border-color: #f87171;
+    color: #f87171;
+}
+
+.entry-songs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.entry-songs li {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    padding: 2px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.entry-songs li span {
+    color: var(--text);
+}
+
+.song-link {
+    color: var(--text);
+    text-decoration: none;
+}
+
+.song-link:hover {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+.performed-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.75rem;
+    padding: 1px 6px;
+    line-height: 1.4;
+    flex-shrink: 0;
+}
+
+.performed-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.entry-songs li.song-performed,
+.entry-songs li.song-performed span {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+.remove-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    font-family: inherit;
+}
+
+.remove-btn:hover {
+    border-color: #f87171;
+    color: #f87171;
+}
+
+#remove-dialog {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: inherit;
+    padding: 24px 28px;
+    max-width: 360px;
+    width: 100%;
+}
+
+#remove-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+#remove-dialog p {
+    margin: 0 0 20px 0;
+    font-size: 1rem;
+}
+
+.dialog-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.dialog-cancel-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+    padding: 6px 14px;
+}
+
+.dialog-confirm-btn {
+    background: #f87171;
+    border: none;
+    border-radius: 4px;
+    color: #0f0f18;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 6px 14px;
+}
+
+.add-song-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    font-family: inherit;
+    margin-top: 10px;
+}
+
+.add-song-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+#add-song-picker {
+    margin-top: 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+}
+
+#add-song-search {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.9rem;
+    padding: 6px 10px;
+    box-sizing: border-box;
+    margin-bottom: 8px;
+}
+
+#add-song-search:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+#add-song-results {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.add-song-result {
+    font-size: 0.85rem;
+    padding: 5px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+.add-song-result span {
+    color: var(--text);
+}
+
+.add-song-result:hover {
+    background: var(--surface);
+    color: var(--text);
+}
+
+.empty {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+.position {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-bottom: 4px;
+}
+
+.drag-handle {
+    cursor: grab;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    padding-right: 6px;
+    flex-shrink: 0;
+}
+
+.entry.drag-over-top {
+    border-top: 2px solid var(--accent);
+}
+
+.entry.drag-over-bottom {
+    border-bottom: 2px solid var(--accent);
+}
