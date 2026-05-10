@@ -329,6 +329,19 @@
 
     document.getElementById('name').addEventListener('input', updateSubmit);
 
+    document.querySelector('form').addEventListener('htmx:beforeRequest', function(evt) {
+        if (evt.detail.elt !== this) return;
+        const btn = document.getElementById('submit-btn');
+        btn.disabled = true;
+        btn.textContent = 'Submitting…';
+    });
+
+    document.querySelector('form').addEventListener('htmx:afterRequest', function(evt) {
+        if (evt.detail.elt !== this) return;
+        document.getElementById('submit-btn').textContent = 'Sign Up';
+        updateSubmit();
+    });
+
     // Column header clicks toggle sort direction; clicking a new column resets to ascending.
     let sortCol = null, sortDir = 1;
 
