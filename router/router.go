@@ -18,9 +18,9 @@ import (
 	"github.com/iamdanhart/te-live/queue"
 )
 
-func NewRouter(cfg config.Props) http.Handler {
-	rl := middleware.NewRateLimiter(2*time.Minute, cfg.EnforceSignupLimit)
-	fl := middleware.NewFailureLimiter(15*time.Minute, 10)
+func NewRouter(ctx context.Context, cfg config.Props) http.Handler {
+	rl := middleware.NewRateLimiter(ctx, 2*time.Minute, cfg.EnforceSignupLimit)
+	fl := middleware.NewFailureLimiter(ctx, 15*time.Minute, 10)
 	csrf := middleware.RequireSameOrigin(cfg.AllowedHosts)
 	q, err := queue.NewPgQueue(cfg.DatabaseURL)
 	if err != nil {

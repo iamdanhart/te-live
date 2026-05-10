@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"net"
 	"net/http"
 	"sync"
@@ -25,13 +26,13 @@ type RateLimiter struct {
 // NewRateLimiter creates a RateLimiter with the given cooldown and starts
 // a background goroutine to periodically evict expired entries. When enforce
 // is false, request times are still tracked but the limit is never applied.
-func NewRateLimiter(cooldown time.Duration, enforce bool) *RateLimiter {
+func NewRateLimiter(ctx context.Context, cooldown time.Duration, enforce bool) *RateLimiter {
 	rl := &RateLimiter{
 		last:     make(map[string]time.Time),
 		cooldown: cooldown,
 		enforce:  enforce,
 	}
-	go rl.cleanup()
+	go rl.cleanup(ctx)
 	return rl
 }
 
@@ -72,14 +73,21 @@ func (rl *RateLimiter) Limit(next http.Handler) http.Handler {
 
 // cleanup runs forever, removing IPs from the map whose last request was
 // longer ago than the cooldown. This prevents the map from growing unbounded.
-func (rl *RateLimiter) cleanup() {
-	for range time.Tick(time.Minute) {
-		rl.mu.Lock()
-		for ip, last := range rl.last {
-			if time.Since(last) > rl.cooldown {
-				delete(rl.last, ip)
+func (rl *RateLimiter) cleanup(ctx context.Context) {
+	ticker := time.NewTicker(time.Minute)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			rl.mu.Lock()
+			for ip, last := range rl.last {
+				if time.Since(last) > rl.cooldown {
+					delete(rl.last, ip)
+				}
 			}
+			rl.mu.Unlock()
 		}
-		rl.mu.Unlock()
 	}
 }

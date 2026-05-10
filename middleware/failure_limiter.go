@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"net/http"
 	"sync"
 	"time"
@@ -15,13 +16,13 @@ type FailureLimiter struct {
 	maxFails int
 }
 
-func NewFailureLimiter(window time.Duration, maxFails int) *FailureLimiter {
+func NewFailureLimiter(ctx context.Context, window time.Duration, maxFails int) *FailureLimiter {
 	fl := &FailureLimiter{
 		failures: make(map[string][]time.Time),
 		window:   window,
 		maxFails: maxFails,
 	}
-	go fl.cleanup()
+	go fl.cleanup(ctx)
 	return fl
 }
 
@@ -56,22 +57,29 @@ func (fl *FailureLimiter) Limit(next http.Handler) http.Handler {
 	})
 }
 
-func (fl *FailureLimiter) cleanup() {
-	for range time.Tick(time.Minute) {
-		fl.mu.Lock()
-		for ip, times := range fl.failures {
-			var recent []time.Time
-			for _, t := range times {
-				if time.Since(t) < fl.window {
-					recent = append(recent, t)
+func (fl *FailureLimiter) cleanup(ctx context.Context) {
+	ticker := time.NewTicker(time.Minute)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			fl.mu.Lock()
+			for ip, times := range fl.failures {
+				var recent []time.Time
+				for _, t := range times {
+					if time.Since(t) < fl.window {
+						recent = append(recent, t)
+					}
+				}
+				if len(recent) == 0 {
+					delete(fl.failures, ip)
+				} else {
+					fl.failures[ip] = recent
 				}
 			}
-			if len(recent) == 0 {
-				delete(fl.failures, ip)
-			} else {
-				fl.failures[ip] = recent
-			}
+			fl.mu.Unlock()
 		}
-		fl.mu.Unlock()
 	}
 }
