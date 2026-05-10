@@ -66,12 +66,18 @@ document.body.addEventListener('htmx:beforeRequest', function(evt) {
 
 function toggleSignups() {
     fetch('/signups/toggle', {method: 'POST'})
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            return r.json();
+        })
         .then(data => {
             const btn = document.getElementById('signup-toggle-btn');
             const open = data.signups_open;
             btn.textContent = open ? 'Close Signups' : 'Open Signups';
             btn.classList.toggle('open', open);
+        })
+        .catch(err => {
+            console.error('Failed to toggle signups:', err);
         });
 }
 

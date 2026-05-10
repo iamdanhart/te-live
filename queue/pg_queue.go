@@ -341,7 +341,7 @@ func (q *PgQueue) MoveEntry(ctx context.Context, id, afterID int) error {
 	newPos, ok := computeNewPosition(entries, afterID)
 	if !ok {
 		slog.Warn("MoveEntry afterID not found", "afterID", afterID)
-		return nil
+		return fmt.Errorf("afterID %d not found in today's queue", afterID)
 	}
 
 	result, err := q.db.ExecContext(ctx, `UPDATE telive.signups SET position = $1 WHERE id = $2`, newPos, id)

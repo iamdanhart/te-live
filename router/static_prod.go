@@ -11,5 +11,9 @@ import (
 var staticFiles embed.FS
 
 func staticHandler() http.Handler {
-	return http.FileServerFS(staticFiles)
+	fs := http.FileServerFS(staticFiles)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-cache")
+		fs.ServeHTTP(w, r)
+	})
 }
