@@ -1,4 +1,5 @@
 let songCatalog = null;
+let catalogLoading = false;
 let filteredResults = [];
 
 function toggleAddSong() {
@@ -6,12 +7,14 @@ function toggleAddSong() {
     const isHidden = picker.style.display === 'none' || picker.style.display === '';
     picker.style.display = isHidden ? 'block' : 'none';
     if (isHidden) {
-        if (!songCatalog) {
+        if (!songCatalog && !catalogLoading) {
+            catalogLoading = true;
             fetch('/catalog').then(r => r.json()).then(data => {
                 songCatalog = data.songs;
+                catalogLoading = false;
                 renderResults('');
             });
-        } else {
+        } else if (songCatalog) {
             renderResults(document.getElementById('add-song-search').value);
         }
         document.getElementById('add-song-search').focus();
