@@ -75,6 +75,18 @@
             margin-top: 8px;
             text-align: center;
         }
+
+        #tip-link {
+            display: block;
+            text-align: center;
+            margin-top: 32px;
+            padding: 12px;
+            background: var(--border);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -84,6 +96,9 @@
     <div id="queue-status" hx-get="/queue-status" hx-trigger="every 5s" hx-swap="innerHTML">
         {{template "index_queue.html" .}}
     </div>
+    <a id="tip-link" href="https://venmo.com/u/troublesendlbk" target="_blank">
+        💚 Tip the band on Venmo
+    </a>
 </div>
 </body>
 </html>
