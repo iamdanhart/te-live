@@ -39,8 +39,14 @@ func NewRouter(ctx context.Context, cfg config.Props) http.Handler {
 	mux.HandleFunc("GET /signup/check-name", func(w http.ResponseWriter, r *http.Request) {
 		name := strings.TrimSpace(r.URL.Query().Get("name"))
 		if name != "" && q.HasName(r.Context(), name) {
-			if err := grab_templates.GetTemplates().ExecuteTemplate(w, "name_warning.html", nil); err != nil {
+			var buf bytes.Buffer
+			if err := grab_templates.GetTemplates().ExecuteTemplate(&buf, "name_warning.html", nil); err != nil {
 				slog.Error("template error", "err", err)
+				http.Error(w, "internal server error", http.StatusInternalServerError)
+				return
+			}
+			if _, err := buf.WriteTo(w); err != nil {
+				slog.Error("failed to write name warning response", "err", err)
 			}
 		}
 	})
