@@ -15,9 +15,14 @@ import (
 )
 
 func renderQueue(w http.ResponseWriter, r *http.Request, q queue.Queue) {
-	if err := grab_templates.GetTemplates().ExecuteTemplate(w, "host_queue.html", q.Entries(r.Context())); err != nil {
+	var buf bytes.Buffer
+	if err := grab_templates.GetTemplates().ExecuteTemplate(&buf, "host_queue.html", q.Entries(r.Context())); err != nil {
 		slog.Error("template error", "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	if _, err := buf.WriteTo(w); err != nil {
+		slog.Error("failed to write queue response", "err", err)
 	}
 }
 
@@ -35,9 +40,14 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue, rl 
 			Performed   []queue.PerformedSong
 			SignupsOpen bool
 		}{q.Entries(r.Context()), q.Performed(r.Context()), q.SignupsOpen(r.Context())}
-		if err := grab_templates.GetTemplates().ExecuteTemplate(w, "host.html", data); err != nil {
+		var buf bytes.Buffer
+		if err := grab_templates.GetTemplates().ExecuteTemplate(&buf, "host.html", data); err != nil {
 			slog.Error("template error", "err", err)
 			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
+		if _, err := buf.WriteTo(w); err != nil {
+			slog.Error("failed to write host response", "err", err)
 		}
 	}))
 
