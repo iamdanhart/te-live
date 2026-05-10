@@ -1,19 +1,12 @@
 db_url := env("DB_URL", "postgres://telive:telive@localhost:5432/telive")
 
 run:
-    -DATABASE_URL={{db_url}} ENFORCE_SIGNUP_LIMIT=1 ENFORCE_ADMIN_AUTH=1 go run .
-
-run-nolimit:
-    -DATABASE_URL={{db_url}} ENFORCE_ADMIN_AUTH=1 go run .
-
-run-noadmin:
-    -DATABASE_URL={{db_url}} ENFORCE_SIGNUP_LIMIT=1 go run .
-
-run-noenforce:
     -DATABASE_URL={{db_url}} go run .
 
+# Runs with prod config (auth + rate limiting enforced, allowed_hosts active) but
+# templates and static files are still served from disk, not the embedded binary.
 run-prod:
-    -DATABASE_URL={{db_url}} ENV=production ENFORCE_SIGNUP_LIMIT=1 ENFORCE_ADMIN_AUTH=1 go run .
+    -DATABASE_URL={{db_url}} ENV=production go run .
 
 build:
     CGO_ENABLED=0 go test ./...
@@ -40,7 +33,8 @@ deploy:
 flyproxy:
     # Creates a local proxy to the Fly Managed Postgres cluster on localhost:15432.
     # Run this in a separate terminal before db-migrate-prod or add-host-user-prod.
-    fly mpg proxy 82ylg01lgmmrzx19 -p 15432
+    # MPG_CLUSTER_ID is set in .env
+    source .env && fly mpg proxy $MPG_CLUSTER_ID -p 15432
 
 # For a full prod reinit: drop and recreate the telive database in the Fly dashboard first, then run this.
 # Requires flyproxy running in another terminal.
