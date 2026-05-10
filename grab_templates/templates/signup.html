@@ -188,7 +188,7 @@
 <form method="post" hx-post="/signup" hx-target="#status">
     <div id="name-bar">
         <label for="name">Your name</label>
-        <input id="name" name="name" type="text" placeholder="Enter your name"
+        <input id="name" name="name" type="text" placeholder="Enter your name" maxlength="50"
             hx-get="/signup/check-name"
             hx-trigger="input changed delay:400ms"
             hx-target="#name-warning"

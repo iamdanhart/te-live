@@ -114,6 +114,10 @@ func handleSignupPage(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 
 func handleSignup(w http.ResponseWriter, r *http.Request, q queue.Queue) {
 	name := r.FormValue("name")
+	if len(name) > 50 {
+		http.Error(w, "name too long", http.StatusBadRequest)
+		return
+	}
 	var songIDs []int
 	for _, s := range r.Form["song"] {
 		var id int

@@ -1,6 +1,10 @@
 package router
 
 import (
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/iamdanhart/te-live/queue"
@@ -27,6 +31,16 @@ func (s *stubQueue) RemoveCurrent()             { panic("not implemented") }
 func (s *stubQueue) MoveEntry(int, int)         { panic("not implemented") }
 func (s *stubQueue) HasName(string) bool              { panic("not implemented") }
 func (s *stubQueue) AuthenticateHost(string) bool     { panic("not implemented") }
+
+func TestHandleSignup_NameTooLong(t *testing.T) {
+	form := url.Values{"name": {strings.Repeat("a", 51)}}
+	req := httptest.NewRequest(http.MethodPost, "/signup", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rr := httptest.NewRecorder()
+	handleSignup(rr, req, nil)
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
+	assert.Contains(t, rr.Body.String(), "name too long")
+}
 
 func TestQueueStatusData_EmptyQueue(t *testing.T) {
 	q := &stubQueue{entries: nil, signupsOpen: false}
