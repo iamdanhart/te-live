@@ -92,6 +92,13 @@ func newHostMux(q *hostStub) *http.ServeMux {
 	return mux
 }
 
+func getRequest(mux *http.ServeMux, path string) *httptest.ResponseRecorder {
+	req := httptest.NewRequest(http.MethodGet, path, nil)
+	rr := httptest.NewRecorder()
+	mux.ServeHTTP(rr, req)
+	return rr
+}
+
 func postForm(mux *http.ServeMux, path string, values url.Values) *httptest.ResponseRecorder {
 	req := httptest.NewRequest(http.MethodPost, path, strings.NewReader(values.Encode()))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -256,4 +263,25 @@ func TestHostToggleSignups_ReturnsFalse(t *testing.T) {
 	q := &hostStub{signupsOpen: false}
 	rr := postForm(newHostMux(q), "/signups/toggle", url.Values{})
 	assert.JSONEq(t, `{"signups_open":false}`, rr.Body.String())
+}
+
+// --- GET /host ---
+
+func TestGetHost_Empty(t *testing.T) {
+	rr := getRequest(newHostMux(&hostStub{}), "/host")
+	assert.Equal(t, http.StatusOK, rr.Code)
+}
+
+func TestGetHost_WithData(t *testing.T) {
+	q := &hostStub{
+		entries: []queue.Entry{
+			{ID: 1, Name: "Alice", Songs: []queue.SongEntry{{Song: queue.Song{ID: 1, Title: "Bohemian Rhapsody", Artist: "Queen"}}}},
+		},
+		performed: []queue.PerformedSong{
+			{Singer: "Bob", Song: queue.Song{ID: 2, Title: "Wonderwall", Artist: "Oasis"}},
+		},
+		signupsOpen: true,
+	}
+	rr := getRequest(newHostMux(q), "/host")
+	assert.Equal(t, http.StatusOK, rr.Code)
 }
