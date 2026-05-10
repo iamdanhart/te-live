@@ -3,6 +3,7 @@ package router
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -207,6 +208,16 @@ func TestHostMove_Error(t *testing.T) {
 	q := &hostStub{moveEntryErr: errors.New("db error")}
 	rr := postForm(newHostMux(q), "/host/move", url.Values{
 		"id":       {"1"},
+		"after_id": {"0"},
+	})
+	assert.Equal(t, http.StatusInternalServerError, rr.Code)
+	assert.True(t, q.moveEntryCalled)
+}
+
+func TestHostMove_NonExistentID(t *testing.T) {
+	q := &hostStub{moveEntryErr: fmt.Errorf("entry 99 not found in today's queue")}
+	rr := postForm(newHostMux(q), "/host/move", url.Values{
+		"id":       {"99"},
 		"after_id": {"0"},
 	})
 	assert.Equal(t, http.StatusInternalServerError, rr.Code)

@@ -101,10 +101,14 @@ func TestQueueStatusData_TwoEntries(t *testing.T) {
 // addableStub extends stubQueue with a working Add method for signup success tests.
 type addableStub struct {
 	*stubQueue
-	addErr error
+	addErr        error
+	capturedSongs []int
 }
 
-func (s *addableStub) Add(_ context.Context, _ string, _ []int) error { return s.addErr }
+func (s *addableStub) Add(_ context.Context, _ string, songs []int) error {
+	s.capturedSongs = songs
+	return s.addErr
+}
 
 // songsStub extends stubQueue with a working Songs method for catalog tests.
 type songsStub struct {
@@ -123,6 +127,17 @@ func TestHandleSignup_Success(t *testing.T) {
 	handleSignup(rr, req, q)
 	assert.Equal(t, http.StatusOK, rr.Code)
 	assert.Contains(t, rr.Body.String(), "Alice")
+}
+
+func TestHandleSignup_MultiSong(t *testing.T) {
+	form := url.Values{"name": {"Alice"}, "song": {"1", "2", "3"}}
+	req := httptest.NewRequest(http.MethodPost, "/signup", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rr := httptest.NewRecorder()
+	q := &addableStub{stubQueue: &stubQueue{}}
+	handleSignup(rr, req, q)
+	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.Equal(t, []int{1, 2, 3}, q.capturedSongs)
 }
 
 func TestHandleSignup_AddError(t *testing.T) {

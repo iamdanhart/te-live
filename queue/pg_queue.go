@@ -344,9 +344,19 @@ func (q *PgQueue) MoveEntry(ctx context.Context, id, afterID int) error {
 		return nil
 	}
 
-	if _, err := q.db.ExecContext(ctx, `UPDATE telive.signups SET position = $1 WHERE id = $2`, newPos, id); err != nil {
+	result, err := q.db.ExecContext(ctx, `UPDATE telive.signups SET position = $1 WHERE id = $2`, newPos, id)
+	if err != nil {
 		slog.Error("MoveEntry update", "err", err)
 		return err
+	}
+	n, err := result.RowsAffected()
+	if err != nil {
+		slog.Error("MoveEntry rows affected", "err", err)
+		return err
+	}
+	if n == 0 {
+		slog.Warn("MoveEntry entry not found", "id", id)
+		return fmt.Errorf("entry %d not found in today's queue", id)
 	}
 	return nil
 }
