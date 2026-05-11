@@ -29,6 +29,10 @@ type PgQueue struct {
 	queries *sqlcdb.Queries
 }
 
+func (q *PgQueue) Close() error {
+	return q.db.Close()
+}
+
 func NewPgQueue(dsn string) (*PgQueue, error) {
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {

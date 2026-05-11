@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/iamdanhart/te-live/config"
+	"github.com/iamdanhart/te-live/queue"
 	"github.com/iamdanhart/te-live/router"
 )
 
@@ -26,7 +27,13 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	srv := &http.Server{Addr: ":8080", Handler: router.NewRouter(ctx, cfg)}
+	q, err := queue.NewPgQueue(cfg.DatabaseURL)
+	if err != nil {
+		slog.Error("failed to connect to database", "err", err)
+		os.Exit(1)
+	}
+
+	srv := &http.Server{Addr: ":8080", Handler: router.NewRouter(ctx, cfg, q)}
 
 	go func() {
 		slog.Info("Listening on :8080")
@@ -46,5 +53,8 @@ func main() {
 	defer shutdownCancel()
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		slog.Error("shutdown error", "err", err)
+	}
+	if err := q.Close(); err != nil {
+		slog.Error("db close error", "err", err)
 	}
 }
