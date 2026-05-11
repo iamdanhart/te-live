@@ -28,7 +28,7 @@ The `Queue` interface (`queue/queue.go`) is the boundary between HTTP handlers a
 
 Two views poll the server automatically using HTMX:
 
-| View | Element | Endpoint | Interval |
+p| View | Element | Endpoint | Interval |
 |------|---------|----------|----------|
 | Audience (`/`) | `#queue-status` | `GET /queue-status` | every 5s |
 | Host (`/host`) | `#queue-list` | `GET /host/queue` | every 3s |
@@ -287,7 +287,6 @@ just db-migrate-prod  # run Liquibase migrations against production
 ### Known Limitations
 - **Float position drift** — `MoveEntry` uses a midpoint algorithm (`(a + b) / 2`) to reorder queue entries without renumbering. After many drag-drops in one session, positions can converge toward float64 precision limits, causing two entries to collide on the same value. Not a practical problem at current queue lengths, but a periodic rebalance (e.g. reassign integer positions 1, 2, 3… on `ToggleSignups` open) would eliminate the risk.
 - **`MoveEntry` race condition** — `MoveEntry` reads positions in one query, computes the new position in Go, then writes in a second query with no wrapping transaction. Two simultaneous drags reading the same snapshot can both pick a midpoint between the same two entries, producing a position collision. Unlikely in practice (single host), but the fix is to wrap the read + write in a transaction.
-- **`times_on_stage` is tracked but not displayed** — `CompleteCurrentSong` increments the counter but nothing reads it in templates or handlers. Could feed a fairness indicator in the host view ("sang 3 times tonight").
 - **Shallow health check** — `GET /health` returns 200 immediately with no DB ping. A DB blip won't cause a machine restart (intentional), but UptimeRobot will show green while all DB-backed requests are failing.
 
 ### Nice to Have

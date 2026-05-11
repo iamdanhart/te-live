@@ -63,7 +63,7 @@ func (q *PgQueue) Songs(ctx context.Context) []Song {
 
 func (q *PgQueue) Entries(ctx context.Context) []Entry {
 	rows, err := q.db.QueryContext(ctx, `
-		SELECT qe.id, qe.name, s.id, s.title, s.artist, s.tab_url, es.performed
+		SELECT qe.id, qe.name, s.id, s.title, s.artist, s.tab_url, es.performed, qe.times_on_stage
 		FROM telive.signups qe
 		JOIN telive.entry_songs es ON es.entry_id = qe.id
 		JOIN telive.songs s ON s.id = es.song_id
@@ -381,21 +381,22 @@ func scanEntries(rows *sql.Rows) []Entry {
 
 	for rows.Next() {
 		var (
-			entryID   int
-			name      string
-			songID    int
-			title     string
-			artist    string
-			tabUrl    string
-			performed bool
+			entryID      int
+			name         string
+			songID       int
+			title        string
+			artist       string
+			tabUrl       string
+			performed    bool
+			timesOnStage int
 		)
-		if err := rows.Scan(&entryID, &name, &songID, &title, &artist, &tabUrl, &performed); err != nil {
+		if err := rows.Scan(&entryID, &name, &songID, &title, &artist, &tabUrl, &performed, &timesOnStage); err != nil {
 			slog.Error("scanEntries scan", "err", err)
 			continue
 		}
 		idx, exists := entryIndex[entryID]
 		if !exists {
-			entries = append(entries, Entry{ID: entryID, Name: name})
+			entries = append(entries, Entry{ID: entryID, Name: name, TimesOnStage: timesOnStage})
 			idx = len(entries) - 1
 			entryIndex[entryID] = idx
 		}

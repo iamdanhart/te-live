@@ -18,9 +18,10 @@ type SongEntry struct {
 
 // Entry is a single singer signup in the queue.
 type Entry struct {
-	ID    int
-	Name  string
-	Songs []SongEntry
+	ID           int
+	Name         string
+	Songs        []SongEntry
+	TimesOnStage int
 }
 
 // PerformedSong records a song that has been sung, along with the singer's name.
