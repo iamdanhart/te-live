@@ -295,3 +295,13 @@ just db-migrate-prod  # run Liquibase migrations against production
 
 ### Deployment
 - **Brewery custom domain** — Once the brewery picks a subdomain, add it to `config/prod.json` `allowed_hosts`, run `fly certs add <subdomain>`, and coordinate the DNS CNAME on their end.
+
+---
+
+## Design Docs
+
+Extended notes on planned features and technical decisions live in `docs/`:
+
+- [`docs/signup_ordering.md`](docs/signup_ordering.md) — planned signup queue ordering logic (fairness, concurrent signup handling)
+- [`docs/off_book_request.md`](docs/off_book_request.md) — planned off-book request feature
+- [`docs/race_detection.md`](docs/race_detection.md) — race detection strategy and planned concurrent test coverage

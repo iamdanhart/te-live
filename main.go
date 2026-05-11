@@ -33,7 +33,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	srv := &http.Server{Addr: ":8080", Handler: router.NewRouter(ctx, cfg, q)}
+	srv := &http.Server{
+		Addr:         ":8080",
+		Handler:      router.NewRouter(ctx, cfg, q),
+		ReadTimeout:  30 * time.Second,
+		WriteTimeout: 30 * time.Second,
+		IdleTimeout:  30 * time.Second,
+	}
 
 	go func() {
 		slog.Info("Listening on :8080")
