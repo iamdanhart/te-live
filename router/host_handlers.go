@@ -155,7 +155,9 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue, rl 
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintf(w, `{"signups_open":%t}`, open)
+		if _, err := fmt.Fprintf(w, `{"signups_open":%t}`, open); err != nil {
+			slog.Error("failed to write toggle response", "err", err)
+		}
 	}))
 }
 
