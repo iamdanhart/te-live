@@ -389,24 +389,15 @@ func scanEntries(rows *sql.Rows) []Entry {
 }
 
 func (q *PgQueue) AuthenticateHost(ctx context.Context, passcode string) bool {
-	rows, err := q.db.QueryContext(ctx, `SELECT passcode_hash FROM telive.host_users WHERE active = TRUE`)
+	hashes, err := q.queries.ListActivePasscodeHashes(ctx)
 	if err != nil {
 		slog.Error("AuthenticateHost query", "err", err)
 		return false
 	}
-	defer rows.Close()
-	for rows.Next() {
-		var hash string
-		if err := rows.Scan(&hash); err != nil {
-			slog.Error("AuthenticateHost scan", "err", err)
-			continue
-		}
+	for _, hash := range hashes {
 		if bcrypt.CompareHashAndPassword([]byte(hash), []byte(passcode)) == nil {
 			return true
 		}
-	}
-	if err := rows.Err(); err != nil {
-		slog.Error("AuthenticateHost rows", "err", err)
 	}
 	return false
 }
