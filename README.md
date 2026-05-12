@@ -213,7 +213,7 @@ One workflow runs on a schedule:
 brew install sqlc
 ```
 
-Queries live in `db/queries/`. The schema used for generation is `db/schema.sql` (a plain SQL mirror of the Liquibase migrations — keep them in sync when adding tables). Config is in `sqlc.yaml`.
+Queries live in `db/queries/`. The schema used for generation is `db/schema.sql` — a plain SQL mirror of the Liquibase migrations. **When adding a Liquibase migration, update `db/schema.sql` in the same commit.** Config is in `sqlc.yaml`.
 
 To regenerate after changing a query:
 

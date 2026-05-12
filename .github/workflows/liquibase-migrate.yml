@@ -9,6 +9,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Check schema.sql and migrations are in sync
+        run: |
+          LAST_MIGRATION=$(git log -1 --format="%H" -- 'db/changelog/changes/')
+          LAST_SCHEMA=$(git log -1 --format="%H" -- 'db/schema.sql')
+          if [ "$LAST_MIGRATION" != "$LAST_SCHEMA" ]; then
+            echo "db/schema.sql and db/changelog/changes/ were last changed in different commits."
+            echo "Last migration commit: $LAST_MIGRATION"
+            echo "Last schema.sql commit: $LAST_SCHEMA"
+            exit 1
+          fi
+
       - uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
