@@ -117,7 +117,7 @@ func insertSong(t *testing.T, q *PgQueue, title, artist string) int {
 	t.Helper()
 	var id int
 	err := q.db.QueryRow(
-		`INSERT INTO songs (title, artist) VALUES ($1, $2) RETURNING id`,
+		`INSERT INTO songs (title, artist, tab_url) VALUES ($1, $2, 'https://example.com') RETURNING id`,
 		title, artist,
 	).Scan(&id)
 	require.NoError(t, err)
@@ -316,4 +316,40 @@ func TestToggleSignups_CloseDoesNotClearSignups(t *testing.T) {
 	err = q.db.QueryRow(`SELECT COUNT(*) FROM signups WHERE id = $1`, oldID).Scan(&count)
 	require.NoError(t, err)
 	assert.Equal(t, 1, count, "closing signups should not delete old signups")
+}
+
+func TestMoveEntry_MovesToFrontAndBack(t *testing.T) {
+	q := openTestQueue(t)
+
+	song1 := insertSong(t, q, "Song 1", "Artist")
+	song2 := insertSong(t, q, "Song 2", "Artist")
+	song3 := insertSong(t, q, "Song 3", "Artist")
+	t.Cleanup(func() {
+		q.db.Exec(`DELETE FROM songs WHERE id = ANY($1)`, []int{song1, song2, song3})
+		q.db.Exec(`DELETE FROM signups WHERE name IN ('Alice', 'Bob', 'Carol')`)
+	})
+
+	require.NoError(t, q.Add(context.Background(), "Alice", []int{song1}))
+	require.NoError(t, q.Add(context.Background(), "Bob", []int{song2}))
+	require.NoError(t, q.Add(context.Background(), "Carol", []int{song3}))
+
+	entries := q.Entries(context.Background())
+	require.Len(t, entries, 3)
+	aliceID := entries[0].ID
+	bobID := entries[1].ID
+	carolID := entries[2].ID
+
+	// Move Carol to front.
+	require.NoError(t, q.MoveEntry(context.Background(), carolID, 0))
+	entries = q.Entries(context.Background())
+	assert.Equal(t, "Carol", entries[0].Name)
+	assert.Equal(t, "Alice", entries[1].Name)
+	assert.Equal(t, "Bob", entries[2].Name)
+
+	// Move Alice to back (after Bob).
+	require.NoError(t, q.MoveEntry(context.Background(), aliceID, bobID))
+	entries = q.Entries(context.Background())
+	assert.Equal(t, "Carol", entries[0].Name)
+	assert.Equal(t, "Bob", entries[1].Name)
+	assert.Equal(t, "Alice", entries[2].Name)
 }

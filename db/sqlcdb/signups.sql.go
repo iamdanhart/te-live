@@ -23,3 +23,37 @@ func (q *Queries) HasName(ctx context.Context, lower string) (bool, error) {
 	err := row.Scan(&exists)
 	return exists, err
 }
+
+const listTodayPositions = `-- name: ListTodayPositions :many
+SELECT id, position FROM telive.signups
+WHERE created_at >= CURRENT_DATE
+ORDER BY position ASC
+`
+
+type ListTodayPositionsRow struct {
+	ID       int32
+	Position float64
+}
+
+func (q *Queries) ListTodayPositions(ctx context.Context) ([]ListTodayPositionsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listTodayPositions)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListTodayPositionsRow
+	for rows.Next() {
+		var i ListTodayPositionsRow
+		if err := rows.Scan(&i.ID, &i.Position); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

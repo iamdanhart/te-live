@@ -303,28 +303,15 @@ func computeNewPosition(entries []positionRow, afterID int) (float64, bool) {
 }
 
 func (q *PgQueue) MoveEntry(ctx context.Context, id, afterID int) error {
-	rows, err := q.db.QueryContext(ctx, `
-		SELECT id, position FROM telive.signups
-		WHERE `+todayQueueEntries+`
-		ORDER BY position ASC`)
+	fetched, err := q.queries.ListTodayPositions(ctx)
 	if err != nil {
 		slog.Error("MoveEntry query", "err", err)
 		return err
 	}
-	defer rows.Close()
 
-	var entries []positionRow
-	for rows.Next() {
-		var r positionRow
-		if err := rows.Scan(&r.id, &r.pos); err != nil {
-			slog.Error("MoveEntry scan", "err", err)
-			return err
-		}
-		entries = append(entries, r)
-	}
-	if err := rows.Err(); err != nil {
-		slog.Error("MoveEntry rows", "err", err)
-		return err
+	entries := make([]positionRow, len(fetched))
+	for i, r := range fetched {
+		entries[i] = positionRow{id: int(r.ID), pos: r.Position}
 	}
 
 	if isNoOpMove(entries, id, afterID) {
