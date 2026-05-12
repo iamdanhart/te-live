@@ -26,7 +26,7 @@ More complex reads that return multiple joined rows.
 
 | Method | Notes | Status |
 |--------|-------|--------|
-| `Entries()` | Multi-table join; result requires `scanEntries` grouping logic — sqlc generates row structs, but the grouping (entries → songs) stays in Go | |
+| `Entries()` | Multi-table join; result requires `scanEntries` grouping logic — sqlc generates row structs, but the grouping (entries → songs) stays in Go | ✅ done |
 | `AuthenticateHost()` | Simple scan but iterates rows for bcrypt comparison | ✅ done |
 | `MoveEntry()` position read | The initial `SELECT id, position` inside `MoveEntry` | ✅ done |
 

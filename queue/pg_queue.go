@@ -61,18 +61,11 @@ func (q *PgQueue) Songs(ctx context.Context) []Song {
 }
 
 func (q *PgQueue) Entries(ctx context.Context) []Entry {
-	rows, err := q.db.QueryContext(ctx, `
-		SELECT qe.id, qe.name, s.id, s.title, s.artist, s.tab_url, es.performed, qe.times_on_stage
-		FROM telive.signups qe
-		JOIN telive.entry_songs es ON es.entry_id = qe.id
-		JOIN telive.songs s ON s.id = es.song_id
-		WHERE `+todayQueueEntries+`
-		ORDER BY qe.position ASC, es.sort_order ASC`)
+	rows, err := q.queries.ListTodayEntries(ctx)
 	if err != nil {
 		slog.Error("Entries query", "err", err)
 		return nil
 	}
-	defer rows.Close()
 	return scanEntries(rows)
 }
 
@@ -341,35 +334,21 @@ func (q *PgQueue) MoveEntry(ctx context.Context, id, afterID int) error {
 	return nil
 }
 
-// scanEntries collapses the joined rows into []Entry, grouping songs by singer.
-func scanEntries(rows *sql.Rows) []Entry {
+// scanEntries collapses the joined rows into []Entry, grouping songs by entry.
+func scanEntries(rows []sqlcdb.ListTodayEntriesRow) []Entry {
 	var entries []Entry
-	entryIndex := map[int]int{} // queue_entry id → index in entries slice
+	entryIndex := map[int]int{} // signup id → index in entries slice
 
-	for rows.Next() {
-		var (
-			entryID      int
-			name         string
-			songID       int
-			title        string
-			artist       string
-			tabUrl       string
-			performed    bool
-			timesOnStage int
-		)
-		if err := rows.Scan(&entryID, &name, &songID, &title, &artist, &tabUrl, &performed, &timesOnStage); err != nil {
-			slog.Error("scanEntries scan", "err", err)
-			continue
-		}
-		idx, exists := entryIndex[entryID]
+	for _, r := range rows {
+		idx, exists := entryIndex[int(r.ID)]
 		if !exists {
-			entries = append(entries, Entry{ID: entryID, Name: name, TimesOnStage: timesOnStage})
+			entries = append(entries, Entry{ID: int(r.ID), Name: r.Name, TimesOnStage: r.TimesOnStage})
 			idx = len(entries) - 1
-			entryIndex[entryID] = idx
+			entryIndex[int(r.ID)] = idx
 		}
 		entries[idx].Songs = append(entries[idx].Songs, SongEntry{
-			Song:      Song{ID: songID, Title: title, Artist: artist, TabUrl: tabUrl},
-			Performed: performed,
+			Song:      Song{ID: int(r.SongID), Title: r.Title, Artist: r.Artist, TabUrl: r.TabUrl},
+			Performed: r.Performed,
 		})
 	}
 	return entries

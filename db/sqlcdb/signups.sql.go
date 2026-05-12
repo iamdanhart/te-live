@@ -24,6 +24,58 @@ func (q *Queries) HasName(ctx context.Context, lower string) (bool, error) {
 	return exists, err
 }
 
+const listTodayEntries = `-- name: ListTodayEntries :many
+SELECT qe.id, qe.name, s.id AS song_id, s.title, s.artist, s.tab_url, es.performed, qe.times_on_stage
+FROM telive.signups qe
+JOIN telive.entry_songs es ON es.entry_id = qe.id
+JOIN telive.songs s ON s.id = es.song_id
+WHERE qe.created_at >= CURRENT_DATE
+ORDER BY qe.position ASC, es.sort_order ASC
+`
+
+type ListTodayEntriesRow struct {
+	ID           int32
+	Name         string
+	SongID       int32
+	Title        string
+	Artist       string
+	TabUrl       string
+	Performed    bool
+	TimesOnStage int
+}
+
+func (q *Queries) ListTodayEntries(ctx context.Context) ([]ListTodayEntriesRow, error) {
+	rows, err := q.db.QueryContext(ctx, listTodayEntries)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListTodayEntriesRow
+	for rows.Next() {
+		var i ListTodayEntriesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.SongID,
+			&i.Title,
+			&i.Artist,
+			&i.TabUrl,
+			&i.Performed,
+			&i.TimesOnStage,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listTodayPositions = `-- name: ListTodayPositions :many
 SELECT id, position FROM telive.signups
 WHERE created_at >= CURRENT_DATE
