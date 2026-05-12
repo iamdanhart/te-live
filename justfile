@@ -14,7 +14,7 @@ test:
 
 # CGO_ENABLED is intentionally omitted — -race requires CGO
 itest:
-    go test -race ./queue/...
+    go test -race ./queue/... ./feature_flag/...
 
 build:
     CGO_ENABLED=0 go test ./...
@@ -43,7 +43,7 @@ test-toggle-signups:
     hurl dev_tools/toggle_signups.hurl
 
 generate-qr:
-    source .env && qrencode -t SVG -o docs/qr.svg "$APP_URL"
+    source .env && qrencode -t SVG -o docs/qr.svg "${APP_PUBLIC_URL:-$APP_URL}"
 
 deploy:
     fly deploy

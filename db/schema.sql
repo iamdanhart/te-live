@@ -41,3 +41,8 @@ CREATE TABLE telive.host_users (
     passcode_hash TEXT NOT NULL,
     active        BOOLEAN NOT NULL DEFAULT TRUE
 );
+
+CREATE TABLE telive.feature_flags (
+    key     TEXT    PRIMARY KEY,
+    enabled BOOLEAN NOT NULL DEFAULT FALSE
+);
