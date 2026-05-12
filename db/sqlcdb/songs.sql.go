@@ -10,27 +10,20 @@ import (
 )
 
 const listSongs = `-- name: ListSongs :many
-SELECT id, title, artist, COALESCE(tab_url, '') AS tab_url
+SELECT id, title, artist, tab_url
 FROM telive.songs
 ORDER BY title ASC
 `
 
-type ListSongsRow struct {
-	ID     int32
-	Title  string
-	Artist string
-	TabUrl string
-}
-
-func (q *Queries) ListSongs(ctx context.Context) ([]ListSongsRow, error) {
+func (q *Queries) ListSongs(ctx context.Context) ([]TeliveSong, error) {
 	rows, err := q.db.QueryContext(ctx, listSongs)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ListSongsRow
+	var items []TeliveSong
 	for rows.Next() {
-		var i ListSongsRow
+		var i TeliveSong
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,

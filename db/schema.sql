@@ -46,3 +46,6 @@ CREATE TABLE telive.feature_flags (
     key     TEXT    PRIMARY KEY,
     enabled BOOLEAN NOT NULL DEFAULT FALSE
 );
+
+ALTER TABLE telive.songs ALTER COLUMN tab_url SET NOT NULL;
+ALTER TABLE telive.songs ADD CONSTRAINT songs_tab_url_https CHECK (tab_url LIKE 'https://%');

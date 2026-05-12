@@ -5,7 +5,6 @@
 package sqlcdb
 
 import (
-	"database/sql"
 	"time"
 )
 
@@ -53,5 +52,5 @@ type TeliveSong struct {
 	ID     int32
 	Title  string
 	Artist string
-	TabUrl sql.NullString
+	TabUrl string
 }

@@ -24,11 +24,11 @@ These have fixed columns, no string-concatenated WHERE clauses, and no joins tha
 
 More complex reads that return multiple joined rows.
 
-| Method | Notes |
-|--------|-------|
-| `Entries()` | Multi-table join; result requires `scanEntries` grouping logic — sqlc generates row structs, but the grouping (entries → songs) stays in Go |
-| `AuthenticateHost()` | Simple scan but iterates rows for bcrypt comparison |
-| `MoveEntry()` position read | The initial `SELECT id, position` inside `MoveEntry` |
+| Method | Notes | Status |
+|--------|-------|--------|
+| `Entries()` | Multi-table join; result requires `scanEntries` grouping logic — sqlc generates row structs, but the grouping (entries → songs) stays in Go | |
+| `AuthenticateHost()` | Simple scan but iterates rows for bcrypt comparison | ✅ done |
+| `MoveEntry()` position read | The initial `SELECT id, position` inside `MoveEntry` | ✅ done |
 
 ---
 
