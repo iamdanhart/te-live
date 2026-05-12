@@ -300,8 +300,9 @@ just db-migrate-prod  # run Liquibase migrations against production
 
 ## Design Docs
 
-Extended notes on planned features and technical decisions live in `docs/`:
+Extended notes on planned features and technical decisions live in `docs/proposed_changes/`:
 
-- [`docs/signup_ordering.md`](docs/signup_ordering.md) — planned signup queue ordering logic (fairness, concurrent signup handling)
-- [`docs/off_book_request.md`](docs/off_book_request.md) — planned off-book request feature
-- [`docs/race_detection.md`](docs/race_detection.md) — race detection strategy and planned concurrent test coverage
+- [`signup_ordering.md`](docs/proposed_changes/signup_ordering.md) — planned signup queue ordering logic (fairness, concurrent signup handling)
+- [`off_book_request.md`](docs/proposed_changes/off_book_request.md) — planned off-book request feature
+- [`race_detection.md`](docs/proposed_changes/race_detection.md) — race detection strategy and planned concurrent test coverage
+- [`sqlc_migration.md`](docs/proposed_changes/sqlc_migration.md) — phased plan for migrating raw SQL queries to sqlc

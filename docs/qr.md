@@ -1,6 +1,6 @@
 # QR Code Generation
 
-Requires `APP_URL` set in `.env`.
+Requires `APP_PUBLIC_URL` or `APP_URL` set in `.env`. Uses `APP_PUBLIC_URL` if set, falls back to `APP_URL`.
 
 Generate an SVG (scales to any print size):
 
