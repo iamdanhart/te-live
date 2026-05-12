@@ -124,6 +124,64 @@ func insertSong(t *testing.T, q *PgQueue, title, artist string) int {
 	return id
 }
 
+func TestSignupsOpen_ReflectsSettingsTable(t *testing.T) {
+	q := openTestQueue(t)
+
+	// Raw SQL: no application method exists to set signups_open directly.
+	_, err := q.db.Exec(`UPDATE settings SET value = 'true' WHERE key = 'signups_open'`)
+	require.NoError(t, err)
+	t.Cleanup(func() { q.db.Exec(`UPDATE settings SET value = 'false' WHERE key = 'signups_open'`) })
+
+	assert.True(t, q.SignupsOpen(context.Background()))
+
+	_, err = q.db.Exec(`UPDATE settings SET value = 'false' WHERE key = 'signups_open'`)
+	require.NoError(t, err)
+
+	assert.False(t, q.SignupsOpen(context.Background()))
+}
+
+func TestHasName_ExistingName(t *testing.T) {
+	q := openTestQueue(t)
+	songID := insertSong(t, q, "Test Song", "Test Artist")
+
+	// Use q.Add rather than raw SQL: HasName checks for real signup names,
+	// so coupling to the actual signup path keeps the test cohesive.
+	err := q.Add(context.Background(), "Alice", []int{songID})
+	require.NoError(t, err)
+	t.Cleanup(func() {
+		q.db.Exec(`DELETE FROM signups WHERE name = 'Alice'`)
+		q.db.Exec(`DELETE FROM songs WHERE id = $1`, songID)
+	})
+
+	assert.True(t, q.HasName(context.Background(), "Alice"))
+	assert.True(t, q.HasName(context.Background(), "alice"))
+	assert.False(t, q.HasName(context.Background(), "Bob"))
+}
+
+func TestPerformed_ReturnsToday(t *testing.T) {
+	q := openTestQueue(t)
+
+	// Use the full application path (Songs → Add → CompleteCurrentSong) rather
+	// than raw SQL inserts; this matches the production write path and keeps
+	// the test cohesive with the real signup + completion flow.
+	songs := q.Songs(context.Background())
+	require.NotEmpty(t, songs, "seed songs required")
+	song := songs[0]
+
+	err := q.Add(context.Background(), "Alice", []int{song.ID})
+	require.NoError(t, err)
+	t.Cleanup(func() { q.db.Exec(`DELETE FROM signups WHERE name = 'Alice'`) })
+
+	err = q.CompleteCurrentSong(context.Background(), "Alice", song.ID)
+	require.NoError(t, err)
+	t.Cleanup(func() { q.db.Exec(`DELETE FROM performed_songs WHERE singer = 'Alice'`) })
+
+	result := q.Performed(context.Background())
+	require.Len(t, result, 1)
+	assert.Equal(t, "Alice", result[0].Singer)
+	assert.Equal(t, song.Title, result[0].Song.Title)
+}
+
 func TestAdd_InvalidSongID(t *testing.T) {
 	q := openTestQueue(t)
 

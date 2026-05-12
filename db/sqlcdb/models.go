@@ -17,6 +17,11 @@ type TeliveEntrySong struct {
 	SortOrder int
 }
 
+type TeliveFeatureFlag struct {
+	Key     string
+	Enabled bool
+}
+
 type TeliveHostUser struct {
 	ID           int32
 	Label        string

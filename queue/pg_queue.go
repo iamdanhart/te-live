@@ -19,7 +19,6 @@ var ErrInvalidSongID = errors.New("one or more song IDs are invalid")
 // todayFilter is appended to WHERE clauses on signups and performed_songs
 // to scope all queries to the current calendar day.
 const todayQueueEntries = `created_at >= CURRENT_DATE`
-const todayPerformed = `performed_at >= CURRENT_DATE`
 
 // firstTodayID is a subquery that returns the id of the first entry in today's queue.
 const firstTodayID = `(SELECT id FROM telive.signups WHERE created_at >= CURRENT_DATE ORDER BY position ASC LIMIT 1)`
@@ -78,8 +77,7 @@ func (q *PgQueue) Entries(ctx context.Context) []Entry {
 }
 
 func (q *PgQueue) SignupsOpen(ctx context.Context) bool {
-	var value string
-	err := q.db.QueryRowContext(ctx, `SELECT value FROM telive.settings WHERE key = 'signups_open'`).Scan(&value)
+	value, err := q.queries.GetSignupsOpen(ctx)
 	if err != nil {
 		slog.Error("SignupsOpen query", "err", err)
 		return false
@@ -215,30 +213,17 @@ func (q *PgQueue) CompleteCurrentSong(ctx context.Context, singer string, songID
 }
 
 func (q *PgQueue) Performed(ctx context.Context) []PerformedSong {
-	rows, err := q.db.QueryContext(ctx, `
-		SELECT ps.singer, s.id, s.title, s.artist, s.tab_url
-		FROM telive.performed_songs ps
-		JOIN telive.songs s ON s.id = ps.song_id
-		WHERE `+todayPerformed+`
-		ORDER BY ps.performed_at ASC`)
+	rows, err := q.queries.ListPerformedToday(ctx)
 	if err != nil {
 		slog.Error("Performed query", "err", err)
 		return nil
 	}
-	defer rows.Close()
-
-	var result []PerformedSong
-	for rows.Next() {
-		var ps PerformedSong
-		if err := rows.Scan(&ps.Singer, &ps.Song.ID, &ps.Song.Title, &ps.Song.Artist, &ps.Song.TabUrl); err != nil {
-			slog.Error("Performed scan", "err", err)
-			continue
+	result := make([]PerformedSong, len(rows))
+	for i, r := range rows {
+		result[i] = PerformedSong{
+			Singer: r.Singer,
+			Song:   Song{ID: int(r.ID), Title: r.Title, Artist: r.Artist, TabUrl: r.TabUrl},
 		}
-		result = append(result, ps)
-	}
-	if err := rows.Err(); err != nil {
-		slog.Error("Performed rows", "err", err)
-		return nil
 	}
 	return result
 }
@@ -267,12 +252,7 @@ func (q *PgQueue) AddSongToFirst(ctx context.Context, songID int) error {
 }
 
 func (q *PgQueue) HasName(ctx context.Context, name string) bool {
-	var exists bool
-	err := q.db.QueryRowContext(ctx, `
-		SELECT EXISTS(
-			SELECT 1 FROM telive.signups
-			WHERE LOWER(name) = LOWER($1) AND `+todayQueueEntries+`
-		)`, name).Scan(&exists)
+	exists, err := q.queries.HasName(ctx, name)
 	if err != nil {
 		slog.Error("HasName query", "err", err)
 		return false

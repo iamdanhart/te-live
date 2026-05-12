@@ -6,15 +6,15 @@ Approach: SELECTs first (read-only, no side effects), then INSERTs/UPDATEs/DELET
 
 ---
 
-## Phase 1: Simple SELECTs
+## Phase 1: Simple SELECTs ✅
 
 Straightforward reads with no dynamic SQL.
 
-| Method | Query file |
-|--------|-----------|
-| `SignupsOpen()` | `db/queries/settings.sql` |
-| `HasName()` | `db/queries/signups.sql` |
-| `Performed()` | `db/queries/performed_songs.sql` |
+| Method | Query file | Status |
+|--------|-----------|--------|
+| `SignupsOpen()` | `db/queries/settings.sql` | ✅ done |
+| `HasName()` | `db/queries/signups.sql` | ✅ done |
+| `Performed()` | `db/queries/performed_songs.sql` | ✅ done |
 
 These have fixed columns, no string-concatenated WHERE clauses, and no joins that require custom scan logic. Good candidates to establish the pattern.
 
