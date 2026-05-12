@@ -279,7 +279,7 @@ just db-migrate-prod  # run Liquibase migrations against production
 - **Tab URLs** — `tab_url` is only populated for Bohemian Rhapsody (PoC). Remaining songs need their URLs updated directly in the DB.
 
 ### sqlc Migration
-- **Migrate remaining queries** — Only `Songs()` has been moved to sqlc. The remaining queries in `pg_queue.go` are candidates, though some (e.g. dynamic position subqueries, multi-step transactions) will need care. `db/schema.sql` must also be kept in sync with any new Liquibase migrations.
+- **Migrate remaining queries** — Phase 1 (simple SELECTs: `SignupsOpen`, `HasName`, `Performed`) is complete. Phase 2 (JOIN SELECTs: `Entries`, `AuthenticateHost`, position read in `MoveEntry`) and Phase 3 (writes) are next. Some queries (dynamic IN clause, multi-step transactions) will need care. See [`sqlc_migration.md`](docs/proposed_changes/sqlc_migration.md). `db/schema.sql` must also be kept in sync with any new Liquibase migrations.
 
 ### Code Quality
 - **`scanEntries` missing `rows.Err()` check** — `scanEntries` in `queue/pg_queue.go` is a shared helper that returns `[]Entry` with no error return, so it can't propagate a mid-stream query failure without a signature change. Fixing it properly requires either adding an error return or switching to a different pattern. Deferred until broader error propagation is addressed.
@@ -300,9 +300,10 @@ just db-migrate-prod  # run Liquibase migrations against production
 
 ## Design Docs
 
-Extended notes on planned features and technical decisions live in `docs/proposed_changes/`:
+Extended notes on planned features and technical decisions live in `docs/`:
 
 - [`signup_ordering.md`](docs/proposed_changes/signup_ordering.md) — planned signup queue ordering logic (fairness, concurrent signup handling)
 - [`off_book_request.md`](docs/proposed_changes/off_book_request.md) — planned off-book request feature
 - [`race_detection.md`](docs/proposed_changes/race_detection.md) — race detection strategy and planned concurrent test coverage
 - [`sqlc_migration.md`](docs/proposed_changes/sqlc_migration.md) — phased plan for migrating raw SQL queries to sqlc
+- [`sqlc.md`](docs/sqlc.md) — sqlc value proposition and workflow reference
