@@ -3,6 +3,9 @@ name: CI - Integration Tests
 on:
   push:
 
+tpermissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-24.04

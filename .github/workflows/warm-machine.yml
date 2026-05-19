@@ -9,6 +9,9 @@ on:
     # 2–4 AM UTC Saturday (10 PM–midnight EDT): every 10 min — winding down
     - cron: '*/10 2-3 * * 6'
 
+permissions:
+  contents: read
+
 jobs:
   ping:
     name: Ping health endpoint

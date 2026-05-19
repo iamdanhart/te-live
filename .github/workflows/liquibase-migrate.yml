@@ -3,6 +3,9 @@ name: Liquibase Migrate (Prod)
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   migrate:
     name: Run Liquibase migrations
