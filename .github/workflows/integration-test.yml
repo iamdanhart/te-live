@@ -3,7 +3,7 @@ name: CI - Integration Tests
 on:
   push:
 
-tpermissions:
+permissions:
   contents: read
 
 jobs:
