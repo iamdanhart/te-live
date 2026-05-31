@@ -20,7 +20,7 @@ These have fixed columns, no string-concatenated WHERE clauses, and no joins tha
 
 ---
 
-## Phase 2: JOIN SELECTs
+## Phase 2: JOIN SELECTs ✅
 
 More complex reads that return multiple joined rows.
 
@@ -36,15 +36,15 @@ More complex reads that return multiple joined rows.
 
 Single-statement writes with fixed parameters.
 
-| Method | Notes |
-|--------|-------|
-| `MoveCurrentToBottom()` | UPDATE with subquery — uses `firstTodayID` and `todayQueueEntries` constants |
-| `RemoveCurrent()` | DELETE with subquery |
-| `AddSongToFirst()` existence check | `SELECT COUNT(*)` before the INSERT |
-| `MoveEntry()` UPDATE | The final position write |
-| `ToggleSignups()` UPDATE | RETURNING clause — sqlc handles this |
-| `ToggleSignups()` DELETE | Simple date-scoped delete |
-| `CompleteCurrentSong()` individual statements | Three statements inside a transaction |
+| Method | Notes | Status |
+|--------|-------|--------|
+| `MoveCurrentToBottom()` | UPDATE with subquery — uses `firstTodayID` and `todayQueueEntries` constants | |
+| `RemoveCurrent()` | DELETE with subquery | |
+| `AddSongToFirst()` existence check | `SELECT COUNT(*)` before the INSERT | |
+| `MoveEntry()` UPDATE | The final position write | ✅ done |
+| `ToggleSignups()` UPDATE | RETURNING clause — sqlc handles this | |
+| `ToggleSignups()` DELETE | Simple date-scoped delete | |
+| `CompleteCurrentSong()` individual statements | Three statements inside a transaction | |
 
 ---
 

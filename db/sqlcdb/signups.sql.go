@@ -109,3 +109,20 @@ func (q *Queries) ListTodayPositions(ctx context.Context) ([]ListTodayPositionsR
 	}
 	return items, nil
 }
+
+const updateEntryPosition = `-- name: UpdateEntryPosition :execrows
+UPDATE telive.signups SET position = $1 WHERE id = $2
+`
+
+type UpdateEntryPositionParams struct {
+	Position float64
+	ID       int32
+}
+
+func (q *Queries) UpdateEntryPosition(ctx context.Context, arg UpdateEntryPositionParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, updateEntryPosition, arg.Position, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}

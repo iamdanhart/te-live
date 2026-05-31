@@ -1,3 +1,7 @@
+# `set dotenv-load` is not used here because just's dotenv parser doesn't support
+# shell command substitution ($(cat ...)) or variable interpolation, both of which
+# .env relies on. Prod recipes that need .env use `source .env &&` explicitly instead.
+
 DATABASE_URL := env("DATABASE_URL", "postgres://telive:telive@localhost:5432/telive")
 
 run:
@@ -47,6 +51,9 @@ generate-qr:
 
 deploy:
     fly deploy
+
+prod-app:
+    fly apps open
 
 # For a full prod reinit: drop and recreate the telive database in the Fly dashboard first, then run this.
 # Note: host.docker.internal resolves on macOS/Windows Docker Desktop only.

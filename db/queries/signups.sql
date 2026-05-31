@@ -10,6 +10,9 @@ SELECT id, position FROM telive.signups
 WHERE created_at >= CURRENT_DATE
 ORDER BY position ASC;
 
+-- name: UpdateEntryPosition :execrows
+UPDATE telive.signups SET position = $1 WHERE id = $2;
+
 -- name: ListTodayEntries :many
 SELECT qe.id, qe.name, s.id AS song_id, s.title, s.artist, s.tab_url, es.performed, qe.times_on_stage
 FROM telive.signups qe
