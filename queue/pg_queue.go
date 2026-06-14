@@ -79,19 +79,13 @@ func (q *PgQueue) SignupsOpen(ctx context.Context) bool {
 }
 
 func (q *PgQueue) ToggleSignups(ctx context.Context) (bool, error) {
-	var value string
-	err := q.db.QueryRowContext(ctx, `
-		UPDATE telive.settings
-		SET value = CASE WHEN value = 'true' THEN 'false' ELSE 'true' END
-		WHERE key = 'signups_open'
-		RETURNING value`).Scan(&value)
+	value, err := q.queries.ToggleSignupsOpen(ctx)
 	if err != nil {
 		slog.Error("ToggleSignups query", "err", err)
 		return false, err
 	}
 	if value == "true" {
-		_, err = q.db.ExecContext(ctx, `DELETE FROM telive.signups WHERE created_at < CURRENT_DATE`)
-		if err != nil {
+		if err = q.queries.DeletePastSignups(ctx); err != nil {
 			slog.Error("ToggleSignups clear old signups", "err", err)
 		}
 	}

@@ -19,3 +19,17 @@ func (q *Queries) GetSignupsOpen(ctx context.Context) (string, error) {
 	err := row.Scan(&value)
 	return value, err
 }
+
+const toggleSignupsOpen = `-- name: ToggleSignupsOpen :one
+UPDATE telive.settings
+SET value = CASE WHEN value = 'true' THEN 'false' ELSE 'true' END
+WHERE key = 'signups_open'
+RETURNING value
+`
+
+func (q *Queries) ToggleSignupsOpen(ctx context.Context) (string, error) {
+	row := q.db.QueryRowContext(ctx, toggleSignupsOpen)
+	var value string
+	err := row.Scan(&value)
+	return value, err
+}

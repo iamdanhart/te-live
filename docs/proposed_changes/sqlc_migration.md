@@ -42,8 +42,8 @@ Single-statement writes with fixed parameters.
 | `RemoveCurrent()` | DELETE with subquery | |
 | `AddSongToFirst()` existence check | `SELECT COUNT(*)` before the INSERT | |
 | `MoveEntry()` UPDATE | The final position write | ✅ done |
-| `ToggleSignups()` UPDATE | RETURNING clause — sqlc handles this | |
-| `ToggleSignups()` DELETE | Simple date-scoped delete | |
+| `ToggleSignups()` UPDATE | RETURNING clause — sqlc handles this | ✅ done |
+| `ToggleSignups()` DELETE | Simple date-scoped delete | ✅ done |
 | `CompleteCurrentSong()` individual statements | Three statements inside a transaction | |
 
 ---

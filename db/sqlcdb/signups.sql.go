@@ -9,6 +9,15 @@ import (
 	"context"
 )
 
+const deletePastSignups = `-- name: DeletePastSignups :exec
+DELETE FROM telive.signups WHERE created_at < CURRENT_DATE
+`
+
+func (q *Queries) DeletePastSignups(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, deletePastSignups)
+	return err
+}
+
 const hasName = `-- name: HasName :one
 SELECT EXISTS(
     SELECT 1 FROM telive.signups
