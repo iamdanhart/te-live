@@ -2,6 +2,8 @@ ARG GO_VERSION=1
 FROM golang:${GO_VERSION}-bookworm as builder
 
 WORKDIR /usr/src/app
+# Copy only the dependency files first so Docker can cache the module download
+# layer; it's only re-run when go.mod or go.sum change, not on every code edit.
 COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 COPY . .
