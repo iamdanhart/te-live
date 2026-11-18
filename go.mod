@@ -4,7 +4,7 @@ go 1.27.4
 
 require (
 	github.com/jackc/pgx/v5 v5.13.0
-	github.com/stretchr/testify v1.11.1
+	github.com/stretchr/testify v1.12.1
 	github.com/testcontainers/testcontainers-go v0.42.0
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.42.0
 	golang.org/x/crypto v0.59.0
