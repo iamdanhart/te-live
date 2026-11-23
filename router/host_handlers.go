@@ -131,16 +131,18 @@ func registerHostRoutes(mux *http.ServeMux, cfg config.Props, q queue.Queue, rl 
 	}))
 
 	mux.Handle("POST /host/move", authPost(func(w http.ResponseWriter, r *http.Request) {
-		id, err := strconv.Atoi(r.FormValue("id"))
+		parsedID, err := strconv.ParseInt(r.FormValue("id"), 10, 32)
 		if err != nil {
 			http.Error(w, "invalid id", http.StatusBadRequest)
 			return
 		}
-		afterID, err := strconv.Atoi(r.FormValue("after_id"))
+		parsedAfterID, err := strconv.ParseInt(r.FormValue("after_id"), 10, 32)
 		if err != nil {
 			http.Error(w, "invalid after_id", http.StatusBadRequest)
 			return
 		}
+		id := int(parsedID)
+		afterID := int(parsedAfterID)
 		if err := q.MoveEntry(r.Context(), id, afterID); err != nil {
 			http.Error(w, "failed to move entry", http.StatusInternalServerError)
 			return
